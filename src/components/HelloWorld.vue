@@ -1,23 +1,11 @@
 <template>
-  <button @click="onclick">点击</button>
+  <canvas id="testCanvas" width="500" height="500" @wheel.prevent="scrollBarWheel"></canvas>
 </template>
 
 <script lang="ts" src="./HelloWorld.ts"></script>
 
 <style scoped>
-a {
-  color: #42b983;
-}
-
-label {
-  margin: 0 0.5em;
-  font-weight: bold;
-}
-
-code {
-  background-color: #eee;
-  padding: 2px 4px;
-  border-radius: 4px;
-  color: #304455;
+canvas {
+  border: 1px solid black;
 }
 </style>
