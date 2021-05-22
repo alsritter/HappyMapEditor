@@ -1,10 +1,3 @@
-/**
- * 按键表，后面的数字是监听传入的按键码
- * 对应的 KEY CODE 查询
- * https://keycode.info/
- * 这里的常量参考自：
- * https://github.com/kabirbaidhya/keycode-js/blob/master/mod.d.ts
- */
 export const keyCodes = {
   KEY_CANCEL: 3,
   KEY_HELP: 6,
@@ -365,5 +358,3 @@ export const keyCodes = {
   CODE_CLOSE_BRACKET: 'BracketRight',
   CODE_QUOTE: 'Quote'
 };
-
-export default keyCodes;

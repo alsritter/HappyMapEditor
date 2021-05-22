@@ -3,7 +3,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'Home',
-    component: () => import('../components/HelloWorld.vue')
+    component: () => import('../components/MainCanvas/MainCanvas.vue')
   }
 ];
 const router = createRouter({

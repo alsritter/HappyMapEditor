@@ -1,15 +1,39 @@
-const getters = {
-  status: (state: any) => state.status,
-  selectKeys: (state: any) => state.keys,
-  selectPressedKeys: (state: any) =>
-    Object.entries(state.keys)
-      .filter(([_key, value]) => value)
-      .map(item => item[0]),
+import { GetterTree } from 'vuex';
+import { KeyState } from './keyboard.state';
 
-  isRightDown: (state: any) => state.keys['RIGHT_ARROW'],
-  isLeftDown: (state: any) => state.keys['LEFT_ARROW'],
-  isUpDown: (state: any) => state.keys['UP_ARROW'],
-  isDownDown: (state: any) => state.keys['DOWN_ARROW'],
+interface SimpleKeyValueObject {
+  [key: string]: boolean;
+}
+
+export type KeyGetters = {
+  //status(state: any): any;
+  selectKeys(state: KeyState): SimpleKeyValueObject;
+  // 取得全部按下的键名
+  selectPressedKeys(state: KeyState): string[];
+  // 是否撤回
+  isRecall(state: KeyState): boolean;
+};
+
+/**
+ * Getter 可以对 Store 中已有的数据加工处理之后形成新的数据，类似 Vue 的计算属性
+ */
+const getters: GetterTree<KeyState, KeyState> & KeyGetters = {
+  //status: (state) => state.status,
+  selectKeys: (state) => state.keys,
+
+  selectPressedKeys: (state) =>
+    Object.entries(state.keys)
+      // , 这里表示用不到前面那个参数，可以省略不写
+      .filter(([, value]) => value)
+      .map((item) => item[0]),
+
+  isRecall: (state) => state.keys['VALUE_CONTROL'] && state.keys['VALUE_Z']
+
+  // 这里的原理就是当调用了 isRightDown 方法时返回 'RIGHT_ARROW' 对应的 Boolean
+  // isRightDown: (state: any) => state.keys['RIGHT_ARROW'],
+  // isLeftDown: (state: any) => state.keys['LEFT_ARROW'],
+  // isUpDown: (state: any) => state.keys['UP_ARROW'],
+  // isDownDown: (state: any) => state.keys['DOWN_ARROW']
 };
 
 export default getters;

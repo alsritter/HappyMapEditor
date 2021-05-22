@@ -1,4 +1,4 @@
-import {createStore} from 'vuex';
+import { createStore } from 'vuex';
 
 import keyboard from './keyboard';
 
