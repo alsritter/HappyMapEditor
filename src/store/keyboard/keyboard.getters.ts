@@ -27,6 +27,7 @@ const getters: GetterTree<KeyState, KeyState> & KeyGetters = {
       .filter(([, value]) => value)
       .map((item) => item[0]),
 
+  // 是否撤回
   isRecall: (state) => state.keys['VALUE_CONTROL'] && state.keys['VALUE_Z']
 
   // 这里的原理就是当调用了 isRightDown 方法时返回 'RIGHT_ARROW' 对应的 Boolean

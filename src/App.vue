@@ -16,6 +16,17 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+    // const KeyGetters = computed(() => {
+    //   return {
+    //     ...mapGetters({
+    //       selectKeys: 'keyboard/selectKeys',
+    //       pressedKeys: 'keyboard/selectPressedKeys',
+    //       isRecall: 'keyboard/keyboard'
+    //     })
+    //   };
+    // });
+    //const KeyGetters = { ...mapGetters('keyboard', ['keyboard']) };
+
     const methods = {
       // 这里进行全局初始化
       init() {
@@ -29,10 +40,17 @@ export default defineComponent({
       onKeyDown(e: KeyboardEvent) {
         e.preventDefault();
         store.dispatch('keyboard/KEY_DOWN', e.key);
+        methods.onShortcutKey();
       },
       onKeyUp(e: KeyboardEvent) {
         e.preventDefault();
         store.dispatch('keyboard/KEY_UP', e.key);
+      },
+      // 监听快捷键
+      onShortcutKey() {
+        if (store.getters['keyboard/isRecall']) {
+          console.log('按下了撤回键');
+        }
       }
     };
 

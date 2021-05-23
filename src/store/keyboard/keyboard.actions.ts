@@ -30,7 +30,7 @@ const getKeyByValue = (obj: SimpleKeyValueObject, value: number) => Object.keys(
 const actions: ActionTree<KeyState, KeyState> & KeyActions = {
   [mutationsTypes.KEY_DOWN]: async ({ commit }, code: number): Promise<void> => {
     const key = getKeyByValue(keyCodes, code);
-    console.log(`按下了 ${code} 对应的 ${key}`);
+    // console.log(`按下了 ${code} 对应的 ${key}`);
     // 这里调用的第一个参数是 mutations 里的方法名称，第二个参数才是传入的值
     commit(mutationsTypes.KEY_DOWN, key);
   },
