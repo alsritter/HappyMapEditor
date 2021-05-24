@@ -1,3 +1,5 @@
+import Constants from '../../core/util/Constants';
+
 /**
  * 起始点
  */
@@ -10,30 +12,14 @@ const initPoint = {
  * 画布大小
  */
 const canvasSize = {
-  size: 30
-};
-
-/**
- * 画布的图层
- */
-export enum displayLayer {
-  FRONT = 'FRONT',
-  MIDDLE = 'MIDDLE',
-  BACKGROUND = 'BACKGROUND'
-}
-
-const getCanvas = (layer: displayLayer) => {
-  const dom = document.getElementById(layer) as HTMLCanvasElement;
-  const canvas = dom.getContext('2d');
-  return canvas;
+  size: Constants.DEFAULT_SIZE
 };
 
 export const initialState = {
-  initPoint,
   canvasSize,
-  [displayLayer.FRONT]: getCanvas(displayLayer.FRONT),
-  [displayLayer.MIDDLE]: getCanvas(displayLayer.MIDDLE),
-  [displayLayer.BACKGROUND]: getCanvas(displayLayer.BACKGROUND)
+  initPoint
 };
+
+export type CanvasState = typeof initialState;
 
 export default initialState;

@@ -4,7 +4,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted } from 'vue';
+import { defineComponent, onMounted, computed } from 'vue';
 import { useStore } from 'vuex';
 import MainCanvas from './components/MainCanvas/MainCanvas.vue';
 // import HelloWorld from './components/HelloWorld.vue';
@@ -16,16 +16,26 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
-    // const KeyGetters = computed(() => {
+    const KeyGetters = computed(() => {
+      return {
+        isRecall: store.getters['keyboard/isRecall'],
+        selectKeys: store.getters['keyboard/selectKeys'],
+        pressedKeys: store.getters['keyboard/selectPressedKeys']
+      };
+    });
+
+    //FIXME: 注意在 Vue3 中的 composition api 无法使用 mapGetters，因为它依赖于 this
+    // 具体参考这个 issue https://github.com/vuejs/vuex/issues/1948
+    // 所以下面这种写法用不了
+
+    // const test = computed(() => {
     //   return {
-    //     ...mapGetters({
-    //       selectKeys: 'keyboard/selectKeys',
-    //       pressedKeys: 'keyboard/selectPressedKeys',
-    //       isRecall: 'keyboard/keyboard'
-    //     })
+    //     ...mapGetters([
+    //       'keyboard/isRecall'
+    //       // ...
+    //     ])
     //   };
     // });
-    //const KeyGetters = { ...mapGetters('keyboard', ['keyboard']) };
 
     const methods = {
       // 这里进行全局初始化
@@ -48,7 +58,7 @@ export default defineComponent({
       },
       // 监听快捷键
       onShortcutKey() {
-        if (store.getters['keyboard/isRecall']) {
+        if (KeyGetters.value.isRecall) {
           console.log('按下了撤回键');
         }
       }

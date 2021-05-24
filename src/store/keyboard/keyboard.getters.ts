@@ -19,15 +19,29 @@ export type KeyGetters = {
  */
 const getters: GetterTree<KeyState, KeyState> & KeyGetters = {
   //status: (state) => state.status,
+  /**
+   * 取得全部的按键
+   * @param state
+   * @returns 取得全部的按键
+   */
   selectKeys: (state) => state.keys,
 
+  /**
+   * 返回当前已经按下的按键
+   * @param state
+   * @returns 返回当前已经按下的按键
+   */
   selectPressedKeys: (state) =>
     Object.entries(state.keys)
       // , 这里表示用不到前面那个参数，可以省略不写
       .filter(([, value]) => value)
       .map((item) => item[0]),
 
-  // 是否撤回
+  /**
+   * 是否撤回
+   * @param state
+   * @returns 是否撤回
+   */
   isRecall: (state) => state.keys['VALUE_CONTROL'] && state.keys['VALUE_Z']
 
   // 这里的原理就是当调用了 isRightDown 方法时返回 'RIGHT_ARROW' 对应的 Boolean

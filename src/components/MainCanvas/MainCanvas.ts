@@ -1,111 +1,135 @@
 import * as Vue from 'vue';
 import bus from '../../core/util/bus';
+import Constants from '../../core/util/Constants';
+import graph from '../../core/util/graph';
+import { useStore } from 'vuex';
 
-const graph = {
-  drawGrid(ctx: CanvasRenderingContext2D, width: number, hight: number, size: number, x: number, y: number) {
-    // 计算数量
-    const _cols = width / size;
-    const _rows = _cols;
-
-    // 绘制线条
-    for (let i = 0; i < _cols; i++) {
-      ctx.beginPath(); // 开启路径，设置不同的样式
-      ctx.moveTo(size * i - 0.5, y); // -0.5是为了解决像素模糊问题
-      ctx.lineTo(size * i - 0.5, hight);
-      ctx.setLineDash([1, 2]); //绘制虚线
-      ctx.strokeStyle = '#2a2a2a'; // 设置每个线条的颜色
-      ctx.stroke();
-    }
-    // 同理y轴
-    for (let i = 0; i < _rows; i++) {
-      ctx.beginPath(); // 开启路径，设置不同的样式
-      ctx.moveTo(x, size * i - 0.5);
-      ctx.lineTo(width, size * i - 0.5);
-      ctx.strokeStyle = '#2a2a2a';
-      ctx.stroke();
-    }
-  },
-  clearAllCanvas(ctx: CanvasRenderingContext2D, width: number, hight: number) {
-    ctx.clearRect(0, 0, width, hight);
-  }
-};
+export enum displayLayer {
+  FRONT = 'FRONT',
+  MIDDLE = 'MIDDLE',
+  BACKGROUND = 'BACKGROUND'
+}
 
 export default Vue.defineComponent({
   setup() {
-    const mapCanvas = Vue.ref(null) as any;
-    const width = 500;
-    const height = 500;
-    const offsetSpeed = 5;
-    const size = Vue.ref(10);
+    const store = useStore();
+    const canvasBox = {
+      [displayLayer.FRONT]: Vue.ref(null) as Vue.Ref,
+      [displayLayer.MIDDLE]: Vue.ref(null) as Vue.Ref,
+      [displayLayer.BACKGROUND]: Vue.ref(null) as Vue.Ref
+    };
+
+    const canvasGetters = Vue.computed(() => {
+      return {
+        state: store.getters['canvas/status'],
+        getSize: store.getters['canvas/getSize'],
+        getPoint: store.getters['canvas/getPoint']
+      };
+    });
+
+    const KeyGetters = Vue.computed(() => {
+      return {
+        isRecall: store.getters['keyboard/isRecall'],
+        selectKeys: store.getters['keyboard/selectKeys'],
+        pressedKeys: store.getters['keyboard/selectPressedKeys']
+      };
+    });
+
+    const width = Constants.CANVAS_WIDTH;
+    const height = Constants.CANVAS_HEIGHT;
     const currentX = Vue.ref(0);
-    const currentY = Vue.ref(0);
+    const currentY = Vue.ref(0); //TODO: 替换成 state 里面的
+    const dragging = Vue.ref(false); //是否激活拖拽状态
+    const tLeft = 0,
+      tTop = 0; //鼠标按下时相对于选中元素的位移
+
+    // windowToCanvas此方法用于鼠标所在点的坐标切换到画布上的坐标
+    function windowToCanvas(canvas: HTMLCanvasElement, x: number, y: number) {
+      const bbox = canvas.getBoundingClientRect();
+      return {
+        x: x - bbox.left - (bbox.width - canvas.width) / 2,
+        y: y - bbox.top - (bbox.height - canvas.height) / 2
+      };
+    }
+
+    // 只拖动最上面的，下面的是跟着一起动的
+    const dragCanvas = (canvasDOM: HTMLCanvasElement) => {
+      let mouseDownLocation = {
+        x: 0,
+        y: 0
+      };
+
+      //监听鼠标按下事件
+      canvasDOM.onmousedown = (event: MouseEvent) => {
+        // 要同时按下 ALT 键
+        if (KeyGetters.value.selectKeys['VALUE_ALT']) {
+          mouseDownLocation = windowToCanvas(canvasDOM, event.clientX, event.clientY);
+          dragging.value = true;
+        }
+      };
+
+      //鼠标弹起（注意，这里要使用 document）
+      canvasDOM.onmouseup = () => {
+        //canvasDOM.style.cursor = 'default';
+        dragging.value = false;
+      };
+
+      //鼠标移动
+      canvasDOM.onmousemove = (event) => {
+        if (dragging.value) {
+          const move = windowToCanvas(canvasDOM, event.clientX, event.clientY);
+          currentX.value += move.x - mouseDownLocation.x;
+          currentY.value += move.y - mouseDownLocation.y;
+          // 改变光标样式
+          //canvasDOM.style.cursor = 'move';
+          //var newMouseLocation = windowToCanvas(canvas, event.clientX, event.clientY);
+          mouseDownLocation = windowToCanvas(canvasDOM, event.clientX, event.clientY);
+          bus.emit('refreshCanvas');
+        }
+      };
+
+      // 处理鼠标离开容器（这里统一收尾工作）
+      canvasDOM.onmouseout = (event) => {
+        //canvasDOM.style.cursor = 'default';
+        dragging.value = false;
+      };
+    };
 
     const scrollBarWheel = (event: WheelEventInit) => {
       if (event.deltaY == undefined) {
         return;
       }
+      const size = canvasGetters.value.getSize;
+
       if (event.deltaY < 0) {
+        if (size > Constants.MAX_SIZE) return;
         //上滚
-        size.value++;
+        store.dispatch('canvas/UPDATE_SIZE', size + 1);
       } else if (event.deltaY > 0) {
         //下滚
-        size.value--;
+        if (size < Constants.MIN_SIZE) return;
+        store.dispatch('canvas/UPDATE_SIZE', size - 1);
       } else {
         console.error('Mouse wheel zooming in and out status acquisition failed!');
       }
       bus.emit('refreshCanvas');
     };
 
-    const dragCanvas = () => {
-      // 参考资料 https://www.jianshu.com/p/80d37f5763a5
-      mapCanvas.value.onmousedown = (event: MouseEvent) => {
-        if (typeof event === 'object') {
-          //鼠标的x坐标减去box的左边距离，unchangeX 这个距离是不会变的，通过这个新鼠标的X坐标减去 unchangeX 就是box的Left
-          const unchangeX = event.clientX - mapCanvas.value.offsetLeft;
-          const unchangeY = event.clientY - mapCanvas.value.offsetTop;
-
-          mapCanvas.value.onmousemove = (event: MouseEvent) => {
-            let oLeft = event.clientX - unchangeX;
-            let oTop = event.clientY - unchangeY;
-
-            //优化部分：鼠标移动到浏览器左侧、右侧、上侧、下侧时的问题
-            if (oLeft < 0) {
-              oLeft = 0;
-            } else if (oLeft > document.documentElement.clientWidth - mapCanvas.value.offsetWidth) {
-              oLeft = document.documentElement.clientWidth - mapCanvas.value.offsetWidth;
-            }
-
-            if (oTop < 0) {
-              oTop = 0;
-            } else if (oTop > document.documentElement.clientHeight - mapCanvas.value.offsetHeight) {
-              oTop = document.documentElement.clientHeight - mapCanvas.value.offsetHeight;
-            }
-
-            currentX.value = oLeft;
-            currentY.value = oTop;
-
-            bus.emit('refreshCanvas');
-          };
-        }
-      };
-
-      // 恢复
-      mapCanvas.value.onmouseup = (event: MouseEvent) => {
-        mapCanvas.value.onmousemove = null;
-      };
-    };
-
     Vue.onMounted(() => {
-      const canvas = mapCanvas.value;
-      const ctx = canvas.getContext('2d');
+      const canvas = canvasBox.FRONT.value as unknown as HTMLCanvasElement;
+      const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+      graph.drawGrid(ctx, width, height, canvasGetters.value.getSize, currentX.value, currentY.value);
+      // 拖拽画布
+      dragCanvas(canvas);
+
       bus.on('refreshCanvas', () => {
         graph.clearAllCanvas(ctx, width, height);
-        graph.drawGrid(ctx, width, height, size.value, currentX.value, currentY.value);
+        graph.drawGrid(ctx, width, height, canvasGetters.value.getSize, currentX.value, currentY.value);
       });
 
       //dragCanvas();
     });
 
-    return { mapCanvas, width, height, scrollBarWheel };
+    return { ...canvasBox, width, height, scrollBarWheel };
   }
 });

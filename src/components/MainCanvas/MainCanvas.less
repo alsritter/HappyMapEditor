@@ -1,17 +1,23 @@
 .map__container {
+  // 公共块
+  .canvaseffect {
+    position: absolute;
+    transform: translateX(-50%);
+  }
+
   #FRONT {
     border: 1px solid black;
-    position: absolute;
+    .canvaseffect();
     z-index: 2;
   }
   #MIDDLE {
     border: 2px solid rgb(204, 110, 110);
-    position: absolute;
+    .canvaseffect();
     z-index: 1;
   }
   #BACKGROUND {
     border: 3px solid rgb(20, 168, 87);
-    position: absolute;
+    .canvaseffect();
     z-index: 0;
     background-color: aquamarine;
   }
