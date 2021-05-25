@@ -18,6 +18,7 @@ export default Vue.defineComponent({
       [displayLayer.MIDDLE]: Vue.ref(null) as Vue.Ref,
       [displayLayer.BACKGROUND]: Vue.ref(null) as Vue.Ref
     };
+    const GRID_CANVAS = Vue.ref(null);
 
     const canvasGetters = Vue.computed(() => {
       return {
@@ -40,17 +41,6 @@ export default Vue.defineComponent({
     const currentX = Vue.ref(0);
     const currentY = Vue.ref(0); //TODO: 替换成 state 里面的
     const dragging = Vue.ref(false); //是否激活拖拽状态
-    const tLeft = 0,
-      tTop = 0; //鼠标按下时相对于选中元素的位移
-
-    // windowToCanvas此方法用于鼠标所在点的坐标切换到画布上的坐标
-    function windowToCanvas(canvas: HTMLCanvasElement, x: number, y: number) {
-      const bbox = canvas.getBoundingClientRect();
-      return {
-        x: x - bbox.left - (bbox.width - canvas.width) / 2,
-        y: y - bbox.top - (bbox.height - canvas.height) / 2
-      };
-    }
 
     // 只拖动最上面的，下面的是跟着一起动的
     const dragCanvas = (canvasDOM: HTMLCanvasElement) => {
@@ -63,7 +53,7 @@ export default Vue.defineComponent({
       canvasDOM.onmousedown = (event: MouseEvent) => {
         // 要同时按下 ALT 键
         if (KeyGetters.value.selectKeys['VALUE_ALT']) {
-          mouseDownLocation = windowToCanvas(canvasDOM, event.clientX, event.clientY);
+          mouseDownLocation = graph.canvasPoint.windowToCanvas(canvasDOM, event.clientX, event.clientY);
           dragging.value = true;
         }
       };
@@ -77,19 +67,19 @@ export default Vue.defineComponent({
       //鼠标移动
       canvasDOM.onmousemove = (event) => {
         if (dragging.value) {
-          const move = windowToCanvas(canvasDOM, event.clientX, event.clientY);
+          const move = graph.canvasPoint.windowToCanvas(canvasDOM, event.clientX, event.clientY);
           currentX.value += move.x - mouseDownLocation.x;
           currentY.value += move.y - mouseDownLocation.y;
           // 改变光标样式
           //canvasDOM.style.cursor = 'move';
           //var newMouseLocation = windowToCanvas(canvas, event.clientX, event.clientY);
-          mouseDownLocation = windowToCanvas(canvasDOM, event.clientX, event.clientY);
+          mouseDownLocation = graph.canvasPoint.windowToCanvas(canvasDOM, event.clientX, event.clientY);
           bus.emit('refreshCanvas');
         }
       };
 
       // 处理鼠标离开容器（这里统一收尾工作）
-      canvasDOM.onmouseout = (event) => {
+      canvasDOM.onmouseout = () => {
         //canvasDOM.style.cursor = 'default';
         dragging.value = false;
       };
@@ -99,6 +89,7 @@ export default Vue.defineComponent({
       if (event.deltaY == undefined) {
         return;
       }
+
       const size = canvasGetters.value.getSize;
 
       if (event.deltaY < 0) {
@@ -112,24 +103,25 @@ export default Vue.defineComponent({
       } else {
         console.error('Mouse wheel zooming in and out status acquisition failed!');
       }
+
       bus.emit('refreshCanvas');
     };
 
     Vue.onMounted(() => {
-      const canvas = canvasBox.FRONT.value as unknown as HTMLCanvasElement;
+      const canvas = GRID_CANVAS.value as unknown as HTMLCanvasElement;
       const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
-      graph.drawGrid(ctx, width, height, canvasGetters.value.getSize, currentX.value, currentY.value);
+      graph.canvasDraw.drawGrid(ctx, width, height, canvasGetters.value.getSize, currentX.value, currentY.value);
       // 拖拽画布
       dragCanvas(canvas);
 
       bus.on('refreshCanvas', () => {
-        graph.clearAllCanvas(ctx, width, height);
-        graph.drawGrid(ctx, width, height, canvasGetters.value.getSize, currentX.value, currentY.value);
+        graph.canvasDraw.clearAllCanvas(ctx, width, height);
+        graph.canvasDraw.drawGrid(ctx, width, height, canvasGetters.value.getSize, currentX.value, currentY.value);
       });
 
       //dragCanvas();
     });
 
-    return { ...canvasBox, width, height, scrollBarWheel };
+    return { ...canvasBox, GRID_CANVAS, width, height, scrollBarWheel };
   }
 });

@@ -24,19 +24,6 @@ export default defineComponent({
       };
     });
 
-    //FIXME: 注意在 Vue3 中的 composition api 无法使用 mapGetters，因为它依赖于 this
-    // 具体参考这个 issue https://github.com/vuejs/vuex/issues/1948
-    // 所以下面这种写法用不了
-
-    // const test = computed(() => {
-    //   return {
-    //     ...mapGetters([
-    //       'keyboard/isRecall'
-    //       // ...
-    //     ])
-    //   };
-    // });
-
     const methods = {
       // 这里进行全局初始化
       init() {
