@@ -10,6 +10,7 @@ type KeyAugmentedActionContext = {
 export interface KeyActions {
   [KeyMutationsTypes.KEY_DOWN]({ commit }: KeyAugmentedActionContext, code: number): Promise<void>;
   [KeyMutationsTypes.KEY_UP]({ commit }: KeyAugmentedActionContext, code: number): Promise<void>;
+  [KeyMutationsTypes.REFRESH]({ commit }: KeyAugmentedActionContext): Promise<void>;
 }
 
 /**
@@ -37,6 +38,9 @@ const actions: ActionTree<KeyState, KeyState> & KeyActions = {
   [KeyMutationsTypes.KEY_UP]: async ({ commit }, code: number): Promise<void> => {
     const key = getKeyByValue(keyCodes, code);
     commit(KeyMutationsTypes.KEY_UP, key);
+  },
+  [KeyMutationsTypes.REFRESH]: async ({ commit }): Promise<void> => {
+    commit(KeyMutationsTypes.REFRESH, undefined);
   }
 };
 

@@ -4,7 +4,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, computed } from 'vue';
+import { defineComponent, onMounted, computed, onUpdated } from 'vue';
 import { useStore } from 'vuex';
 import MainCanvas from './components/MainCanvas/MainCanvas.vue';
 // import HelloWorld from './components/HelloWorld.vue';
@@ -50,6 +50,16 @@ export default defineComponent({
         }
       }
     };
+
+    const update = {
+      refresh() {
+        store.dispatch('keyboard/REFRESH', undefined);
+      }
+    };
+
+    onUpdated(() => {
+      update.refresh();
+    });
 
     onMounted(() => {
       methods.init();

@@ -107,6 +107,11 @@ export default Vue.defineComponent({
       bus.emit('refreshCanvas');
     };
 
+    Vue.onUpdated(() => {
+      console.log('刷新了');
+      store.commit('keyboard/REFRESH', undefined);
+    });
+
     Vue.onMounted(() => {
       const canvas = GRID_CANVAS.value as unknown as HTMLCanvasElement;
       const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;

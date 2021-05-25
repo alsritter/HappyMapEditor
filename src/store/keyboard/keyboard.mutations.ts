@@ -6,7 +6,8 @@ import { KeyState } from './keyboard.state';
  */
 export enum KeyMutationsTypes {
   KEY_DOWN = 'KEY_DOWN',
-  KEY_UP = 'KEY_UP'
+  KEY_UP = 'KEY_UP',
+  REFRESH = 'REFRESH'
 }
 
 /**
@@ -15,6 +16,7 @@ export enum KeyMutationsTypes {
 export type KeyMutations<S = KeyState> = {
   [KeyMutationsTypes.KEY_DOWN](state: S, key: string): void;
   [KeyMutationsTypes.KEY_UP](state: S, key: string): void;
+  [KeyMutationsTypes.REFRESH](state: S): void;
 };
 
 const mutations: MutationTree<KeyState> & KeyMutations = {
@@ -30,6 +32,16 @@ const mutations: MutationTree<KeyState> & KeyMutations = {
   [KeyMutationsTypes.KEY_UP]: (state, key) => {
     const mutState = state;
     mutState.keys[key] = false;
+  },
+  /**
+   * 刷新全部按键
+   * @param state
+   */
+  [KeyMutationsTypes.REFRESH]: (state) => {
+    const mutState = state;
+    Object.keys(mutState.keys).forEach((key) => {
+      mutState.keys[key] = false;
+    });
   }
 };
 
