@@ -32,7 +32,8 @@ export default Vue.defineComponent({
       return {
         isRecall: store.getters['keyboard/isRecall'],
         selectKeys: store.getters['keyboard/selectKeys'],
-        pressedKeys: store.getters['keyboard/selectPressedKeys']
+        pressedKeys: store.getters['keyboard/selectPressedKeys'],
+        isAlt: store.getters['keyboard/isAlt']
       };
     });
 
@@ -54,11 +55,14 @@ export default Vue.defineComponent({
 
       //监听鼠标按下事件
       canvasDOM.onmousedown = (event: MouseEvent) => {
-        // 要同时按下 ALT 键
-        if (KeyGetters.value.selectKeys['VALUE_ALT']) {
-          mouseDownLocation = graph.canvasPoint.windowToCanvas(canvasDOM, event.clientX, event.clientY);
-          dragging.value = true;
-        }
+        // // 要同时按下 ALT 键
+        // if (KeyGetters.value.selectKeys['VALUE_ALT']) {
+        //   mouseDownLocation = graph.canvasPoint.windowToCanvas(canvasDOM, event.clientX, event.clientY);
+        //   dragging.value = true;
+        // }
+
+        mouseDownLocation = graph.canvasPoint.windowToCanvas(canvasDOM, event.clientX, event.clientY);
+        dragging.value = true;
       };
 
       //鼠标弹起（注意，这里要使用 document）
@@ -75,7 +79,6 @@ export default Vue.defineComponent({
           currentY.value += move.y - mouseDownLocation.y;
           // 改变光标样式
           //canvasDOM.style.cursor = 'move';
-          //var newMouseLocation = windowToCanvas(canvas, event.clientX, event.clientY);
           mouseDownLocation = graph.canvasPoint.windowToCanvas(canvasDOM, event.clientX, event.clientY);
           bus.emit('refreshCanvas');
         }
@@ -87,6 +90,25 @@ export default Vue.defineComponent({
         dragging.value = false;
       };
     };
+
+    /**
+     * 清空绘图事件
+     */
+    const dragCanvasClean = (canvasDOM: HTMLCanvasElement) => {
+      canvasDOM.onmousedown = null;
+      canvasDOM.onmouseup = null;
+      canvasDOM.onmousemove = null;
+      canvasDOM.onmouseout = null;
+
+      dragging.value = false;
+    };
+
+    // /**
+    //  * 绘制画布
+    //  */
+    // const pointCanvas = (canvasDOM: HTMLCanvasElement) => {
+
+    // };
 
     /**
      * 放大缩小画布
@@ -113,8 +135,9 @@ export default Vue.defineComponent({
       bus.emit('refreshCanvas');
     };
 
+    // 会在组件更新后调用，在这里就是画布变化后调用（一直调用）
     Vue.onUpdated(() => {
-      store.commit('keyboard/REFRESH', undefined);
+      // store.commit('keyboard/REFRESH', undefined);
     });
 
     Vue.onMounted(() => {
@@ -131,8 +154,18 @@ export default Vue.defineComponent({
       graph.canvasDraw.drawGrid(GRID_ctx, width, height, canvasGetters.value.getSize, currentX.value, currentY.value);
       graph.canvasDraw.drawData(FRONT_ctx, width, height, canvasGetters.value.getSize, currentX.value, currentY.value, 1, 1, '6');
 
-      // 拖拽画布
-      dragCanvas(GRID_canvas);
+      // 监听键盘事件
+      Vue.watch(
+        () => KeyGetters.value.isAlt,
+        (newValue, oldValue) => {
+          if (newValue == true) {
+            // 拖拽画布
+            dragCanvas(GRID_canvas);
+          } else {
+            dragCanvasClean(GRID_canvas);
+          }
+        }
+      );
 
       bus.on('refreshCanvas', () => {
         graph.canvasDraw.clearAllCanvas(GRID_ctx, width, height);

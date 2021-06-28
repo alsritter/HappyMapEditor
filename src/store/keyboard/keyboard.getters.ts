@@ -12,6 +12,8 @@ export type KeyGetters = {
   selectPressedKeys(state: KeyState): string[];
   // 是否撤回
   isRecall(state: KeyState): boolean;
+  // 是否 Alt
+  isAlt(state: KeyState): boolean;
 };
 
 /**
@@ -42,8 +44,14 @@ const getters: GetterTree<KeyState, KeyState> & KeyGetters = {
    * @param state
    * @returns 是否撤回
    */
-  isRecall: (state) => state.keys['VALUE_CONTROL'] && state.keys['VALUE_Z']
+  isRecall: (state) => state.keys['VALUE_CONTROL'] && state.keys['VALUE_Z'],
 
+  /**
+   * 是否按下 Alt
+   * @param state
+   * @returns 是否按下 Alt
+   */
+  isAlt: (state) => state.keys['VALUE_ALT']
   // 这里的原理就是当调用了 isRightDown 方法时返回 'RIGHT_ARROW' 对应的 Boolean
   // isRightDown: (state: any) => state.keys['RIGHT_ARROW'],
   // isLeftDown: (state: any) => state.keys['LEFT_ARROW'],
