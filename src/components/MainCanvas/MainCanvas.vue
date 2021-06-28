@@ -1,5 +1,6 @@
 <template>
   <div class="map__container">
+    <div>x:{{ currentX }}, y: {{ currentY }}</div>
     <!-- GRID_CANVAS 就是顶层用来刷新网格的那个画布，因为经常更新，所以这里单独提取出来 -->
     <canvas id="GRID_CANVAS" ref="GRID_CANVAS" class="map" :width="width" :height="height" @wheel.prevent="scrollBarWheel"></canvas>
     <!-- 下面这些就是用来绘制 Tile 的画布 -->

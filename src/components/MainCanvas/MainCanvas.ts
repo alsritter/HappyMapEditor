@@ -42,7 +42,10 @@ export default Vue.defineComponent({
     const currentY = Vue.ref(0); //TODO: 替换成 state 里面的
     const dragging = Vue.ref(false); //是否激活拖拽状态
 
-    // 只拖动最上面的，下面的是跟着一起动的
+    /**
+     * 拖动画布
+     * 只拖动最上面的，下面的是跟着一起动的
+     */
     const dragCanvas = (canvasDOM: HTMLCanvasElement) => {
       let mouseDownLocation = {
         x: 0,
@@ -85,6 +88,9 @@ export default Vue.defineComponent({
       };
     };
 
+    /**
+     * 放大缩小画布
+     */
     const scrollBarWheel = (event: WheelEventInit) => {
       if (event.deltaY == undefined) {
         return;
@@ -108,25 +114,35 @@ export default Vue.defineComponent({
     };
 
     Vue.onUpdated(() => {
-      console.log('刷新了');
       store.commit('keyboard/REFRESH', undefined);
     });
 
     Vue.onMounted(() => {
-      const canvas = GRID_CANVAS.value as unknown as HTMLCanvasElement;
-      const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
-      graph.canvasDraw.drawGrid(ctx, width, height, canvasGetters.value.getSize, currentX.value, currentY.value);
+      const GRID_canvas = GRID_CANVAS.value as unknown as HTMLCanvasElement;
+      const FRONT_canvas = canvasBox.FRONT.value as unknown as HTMLCanvasElement;
+      const MIDDLE_canvas = canvasBox.MIDDLE.value as unknown as HTMLCanvasElement;
+      const BACKGROUND_canvas = canvasBox.BACKGROUND.value as unknown as HTMLCanvasElement;
+
+      const GRID_ctx = GRID_canvas.getContext('2d') as CanvasRenderingContext2D;
+      const FRONT_ctx = FRONT_canvas.getContext('2d') as CanvasRenderingContext2D;
+      const MIDDLE_ctx = MIDDLE_canvas.getContext('2d') as CanvasRenderingContext2D;
+      const BACKGROUND_ctx = BACKGROUND_canvas.getContext('2d') as CanvasRenderingContext2D;
+
+      graph.canvasDraw.drawGrid(GRID_ctx, width, height, canvasGetters.value.getSize, currentX.value, currentY.value);
+      graph.canvasDraw.drawData(FRONT_ctx, width, height, canvasGetters.value.getSize, currentX.value, currentY.value, 1, 1, '6');
+
       // 拖拽画布
-      dragCanvas(canvas);
+      dragCanvas(GRID_canvas);
 
       bus.on('refreshCanvas', () => {
-        graph.canvasDraw.clearAllCanvas(ctx, width, height);
-        graph.canvasDraw.drawGrid(ctx, width, height, canvasGetters.value.getSize, currentX.value, currentY.value);
+        graph.canvasDraw.clearAllCanvas(GRID_ctx, width, height);
+        graph.canvasDraw.drawGrid(GRID_ctx, width, height, canvasGetters.value.getSize, currentX.value, currentY.value);
+        // 要清除全部画面
+        graph.canvasDraw.clearAllCanvas(FRONT_ctx, width, height);
+        graph.canvasDraw.drawData(FRONT_ctx, width, height, canvasGetters.value.getSize, currentX.value, currentY.value, 1, 1, '6');
       });
-
-      //dragCanvas();
     });
 
-    return { ...canvasBox, GRID_CANVAS, width, height, scrollBarWheel };
+    return { ...canvasBox, currentX, currentY, GRID_CANVAS, width, height, scrollBarWheel };
   }
 });
