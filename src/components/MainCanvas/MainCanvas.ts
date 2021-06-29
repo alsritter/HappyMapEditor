@@ -2,6 +2,7 @@ import * as Vue from 'vue';
 import bus from '../../core/util/bus';
 import Constants from '../../core/util/Constants';
 import graph from '../../core/util/graph';
+import process from '../../core/util/process';
 import { useStore } from 'vuex';
 
 export enum displayLayer {
@@ -13,13 +14,12 @@ export enum displayLayer {
 export default Vue.defineComponent({
   setup() {
     const store = useStore();
+    const GRID_CANVAS = Vue.ref(null);
     const canvasBox = {
       [displayLayer.FRONT]: Vue.ref(null) as Vue.Ref,
       [displayLayer.MIDDLE]: Vue.ref(null) as Vue.Ref,
       [displayLayer.BACKGROUND]: Vue.ref(null) as Vue.Ref
     };
-    const GRID_CANVAS = Vue.ref(null);
-
     const canvasGetters = Vue.computed(() => {
       return {
         state: store.getters['canvas/status'],
@@ -27,7 +27,6 @@ export default Vue.defineComponent({
         getPoint: store.getters['canvas/getPoint']
       };
     });
-
     const KeyGetters = Vue.computed(() => {
       return {
         isRecall: store.getters['keyboard/isRecall'],
@@ -42,6 +41,35 @@ export default Vue.defineComponent({
     const currentX = Vue.ref(0);
     const currentY = Vue.ref(0); //TODO: 替换成 state 里面的
     const dragging = Vue.ref(false); //是否激活拖拽状态
+
+    type GridParamType = {
+      // 画布元素
+      ctx: CanvasRenderingContext2D;
+      // 画布的高度
+      width: number;
+      // 画布的宽度
+      height: number;
+      // 每个格子的大小
+      size: number;
+      // 起始点 X
+      x: number;
+      // 起始点 Y
+      y: number;
+    };
+
+    // Vue.watch(
+    //   () => dragging.value,
+    //   (newValue, oldValue) => {
+    //     // 激活绘图进程工具（避免一直执行），变化了就刷新
+
+    //   }
+    // );
+
+    const graphGridWord = new Array<GridParamType>();
+
+    // const graphProcess = (flag: boolean) => {
+
+    // };
 
     /**
      * 拖动画布
@@ -135,9 +163,14 @@ export default Vue.defineComponent({
       bus.emit('refreshCanvas');
     };
 
-    // 会在组件更新后调用，在这里就是画布变化后调用（一直调用）
+    /**
+     * 会在组件更新后调用，只有 data 里的变量改变并且要在页面重新渲染完成之后，才会进 updated 生命周期，
+     * 只改变 data 里的值但是没有再页面上渲染该值的话并不会触发 updated 方法。
+     *
+     * 例如这里暴露的坐标 currentX, currentY 变化后就会更新（因为它显示在了页面上）
+     */
     Vue.onUpdated(() => {
-      // store.commit('keyboard/REFRESH', undefined);
+      // console.log('sssssssssss');
     });
 
     Vue.onMounted(() => {
@@ -167,10 +200,33 @@ export default Vue.defineComponent({
         }
       );
 
+      // let count = 0;
       bus.on('refreshCanvas', () => {
-        graph.canvasDraw.clearAllCanvas(GRID_ctx, width, height);
-        graph.canvasDraw.drawGrid(GRID_ctx, width, height, canvasGetters.value.getSize, currentX.value, currentY.value);
+        // console.log('ref:' + count++);
         // 要清除全部画面
+        // graph.canvasDraw.clearAllCanvas(GRID_ctx, width, height);
+        // graph.canvasDraw.drawGrid(GRID_ctx, width, height, canvasGetters.value.getSize, currentX.value, currentY.value);
+        graphGridWord.push({
+          ctx: GRID_ctx,
+          width,
+          height,
+          size: canvasGetters.value.getSize,
+          x: currentX.value,
+          y: currentY.value
+        });
+
+        process.jumpTimedProcessArray(
+          graphGridWord,
+          (item) => {
+            if (item == undefined) return;
+            graph.canvasDraw.drawGrid(item.ctx, item.width, item.height, item.size, item.x, item.y);
+          },
+          () => {
+            // console.log('任务完成');
+          }
+        );
+
+        // 别忘了清除其它画布
         graph.canvasDraw.clearAllCanvas(FRONT_ctx, width, height);
         graph.canvasDraw.drawData(FRONT_ctx, width, height, canvasGetters.value.getSize, currentX.value, currentY.value, 1, 1, '6');
       });

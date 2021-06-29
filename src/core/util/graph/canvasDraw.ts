@@ -3,12 +3,15 @@
  *
  * @param ctx 画布元素
  * @param width 画布的高度
- * @param hight 画布的宽度
+ * @param height 画布的宽度
  * @param size 每个格子的大小
  * @param x 起始点 X
  * @param y 起始点 Y
  */
-export const drawGrid = (ctx: CanvasRenderingContext2D, width: number, hight: number, size: number, x: number, y: number): void => {
+export const drawGrid = (ctx: CanvasRenderingContext2D, width: number, height: number, size: number, x: number, y: number): void => {
+  // 要绘制网格必定要刷新画布
+  clearAllCanvas(ctx, width, height);
+
   // 计算数量
   const _cols = width / size;
   const _rows = _cols;
@@ -24,7 +27,7 @@ export const drawGrid = (ctx: CanvasRenderingContext2D, width: number, hight: nu
   // const cx = (0.5 + (x / width) * _cols) | 0;
   // const cy = (0.5 + (y / hight) * _rows) | 0;
   const cx = (x / width) * _cols;
-  const cy = (y / hight) * _rows;
+  const cy = (y / height) * _rows;
 
   // console.time('time');
 
@@ -32,7 +35,7 @@ export const drawGrid = (ctx: CanvasRenderingContext2D, width: number, hight: nu
   for (let i = 0; i < _cols; i++) {
     ctx.beginPath();
     ctx.moveTo(size * i + (x % size), 0);
-    ctx.lineTo(size * i + (x % size), hight);
+    ctx.lineTo(size * i + (x % size), height);
     ctx.stroke();
 
     // 绘制文字
@@ -61,11 +64,15 @@ export const drawGrid = (ctx: CanvasRenderingContext2D, width: number, hight: nu
   ctx.moveTo(0, y);
   ctx.lineTo(width, y);
   ctx.moveTo(x, 0);
-  ctx.lineTo(x, hight);
+  ctx.lineTo(x, height);
 
   ctx.stroke();
 
-  // console.log(cx, cy);
+  // 模拟阻塞操作
+  // let tmp = 0;
+  // for (let index = 0; index < 30000000; index++) {
+  //   tmp++;
+  // }
 };
 
 /**
@@ -73,7 +80,7 @@ export const drawGrid = (ctx: CanvasRenderingContext2D, width: number, hight: nu
  *
  * @param ctx 画布元素
  * @param width 画布的高度
- * @param hight 画布的宽度
+ * @param height 画布的宽度
  * @param size 每个格子的大小
  * @param x 起始点 X 位置
  * @param y 起始点 Y 位置
@@ -84,7 +91,7 @@ export const drawGrid = (ctx: CanvasRenderingContext2D, width: number, hight: nu
 export const drawData = (
   ctx: CanvasRenderingContext2D,
   width: number,
-  hight: number,
+  height: number,
   size: number,
   x: number,
   y: number,
@@ -97,7 +104,7 @@ export const drawData = (
   const pixY = changeY * size + y;
 
   // 如果要修改的格子在画布外面则不需要绘制，注意它的起始坐标在左上角，所以要比对四个角完全不在画布里面才不需要绘制
-  if (pixX > width || pixX + size < 0 || pixY > hight || pixY + size < 0) return;
+  if (pixX > width || pixX + size < 0 || pixY > height || pixY + size < 0) return;
   // 先清空指定位置
   ctx.clearRect(pixX, pixY, size, size);
   // 绘制色块
@@ -111,10 +118,10 @@ export const drawData = (
  * 清空整个画布
  * @param ctx 画布元素
  * @param width 画布的高度
- * @param hight 画布的宽度
+ * @param height 画布的宽度
  */
-export const clearAllCanvas = (ctx: CanvasRenderingContext2D, width: number, hight: number): void => {
-  ctx.clearRect(0, 0, width, hight);
+export const clearAllCanvas = (ctx: CanvasRenderingContext2D, width: number, height: number): void => {
+  ctx.clearRect(0, 0, width, height);
 };
 
 export default {
