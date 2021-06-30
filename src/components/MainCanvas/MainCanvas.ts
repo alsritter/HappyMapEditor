@@ -4,13 +4,11 @@ import Constants from '@/core/util/Constants';
 import graph from '@/core/util/graph';
 import { GridParamType, DataParamType } from '@/core/util/graph';
 import process from '@/core/util/process';
-// import bus from '../../core/util/bus';
-// import Constants from '../../core/util/Constants';
-// import graph from '../../core/util/graph';
-// import process from '../../core/util/process';
-// import { GridParamType } from '@/core/util/graph';
 import manipulate from '@/core/util/manipulate';
-import { useStore } from 'vuex';
+// import { useStore } from 'vuex';
+import { useStore } from '@/use/useStore';
+import { AllMutationTypes } from '@/store/mutation-types';
+import { AllActionTypes } from '@/store/action-types';
 
 export enum displayLayer {
   FRONT = 'FRONT',
@@ -22,6 +20,7 @@ export default Vue.defineComponent({
   setup() {
     const store = useStore();
     const GRID_CANVAS = Vue.ref(null) as Vue.Ref<HTMLCanvasElement | null>;
+
     const canvasBox = {
       [displayLayer.FRONT]: Vue.ref(null) as Vue.Ref<HTMLCanvasElement | null>,
       [displayLayer.MIDDLE]: Vue.ref(null) as Vue.Ref<HTMLCanvasElement | null>,
@@ -29,17 +28,17 @@ export default Vue.defineComponent({
     };
     const canvasGetters = Vue.computed(() => {
       return {
-        state: store.getters['canvas/status'],
-        getSize: store.getters['canvas/getSize'],
-        getPoint: store.getters['canvas/getPoint']
+        state: store.getters.status,
+        getSize: store.getters.getSize,
+        getPoint: store.getters.getPoint
       };
     });
     const KeyGetters = Vue.computed(() => {
       return {
-        isRecall: store.getters['keyboard/isRecall'],
-        selectKeys: store.getters['keyboard/selectKeys'],
-        pressedKeys: store.getters['keyboard/selectPressedKeys'],
-        isAlt: store.getters['keyboard/isAlt']
+        isRecall: store.getters.isRecall,
+        selectKeys: store.getters.selectKeys,
+        pressedKeys: store.getters.selectPressedKeys,
+        isAlt: store.getters.isAlt
       };
     });
 

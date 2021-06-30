@@ -17,21 +17,21 @@ interface SimpleKeyValueObject {
  * @param value 键的 code
  * @returns
  */
-const getKeyByValue = (obj: SimpleKeyValueObject, value: number) => Object.keys(obj).find((key: string) => obj[key] === value) as string;
+const getKeyByValue = (obj: SimpleKeyValueObject, value: string) => Object.keys(obj).find((key: string) => obj[key] === value) as string;
 
 const actions: ActionTree<KeyStateTypes, IRootState> & KeyActionsTypes = {
-  [ActionTypes.KEY_DOWN]: async ({ commit }, code: number): Promise<void> => {
+  [ActionTypes.KEYBOARD_KEY_DOWN]: async ({ commit }, code: string): Promise<void> => {
     const key = getKeyByValue(keyCodes, code);
     // console.log(`按下了 ${code} 对应的 ${key}`);
     // 这里调用的第一个参数是 mutations 里的方法名称，第二个参数才是传入的值
-    commit(MutationTypes.KEY_DOWN, key);
+    commit(MutationTypes.KEYBOARD_KEY_DOWN, key);
   },
-  [ActionTypes.KEY_UP]: async ({ commit }, code: number): Promise<void> => {
+  [ActionTypes.KEYBOARD_KEY_UP]: async ({ commit }, code: string): Promise<void> => {
     const key = getKeyByValue(keyCodes, code);
-    commit(MutationTypes.KEY_UP, key);
+    commit(MutationTypes.KEYBOARD_KEY_UP, key);
   },
-  [ActionTypes.REFRESH]: async ({ commit }): Promise<void> => {
-    commit(MutationTypes.REFRESH, undefined);
+  [ActionTypes.KEYBOARD_REFRESH]: async ({ commit }): Promise<void> => {
+    commit(MutationTypes.KEYBOARD_REFRESH, undefined);
   }
 };
 

@@ -56,8 +56,8 @@ export type CanvasGettersTypes = {
 };
 
 export type CanvasMutationsTypes<S = CanvasStateTypes> = {
-  [CanvasM1Types.UPDATE_SIZE](state: S, nSize: number): void;
-  [CanvasM1Types.UPDATE_POINT](state: S, point: Point): void;
+  [CanvasM1Types.CANVAS_UPDATE_SIZE](state: S, nSize: number): void;
+  [CanvasM1Types.CANVAS_UPDATE_POINT](state: S, point: Point): void;
 };
 
 type CanvasAugmentedActionContext = {
@@ -65,8 +65,8 @@ type CanvasAugmentedActionContext = {
 } & Omit<ActionContext<CanvasStateTypes, IRootState>, 'commit'>;
 
 export interface CanvasActionsTypes {
-  [CanvasA1Types.UPDATE_POINT]({ commit }: CanvasAugmentedActionContext, point: Point): Promise<void>;
-  [CanvasA1Types.UPDATE_SIZE]({ commit }: CanvasAugmentedActionContext, nSize: number): Promise<void>;
+  [CanvasA1Types.CANVAS_UPDATE_POINT]({ commit }: CanvasAugmentedActionContext, point: Point): Promise<void>;
+  [CanvasA1Types.CANVAS_UPDATE_SIZE]({ commit }: CanvasAugmentedActionContext, nSize: number): Promise<void>;
 }
 
 /*********************** Keyboard MODULE TYPES  ***********************/
@@ -91,9 +91,9 @@ export type KeyGettersTypes = {
  * 需要指定一下这个 mutations 的接口
  */
 export type KeyMutationsTypes<S = KeyStateTypes> = {
-  [KeyboardM1Types.KEY_DOWN](state: S, key: string): void;
-  [KeyboardM1Types.KEY_UP](state: S, key: string): void;
-  [KeyboardM1Types.REFRESH](state: S): void;
+  [KeyboardM1Types.KEYBOARD_KEY_DOWN](state: S, key: string): void;
+  [KeyboardM1Types.KEYBOARD_KEY_UP](state: S, key: string): void;
+  [KeyboardM1Types.KEYBOARD_REFRESH](state: S): void;
 };
 
 type KeyAugmentedActionContext = {
@@ -101,9 +101,9 @@ type KeyAugmentedActionContext = {
 } & Omit<ActionContext<KeyStateTypes, IRootState>, 'commit'>;
 
 export interface KeyActionsTypes {
-  [KeyboardA1Types.KEY_DOWN]({ commit }: KeyAugmentedActionContext, code: number): Promise<void>;
-  [KeyboardA1Types.KEY_UP]({ commit }: KeyAugmentedActionContext, code: number): Promise<void>;
-  [KeyboardA1Types.REFRESH]({ commit }: KeyAugmentedActionContext): Promise<void>;
+  [KeyboardA1Types.KEYBOARD_KEY_DOWN]({ commit }: KeyAugmentedActionContext, code: string): Promise<void>;
+  [KeyboardA1Types.KEYBOARD_KEY_UP]({ commit }: KeyAugmentedActionContext, code: string): Promise<void>;
+  [KeyboardA1Types.KEYBOARD_REFRESH]({ commit }: KeyAugmentedActionContext): Promise<void>;
 }
 
 export interface StoreActions extends RootActionsTypes, CanvasActionsTypes, KeyActionsTypes {}

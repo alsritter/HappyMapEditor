@@ -5,7 +5,9 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, computed, onUpdated } from 'vue';
-import { useStore } from 'vuex';
+// import { useStore } from 'vuex';
+import { useStore } from '@/use/useStore';
+import { AllActionTypes } from '@/store/action-types';
 import MainCanvas from './components/MainCanvas/MainCanvas.vue';
 // import HelloWorld from './components/HelloWorld.vue';
 
@@ -18,11 +20,14 @@ export default defineComponent({
     const store = useStore();
     const KeyGetters = computed(() => {
       return {
-        isRecall: store.getters['keyboard/isRecall'],
-        selectKeys: store.getters['keyboard/selectKeys'],
-        pressedKeys: store.getters['keyboard/selectPressedKeys']
+        isRecall: store.getters.isRecall,
+        selectKeys: store.getters.selectKeys,
+        pressedKeys: store.getters.selectPressedKeys,
+        isAlt: store.getters.isAlt
       };
     });
+
+    // const tmp = computed(() => store.getters.selectKeys);
 
     const methods = {
       // 这里进行全局初始化
@@ -36,15 +41,19 @@ export default defineComponent({
       },
       onKeyDown(e: KeyboardEvent) {
         e.preventDefault();
-        store.dispatch('keyboard/KEY_DOWN', e.key);
+        // store.dispatch('keyboard/KEY_DOWN', e.key);
+        store.dispatch(AllActionTypes.KEYBOARD_KEY_DOWN, e.key);
         methods.onShortcutKey();
       },
       onKeyUp(e: KeyboardEvent) {
         e.preventDefault();
-        store.dispatch('keyboard/KEY_UP', e.key);
+        // store.dispatch('keyboard/KEY_UP', e.key);
+        store.dispatch(AllActionTypes.KEYBOARD_KEY_UP, e.key);
       },
       // 监听快捷键
       onShortcutKey() {
+        // console.log(tmp);
+
         if (KeyGetters.value.isRecall) {
           console.log('按下了撤回键');
         }
@@ -53,7 +62,8 @@ export default defineComponent({
 
     const update = {
       refresh() {
-        store.dispatch('keyboard/REFRESH', undefined);
+        // store.dispatch('keyboard/REFRESH', undefined);
+        store.dispatch(AllActionTypes.KEYBOARD_REFRESH);
       }
     };
 

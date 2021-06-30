@@ -2,13 +2,16 @@ import * as Vue from 'vue';
 import bus from '@/core/util/bus';
 import graph from '@/core/util/graph';
 import Constants from '@/core/util/Constants';
-import { useStore, Store } from 'vuex';
+// import { useStore, Store } from 'vuex';
+import { Store } from '@/store';
+import { useStore } from '@/use/useStore';
+import { AllActionTypes } from '@/store/action-types';
 
 export default class CanvasEventShape {
   dragging: Vue.Ref<boolean>;
   currentX: Vue.Ref<number>;
   currentY: Vue.Ref<number>;
-  store: Store<any>;
+  store: Store;
   canvasGetters: Vue.ComputedRef<{
     state: any;
     getSize: any;
@@ -29,9 +32,9 @@ export default class CanvasEventShape {
 
     this.canvasGetters = Vue.computed(() => {
       return {
-        state: this.store.getters['canvas/status'],
-        getSize: this.store.getters['canvas/getSize'],
-        getPoint: this.store.getters['canvas/getPoint']
+        state: this.store.getters.status,
+        getSize: this.store.getters.getSize,
+        getPoint: this.store.getters.getPoint
       };
     });
   }
@@ -105,15 +108,18 @@ export default class CanvasEventShape {
     }
 
     const size = this.canvasGetters.value.getSize;
+    console.log(size);
 
     if (event.deltaY < 0) {
       if (size > Constants.MAX_SIZE) return;
       //上滚
-      this.store.dispatch('canvas/UPDATE_SIZE', size + 1);
+      // this.store.dispatch('canvas/UPDATE_SIZE', size + 1);
+      this.store.dispatch(AllActionTypes.CANVAS_UPDATE_SIZE, size + 1);
     } else if (event.deltaY > 0) {
       //下滚
       if (size < Constants.MIN_SIZE) return;
-      this.store.dispatch('canvas/UPDATE_SIZE', size - 1);
+      // this.store.dispatch('canvas/UPDATE_SIZE', size - 1);
+      this.store.dispatch(AllActionTypes.CANVAS_UPDATE_SIZE, size - 1);
     } else {
       console.error('Mouse wheel zooming in and out status acquisition failed!');
     }
