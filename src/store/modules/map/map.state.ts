@@ -3,7 +3,7 @@ import * as Collections from 'typescript-collections';
 /**
  * 显示的图层
  */
-enum displayLayer {
+export enum displayLayer {
   FRONT = 'FRONT',
   MIDDLE = 'MIDDLE',
   BACKGROUND = 'BACKGROUND'
@@ -12,7 +12,7 @@ enum displayLayer {
 /**
  * 砖块的信息
  */
-interface Tile {
+export interface Tile {
   displayModel: displayLayer;
   // 通过 id 去另一个存储图片的 State 查找图片
   tileSpriteId: number;
@@ -24,7 +24,7 @@ interface Tile {
 /**
  * 预制件的信息
  */
-interface Prefab {
+export interface Prefab {
   spriteId: number;
   width: number;
   height: number;
@@ -32,9 +32,9 @@ interface Prefab {
 
 /**
  * 区块
- * size 表示一个区块的大小
+ * size 表示一个区块的大小，这个块不要使用稀疏数组
  */
-interface Block {
+export interface Block {
   x: number;
   y: number;
   size: number;
@@ -55,5 +55,7 @@ export const initialState = {
   tiles,
   prefabs
 };
+
+export type MapState = typeof initialState;
 
 export default initialState;

@@ -1,4 +1,4 @@
-import Constants from '../../core/util/Constants';
+import Constants from '@/core/util/Constants';
 
 /**
  * 起始点
@@ -19,7 +19,5 @@ export const initialState = {
   canvasSize,
   initPoint
 };
-
-export type CanvasState = typeof initialState;
 
 export default initialState;

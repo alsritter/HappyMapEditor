@@ -120,4 +120,14 @@ export default class CanvasEventShape {
 
     bus.emit('refreshCanvas');
   };
+
+  drawCanvas = (canvasDOM: HTMLCanvasElement): void => {
+    canvasDOM.onmousedown = (event: MouseEvent) => {
+      // console.log(event.clientX, event.clientY);
+      // console.log(graph.canvasPoint.windowToCanvas(canvasDOM, event.clientX, event.clientY));
+      console.log(
+        graph.canvasPoint.pixToCoordinate(canvasDOM, this.canvasGetters.value.getSize, this.currentX.value, this.currentY.value, event.clientX, event.clientY)
+      );
+    };
+  };
 }

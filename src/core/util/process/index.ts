@@ -99,7 +99,7 @@ export const jumpTimedProcessArray = <T>(items: Array<T>, process: (item: T | un
         // 如果大于3 帧数
         if (todo.length > 3) {
           // 去掉前面不必要的帧
-          todo.splice(0, todo.length - 4);
+          todo.splice(0, todo.length - 3);
         }
       } while (todo.length && +new Date() - start < 50);
 

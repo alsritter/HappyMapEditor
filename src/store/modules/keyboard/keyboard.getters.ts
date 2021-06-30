@@ -1,25 +1,10 @@
 import { GetterTree } from 'vuex';
-import { KeyState } from './keyboard.state';
-
-interface SimpleKeyValueObject {
-  [key: string]: boolean;
-}
-
-export type KeyGetters = {
-  //status(state: any): any;
-  selectKeys(state: KeyState): SimpleKeyValueObject;
-  // 取得全部按下的键名
-  selectPressedKeys(state: KeyState): string[];
-  // 是否撤回
-  isRecall(state: KeyState): boolean;
-  // 是否 Alt
-  isAlt(state: KeyState): boolean;
-};
+import { KeyStateTypes, IRootState, KeyGettersTypes } from '@/store/interfaces';
 
 /**
  * Getter 可以对 Store 中已有的数据加工处理之后形成新的数据，类似 Vue 的计算属性
  */
-const getters: GetterTree<KeyState, KeyState> & KeyGetters = {
+const getters: GetterTree<KeyStateTypes, IRootState> & KeyGettersTypes = {
   //status: (state) => state.status,
   /**
    * 取得全部的按键

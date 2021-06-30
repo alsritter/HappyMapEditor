@@ -1,4 +1,4 @@
-import keyCodes from '../../core/util/KeyCodes';
+import keyCodes from '@/core/util/KeyCodes';
 
 /**
  * 创建一个简单的索引接口，避免报错
@@ -26,7 +26,5 @@ const prepareKeys = () => {
 export const initialState = {
   keys: prepareKeys()
 };
-
-export type KeyState = typeof initialState;
 
 export default initialState;

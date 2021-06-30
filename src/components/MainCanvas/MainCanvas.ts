@@ -2,7 +2,7 @@ import * as Vue from 'vue';
 import bus from '@/core/util/bus';
 import Constants from '@/core/util/Constants';
 import graph from '@/core/util/graph';
-import { GridParamType } from '@/core/util/graph';
+import { GridParamType, DataParamType } from '@/core/util/graph';
 import process from '@/core/util/process';
 // import bus from '../../core/util/bus';
 // import Constants from '../../core/util/Constants';
@@ -72,9 +72,28 @@ export default Vue.defineComponent({
       const MIDDLE_ctx = MIDDLE_canvas.getContext('2d') as CanvasRenderingContext2D;
       const BACKGROUND_ctx = BACKGROUND_canvas.getContext('2d') as CanvasRenderingContext2D;
 
+      // console.log(store.getters['map/getBlock'](1, 2));
+
       canvasEvent.InitCanvasEvent(GRID_canvas);
-      graph.canvasDraw.drawGrid(GRID_ctx, width, height, canvasGetters.value.getSize, currentX.value, currentY.value);
-      graph.canvasDraw.drawData(FRONT_ctx, width, height, canvasGetters.value.getSize, currentX.value, currentY.value, 1, 1, '6');
+      graph.canvasDraw.drawGrid({
+        ctx: GRID_ctx,
+        width,
+        height,
+        size: canvasGetters.value.getSize,
+        x: currentX.value,
+        y: currentY.value
+      });
+      graph.canvasDraw.drawData({
+        ctx: GRID_ctx,
+        width,
+        height,
+        size: canvasGetters.value.getSize,
+        x: currentX.value,
+        y: currentY.value,
+        changeX: 1,
+        changeY: 1,
+        data: '#ffc107'
+      });
 
       // 监听键盘事件
       Vue.watch(
@@ -88,7 +107,7 @@ export default Vue.defineComponent({
         }
       );
 
-      const graphGridWord = new Array<GridParamType>();
+      const graphGridWord = new Array<GridParamType | DataParamType>();
       bus.on('refreshCanvas', () => {
         // 可以通过不使用缓存的情况来比较卡顿
         // graph.canvasDraw.drawGrid(GRID_ctx, width, height, canvasGetters.value.getSize, currentX.value, currentY.value);
@@ -102,13 +121,30 @@ export default Vue.defineComponent({
           x: currentX.value,
           y: currentY.value
         });
+        // 绘制格子数据入队
+        graphGridWord.push({
+          ctx: GRID_ctx,
+          width,
+          height,
+          size: canvasGetters.value.getSize,
+          x: currentX.value,
+          y: currentY.value,
+          changeX: 1,
+          changeY: 1,
+          data: '#ffc107'
+        });
 
         // 执行任务
         process.jumpTimedProcessArray(
           graphGridWord,
           (item) => {
             if (item == undefined) return;
-            graph.canvasDraw.drawGrid(item.ctx, item.width, item.height, item.size, item.x, item.y);
+
+            if (graph.isDataParamType(item)) {
+              graph.canvasDraw.drawData(item);
+            } else {
+              graph.canvasDraw.drawGrid(item);
+            }
           },
           () => {
             // console.log('任务完成');
@@ -117,7 +153,6 @@ export default Vue.defineComponent({
 
         // 别忘了清除其它画布
         graph.canvasDraw.clearAllCanvas(FRONT_ctx, width, height);
-        graph.canvasDraw.drawData(FRONT_ctx, width, height, canvasGetters.value.getSize, currentX.value, currentY.value, 1, 1, '6');
       });
     });
 
