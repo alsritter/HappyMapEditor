@@ -84,8 +84,8 @@ export const drawGrid = (ctx: CanvasRenderingContext2D, width: number, height: n
  * @param size 每个格子的大小
  * @param x 起始点 X 位置
  * @param y 起始点 Y 位置
- * @param changeX 待修改的位置
- * @param changeY 待修改的位置
+ * @param changeX 待修改的坐标位置
+ * @param changeY 待修改的坐标位置
  * @param data 要绘制的数据
  */
 export const drawData = (

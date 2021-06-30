@@ -9,7 +9,12 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "lib": ["esnext", "dom"],
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+    "paths": {
+      // 根据别名配置相关路径
+        "@/*": ["./src/*"],
+        "@components/*": ["./src/components/*"]
+      }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"]
 }

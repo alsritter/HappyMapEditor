@@ -56,7 +56,7 @@ export const timedProcessArray = <T>(items: Array<T>, process: (item: T | undefi
 
       do {
         process(todo.shift());
-        // console.log(+new Date() - start, todo.length);
+        // console.log(+new Date() - start, todo.length); // 打印任务执行时间以及任务队列堆积的任务数量
       } while (todo.length && +new Date() - start < 50);
 
       if (todo.length > 0) {
@@ -95,7 +95,7 @@ export const jumpTimedProcessArray = <T>(items: Array<T>, process: (item: T | un
 
       do {
         process(todo.shift());
-        console.log(+new Date() - start, todo.length);
+        // console.log(+new Date() - start, todo.length);
         // 如果大于3 帧数
         if (todo.length > 3) {
           // 去掉前面不必要的帧

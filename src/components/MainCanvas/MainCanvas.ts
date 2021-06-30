@@ -1,8 +1,15 @@
 import * as Vue from 'vue';
-import bus from '../../core/util/bus';
-import Constants from '../../core/util/Constants';
-import graph from '../../core/util/graph';
-import process from '../../core/util/process';
+import bus from '@/core/util/bus';
+import Constants from '@/core/util/Constants';
+import graph from '@/core/util/graph';
+import { GridParamType } from '@/core/util/graph';
+import process from '@/core/util/process';
+// import bus from '../../core/util/bus';
+// import Constants from '../../core/util/Constants';
+// import graph from '../../core/util/graph';
+// import process from '../../core/util/process';
+// import { GridParamType } from '@/core/util/graph';
+import manipulate from '@/core/util/manipulate';
 import { useStore } from 'vuex';
 
 export enum displayLayer {
@@ -14,11 +21,11 @@ export enum displayLayer {
 export default Vue.defineComponent({
   setup() {
     const store = useStore();
-    const GRID_CANVAS = Vue.ref(null);
+    const GRID_CANVAS = Vue.ref(null) as Vue.Ref<HTMLCanvasElement | null>;
     const canvasBox = {
-      [displayLayer.FRONT]: Vue.ref(null) as Vue.Ref,
-      [displayLayer.MIDDLE]: Vue.ref(null) as Vue.Ref,
-      [displayLayer.BACKGROUND]: Vue.ref(null) as Vue.Ref
+      [displayLayer.FRONT]: Vue.ref(null) as Vue.Ref<HTMLCanvasElement | null>,
+      [displayLayer.MIDDLE]: Vue.ref(null) as Vue.Ref<HTMLCanvasElement | null>,
+      [displayLayer.BACKGROUND]: Vue.ref(null) as Vue.Ref<HTMLCanvasElement | null>
     };
     const canvasGetters = Vue.computed(() => {
       return {
@@ -42,126 +49,7 @@ export default Vue.defineComponent({
     const currentY = Vue.ref(0); //TODO: 替换成 state 里面的
     const dragging = Vue.ref(false); //是否激活拖拽状态
 
-    type GridParamType = {
-      // 画布元素
-      ctx: CanvasRenderingContext2D;
-      // 画布的高度
-      width: number;
-      // 画布的宽度
-      height: number;
-      // 每个格子的大小
-      size: number;
-      // 起始点 X
-      x: number;
-      // 起始点 Y
-      y: number;
-    };
-
-    // Vue.watch(
-    //   () => dragging.value,
-    //   (newValue, oldValue) => {
-    //     // 激活绘图进程工具（避免一直执行），变化了就刷新
-
-    //   }
-    // );
-
-    const graphGridWord = new Array<GridParamType>();
-
-    // const graphProcess = (flag: boolean) => {
-
-    // };
-
-    /**
-     * 拖动画布
-     * 只拖动最上面的，下面的是跟着一起动的
-     */
-    const dragCanvas = (canvasDOM: HTMLCanvasElement) => {
-      let mouseDownLocation = {
-        x: 0,
-        y: 0
-      };
-
-      //监听鼠标按下事件
-      canvasDOM.onmousedown = (event: MouseEvent) => {
-        // // 要同时按下 ALT 键
-        // if (KeyGetters.value.selectKeys['VALUE_ALT']) {
-        //   mouseDownLocation = graph.canvasPoint.windowToCanvas(canvasDOM, event.clientX, event.clientY);
-        //   dragging.value = true;
-        // }
-
-        mouseDownLocation = graph.canvasPoint.windowToCanvas(canvasDOM, event.clientX, event.clientY);
-        dragging.value = true;
-      };
-
-      //鼠标弹起（注意，这里要使用 document）
-      canvasDOM.onmouseup = () => {
-        //canvasDOM.style.cursor = 'default';
-        dragging.value = false;
-      };
-
-      //鼠标移动
-      canvasDOM.onmousemove = (event) => {
-        if (dragging.value) {
-          const move = graph.canvasPoint.windowToCanvas(canvasDOM, event.clientX, event.clientY);
-          currentX.value += move.x - mouseDownLocation.x;
-          currentY.value += move.y - mouseDownLocation.y;
-          // 改变光标样式
-          //canvasDOM.style.cursor = 'move';
-          mouseDownLocation = graph.canvasPoint.windowToCanvas(canvasDOM, event.clientX, event.clientY);
-          bus.emit('refreshCanvas');
-        }
-      };
-
-      // 处理鼠标离开容器（这里统一收尾工作）
-      canvasDOM.onmouseout = () => {
-        //canvasDOM.style.cursor = 'default';
-        dragging.value = false;
-      };
-    };
-
-    /**
-     * 清空绘图事件
-     */
-    const dragCanvasClean = (canvasDOM: HTMLCanvasElement) => {
-      canvasDOM.onmousedown = null;
-      canvasDOM.onmouseup = null;
-      canvasDOM.onmousemove = null;
-      canvasDOM.onmouseout = null;
-
-      dragging.value = false;
-    };
-
-    // /**
-    //  * 绘制画布
-    //  */
-    // const pointCanvas = (canvasDOM: HTMLCanvasElement) => {
-
-    // };
-
-    /**
-     * 放大缩小画布
-     */
-    const scrollBarWheel = (event: WheelEventInit) => {
-      if (event.deltaY == undefined) {
-        return;
-      }
-
-      const size = canvasGetters.value.getSize;
-
-      if (event.deltaY < 0) {
-        if (size > Constants.MAX_SIZE) return;
-        //上滚
-        store.dispatch('canvas/UPDATE_SIZE', size + 1);
-      } else if (event.deltaY > 0) {
-        //下滚
-        if (size < Constants.MIN_SIZE) return;
-        store.dispatch('canvas/UPDATE_SIZE', size - 1);
-      } else {
-        console.error('Mouse wheel zooming in and out status acquisition failed!');
-      }
-
-      bus.emit('refreshCanvas');
-    };
+    const canvasEvent = new manipulate.CanvasEventShape(dragging, currentX, currentY);
 
     /**
      * 会在组件更新后调用，只有 data 里的变量改变并且要在页面重新渲染完成之后，才会进 updated 生命周期，
@@ -184,6 +72,7 @@ export default Vue.defineComponent({
       const MIDDLE_ctx = MIDDLE_canvas.getContext('2d') as CanvasRenderingContext2D;
       const BACKGROUND_ctx = BACKGROUND_canvas.getContext('2d') as CanvasRenderingContext2D;
 
+      canvasEvent.InitCanvasEvent(GRID_canvas);
       graph.canvasDraw.drawGrid(GRID_ctx, width, height, canvasGetters.value.getSize, currentX.value, currentY.value);
       graph.canvasDraw.drawData(FRONT_ctx, width, height, canvasGetters.value.getSize, currentX.value, currentY.value, 1, 1, '6');
 
@@ -191,21 +80,20 @@ export default Vue.defineComponent({
       Vue.watch(
         () => KeyGetters.value.isAlt,
         (newValue, oldValue) => {
-          if (newValue == true) {
-            // 拖拽画布
-            dragCanvas(GRID_canvas);
+          if (newValue) {
+            canvasEvent.dragCanvas(GRID_canvas);
           } else {
-            dragCanvasClean(GRID_canvas);
+            canvasEvent.InitCanvasEvent(GRID_canvas);
           }
         }
       );
 
-      // let count = 0;
+      const graphGridWord = new Array<GridParamType>();
       bus.on('refreshCanvas', () => {
-        // console.log('ref:' + count++);
-        // 要清除全部画面
-        // graph.canvasDraw.clearAllCanvas(GRID_ctx, width, height);
+        // 可以通过不使用缓存的情况来比较卡顿
         // graph.canvasDraw.drawGrid(GRID_ctx, width, height, canvasGetters.value.getSize, currentX.value, currentY.value);
+
+        // 绘制网格的操作入队
         graphGridWord.push({
           ctx: GRID_ctx,
           width,
@@ -215,6 +103,7 @@ export default Vue.defineComponent({
           y: currentY.value
         });
 
+        // 执行任务
         process.jumpTimedProcessArray(
           graphGridWord,
           (item) => {
@@ -232,6 +121,6 @@ export default Vue.defineComponent({
       });
     });
 
-    return { ...canvasBox, currentX, currentY, GRID_CANVAS, width, height, scrollBarWheel };
+    return { ...canvasBox, currentX, currentY, GRID_CANVAS, width, height, scrollBarWheel: canvasEvent.scrollBarWheel };
   }
 });
