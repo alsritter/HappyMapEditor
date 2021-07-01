@@ -1,4 +1,4 @@
-import * as Vue from 'vue';
+import { Ref, ComputedRef, computed } from 'vue';
 import bus from '@/core/util/bus';
 import graph from '@/core/util/graph';
 import Constants from '@/core/util/Constants';
@@ -6,31 +6,32 @@ import Constants from '@/core/util/Constants';
 import { Store } from '@/store';
 import { useStore } from '@/use/useStore';
 import { AllActionTypes } from '@/store/action-types';
+import { DisplayLayer } from '@/store/modules/map/map.types';
 
 export default class CanvasEventShape {
-  dragging: Vue.Ref<boolean>;
-  currentX: Vue.Ref<number>;
-  currentY: Vue.Ref<number>;
+  dragging: Ref<boolean>;
+  currentX: Ref<number>;
+  currentY: Ref<number>;
   store: Store;
-  canvasGetters: Vue.ComputedRef<{
+  canvasGetters: ComputedRef<{
     state: any;
     getSize: any;
     getPoint: any;
   }>;
 
   /**
-   * 传入绑定的参数，所以这里应该使用 Vue.Ref 类型
+   * 传入绑定的参数，所以这里应该使用 Ref 类型
    * @param dragging 是否拖拽
    * @param currentX 当前 X
    * @param currentY 当前 Y
    */
-  constructor(dragging: Vue.Ref<boolean>, currentX: Vue.Ref<number>, currentY: Vue.Ref<number>) {
+  constructor(dragging: Ref<boolean>, currentX: Ref<number>, currentY: Ref<number>) {
     this.dragging = dragging;
     this.currentX = currentX;
     this.currentY = currentY;
     this.store = useStore();
 
-    this.canvasGetters = Vue.computed(() => {
+    this.canvasGetters = computed(() => {
       return {
         state: this.store.getters.status,
         getSize: this.store.getters.getSize,
@@ -86,13 +87,15 @@ export default class CanvasEventShape {
    * 初始事件
    */
   InitCanvasEvent = (canvasDOM: HTMLCanvasElement): void => {
-    canvasDOM.onmousedown = (event: MouseEvent) => {
-      // console.log(event.clientX, event.clientY);
-      // console.log(graph.canvasPoint.windowToCanvas(canvasDOM, event.clientX, event.clientY));
-      console.log(
-        graph.canvasPoint.pixToCoordinate(canvasDOM, this.canvasGetters.value.getSize, this.currentX.value, this.currentY.value, event.clientX, event.clientY)
-      );
-    };
+    // canvasDOM.onmousedown = (event: MouseEvent) => {
+    //   // console.log(event.clientX, event.clientY);
+    //   // console.log(graph.canvasPoint.windowToCanvas(canvasDOM, event.clientX, event.clientY));
+    //   console.log(
+    //     graph.canvasPoint.pixToCoordinate(canvasDOM, this.canvasGetters.value.getSize, this.currentX.value, this.currentY.value, event.clientX, event.clientY)
+    //   );
+    // };
+    this.drawCanvas(canvasDOM);
+
     canvasDOM.onmouseup = null;
     canvasDOM.onmousemove = null;
     canvasDOM.onmouseout = null;
@@ -129,11 +132,21 @@ export default class CanvasEventShape {
 
   drawCanvas = (canvasDOM: HTMLCanvasElement): void => {
     canvasDOM.onmousedown = (event: MouseEvent) => {
-      // console.log(event.clientX, event.clientY);
-      // console.log(graph.canvasPoint.windowToCanvas(canvasDOM, event.clientX, event.clientY));
-      console.log(
-        graph.canvasPoint.pixToCoordinate(canvasDOM, this.canvasGetters.value.getSize, this.currentX.value, this.currentY.value, event.clientX, event.clientY)
+      const point = graph.canvasPoint.pixToCoordinate(
+        canvasDOM,
+        this.canvasGetters.value.getSize,
+        this.currentX.value,
+        this.currentY.value,
+        event.clientX,
+        event.clientY
       );
+
+      console.log(point);
+      console.log('sssssssssss');
+      const tmp = computed(() => this.store.getters.getBlockByCoordinate);
+      // console.log(tmp.value(1, 2, DisplayLayer.FRONT));
+      console.log(tmp);
+      console.log(this.store.getters.getBlockByCoordinate);
     };
   };
 }

@@ -42,6 +42,8 @@ export default defineComponent({
       onKeyDown(e: KeyboardEvent) {
         e.preventDefault();
         // store.dispatch('keyboard/KEY_DOWN', e.key);
+        // console.log(e.key);
+
         store.dispatch(AllActionTypes.KEYBOARD_KEY_DOWN, e.key);
         methods.onShortcutKey();
       },
@@ -53,7 +55,6 @@ export default defineComponent({
       // 监听快捷键
       onShortcutKey() {
         // console.log(tmp);
-
         if (KeyGetters.value.isRecall) {
           console.log('按下了撤回键');
         }

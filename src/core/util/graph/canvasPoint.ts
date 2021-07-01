@@ -38,9 +38,9 @@ export const pixToCoordinate = (canvas: HTMLCanvasElement, size: number, sx: num
   const relativeX = tmp.x - sx;
   const relativeY = tmp.y - sy;
 
-  console.log(tmp.x, tmp.y);
-  console.log(sx, sy);
-  console.log(relativeX, relativeY);
+  // console.log(tmp.x, tmp.y);
+  // console.log(sx, sy);
+  // console.log(relativeX, relativeY);
 
   return {
     x: Math.floor(relativeX / size),

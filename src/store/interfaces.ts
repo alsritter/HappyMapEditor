@@ -1,12 +1,29 @@
 import { ActionContext, DispatchOptions } from 'vuex';
-import { ActionTypes as KeyboardA1Types } from '@/store/modules/keyboard/keyboard.action-types';
+import { Dictionary } from 'typescript-collections';
+
+import { MutationTypes as RootMTypes } from '@/store/modules/root/root.mutation-types';
 import { MutationTypes as KeyboardM1Types } from '@/store/modules/keyboard/keyboard.mutation-types';
 import { MutationTypes as CanvasM1Types } from '@/store/modules/canvas/canvas.mutation-types';
-import { ActionTypes as CanvasA1Types } from '@/store/modules/canvas/canvas.action-types';
-import { MutationTypes as RootMTypes } from '@/store/modules/root/root.mutation-types';
+import { MutationTypes as MapM1Types } from '@/store/modules/map/map.mutation-types';
+
 import { ActionTypes as RootATypes } from '@/store/modules/root/root.action-types';
+import { ActionTypes as KeyboardA1Types } from '@/store/modules/keyboard/keyboard.action-types';
+import { ActionTypes as CanvasA1Types } from '@/store/modules/canvas/canvas.action-types';
+import { ActionTypes as MapA1Types } from '@/store/modules/map/map.action-types';
+
+import { Point } from '@/store/modules/canvas/canvas.types';
+import { DisplayLayer, Tile, Prefab, Block } from '@/store/modules/map/map.types';
+
 import canvasState from '@/store/modules/canvas/canvas.state';
 import keyState from '@/store/modules/keyboard/keyboard.state';
+import mapState from '@/store/modules/map/map.state';
+
+// 每次添加一个 Module 需要修改的文件：
+// store/interfaces、root/index、store/action-types、store/mutation-types、store/index
+/*********************** Global configuration ***********************/
+
+export interface StoreActions extends RootActionsTypes, CanvasActionsTypes, KeyActionsTypes, MapActionsTypes {}
+export interface StoreGetters extends IRootGettersTypes, KeyGettersTypes, KeyGettersTypes, MapGettersTypes {}
 
 export interface IRootState {
   root: boolean;
@@ -16,6 +33,7 @@ export interface IRootState {
 export interface IMergedState extends IRootState {
   keyboardModule: KeyStateTypes;
   canvasModule: CanvasStateTypes;
+  mapModule: MapStateTypes;
 }
 
 export interface IRootGettersTypes {
@@ -42,10 +60,6 @@ export interface RootActionsTypes {
 }
 
 /*********************** Canvas MODULE TYPES  ***********************/
-export type Point = {
-  x: number;
-  y: number;
-};
 
 export type CanvasStateTypes = typeof canvasState;
 
@@ -106,5 +120,59 @@ export interface KeyActionsTypes {
   [KeyboardA1Types.KEYBOARD_REFRESH]({ commit }: KeyAugmentedActionContext): Promise<void>;
 }
 
-export interface StoreActions extends RootActionsTypes, CanvasActionsTypes, KeyActionsTypes {}
-export interface StoreGetters extends IRootGettersTypes, KeyGettersTypes, KeyGettersTypes {}
+/*********************** MapData MODULE TYPES  ***********************/
+export type MapStateTypes = typeof mapState;
+
+export type MapGettersTypes = {
+  /**
+   * 根据坐标位置取得对应的 Block
+   * 这种闭包的写法使用方式：https://github.com/vuejs/vuex/issues/456
+   * 使用例 store.getters['map/getBlock'](1, 2)
+   *
+   * @param x 当前位置
+   * @param y 当前位置
+   * @param layer 要取的图层
+   */
+  getBlockByCoordinate(state: MapStateTypes): (x: number, y: number, layer: DisplayLayer) => Block;
+
+  /**
+   * 获取全部块
+   * @param layer 要取的图层
+   */
+  getAllBlock(state: MapStateTypes): (layer: DisplayLayer) => Dictionary<string, Block>;
+
+  /**
+   * 根据当前坐标取得当前位置上的 Tile 或者预制件
+   *
+   * @param x 当前位置
+   * @param y 当前位置
+   * @param layer 要取的图层
+   */
+  getTileOrPrefabByCoordinate(state: MapStateTypes): (x: number, y: number, layer: DisplayLayer) => Tile | Prefab;
+};
+
+export type MapMutationsTypes<S = MapStateTypes> = {
+  [MapM1Types.MAP_CHANGE_POINT](
+    state: S,
+    payload: {
+      x: number;
+      y: number;
+      data: string;
+    }
+  ): void;
+};
+
+type MapAugmentedActionContext = {
+  commit<K extends keyof MapMutationsTypes>(key: K, payload: Parameters<MapMutationsTypes[K]>[1]): ReturnType<MapMutationsTypes[K]>;
+} & Omit<ActionContext<MapStateTypes, IRootState>, 'commit'>;
+
+export interface MapActionsTypes {
+  [MapA1Types.MAP_CHANGE_POINT](
+    { commit }: MapAugmentedActionContext,
+    payload: {
+      x: number;
+      y: number;
+      data: string;
+    }
+  ): Promise<void>;
+}

@@ -7,8 +7,6 @@ import process from '@/core/util/process';
 import manipulate from '@/core/util/manipulate';
 // import { useStore } from 'vuex';
 import { useStore } from '@/use/useStore';
-import { AllMutationTypes } from '@/store/mutation-types';
-import { AllActionTypes } from '@/store/action-types';
 
 export enum displayLayer {
   FRONT = 'FRONT',
@@ -26,6 +24,7 @@ export default Vue.defineComponent({
       [displayLayer.MIDDLE]: Vue.ref(null) as Vue.Ref<HTMLCanvasElement | null>,
       [displayLayer.BACKGROUND]: Vue.ref(null) as Vue.Ref<HTMLCanvasElement | null>
     };
+
     const canvasGetters = Vue.computed(() => {
       return {
         state: store.getters.status,
@@ -71,8 +70,6 @@ export default Vue.defineComponent({
       const MIDDLE_ctx = MIDDLE_canvas.getContext('2d') as CanvasRenderingContext2D;
       const BACKGROUND_ctx = BACKGROUND_canvas.getContext('2d') as CanvasRenderingContext2D;
 
-      // console.log(store.getters['map/getBlock'](1, 2));
-
       canvasEvent.InitCanvasEvent(GRID_canvas);
       graph.canvasDraw.drawGrid({
         ctx: GRID_ctx,
@@ -82,6 +79,7 @@ export default Vue.defineComponent({
         x: currentX.value,
         y: currentY.value
       });
+
       graph.canvasDraw.drawData({
         ctx: GRID_ctx,
         width,

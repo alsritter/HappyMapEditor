@@ -6,11 +6,13 @@ import { mutations } from './root.mutations';
 import { state } from './root.state';
 import keyboardModule from '@/store/modules/keyboard';
 import canvasModule from '@/store/modules/canvas';
+import mapModule from '@/store/modules/map';
 
 // Modules
 const modules: ModuleTree<IRootState> = {
   keyboardModule,
-  canvasModule
+  canvasModule,
+  mapModule
 };
 
 const root: Module<IRootState, IRootState> = {
