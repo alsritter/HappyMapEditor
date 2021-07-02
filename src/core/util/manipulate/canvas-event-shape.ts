@@ -6,6 +6,7 @@ import Constants from '@/core/util/Constants';
 import { Store } from '@/store';
 import { useStore } from '@/use/useStore';
 import { AllActionTypes } from '@/store/action-types';
+import { AllMutationTypes } from '@/store/mutation-types';
 import { DisplayLayer } from '@/store/modules/map/map.types';
 
 export default class CanvasEventShape {
@@ -141,12 +142,24 @@ export default class CanvasEventShape {
         event.clientY
       );
 
-      console.log(point);
-      console.log('sssssssssss');
-      const tmp = computed(() => this.store.getters.getBlockByCoordinate);
-      // console.log(tmp.value(1, 2, DisplayLayer.FRONT));
-      console.log(tmp);
-      console.log(this.store.getters.getBlockByCoordinate);
+      const tmpTile = {
+        id: 0,
+        displayModel: DisplayLayer.FRONT,
+        // 通过 id 去另一个存储图片的 State 查找图片
+        tileSpriteId: 0,
+        color: '#ffc107',
+        effectKeys: [],
+        tags: []
+      };
+
+      // console.log(this.store.getters.getTileOrPrefabByCoordinate(point.x, point.y, DisplayLayer.FRONT));
+      this.store.commit(AllMutationTypes.MAP_CHANGE_POINT, {
+        x: point.x,
+        y: point.y,
+        data: tmpTile
+      });
+
+      console.log(this.store.getters.getAllBlock(DisplayLayer.FRONT));
     };
   };
 }

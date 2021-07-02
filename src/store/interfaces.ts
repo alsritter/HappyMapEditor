@@ -133,13 +133,13 @@ export type MapGettersTypes = {
    * @param y 当前位置
    * @param layer 要取的图层
    */
-  getBlockByCoordinate(state: MapStateTypes): (x: number, y: number, layer: DisplayLayer) => Block;
+  getBlockByCoordinate(state: MapStateTypes): (x: number, y: number, layer: DisplayLayer) => Block | undefined;
 
   /**
    * 获取全部块
    * @param layer 要取的图层
    */
-  getAllBlock(state: MapStateTypes): (layer: DisplayLayer) => Dictionary<string, Block>;
+  getAllBlock(state: MapStateTypes): (layer: DisplayLayer) => Block[];
 
   /**
    * 根据当前坐标取得当前位置上的 Tile 或者预制件
@@ -148,16 +148,28 @@ export type MapGettersTypes = {
    * @param y 当前位置
    * @param layer 要取的图层
    */
-  getTileOrPrefabByCoordinate(state: MapStateTypes): (x: number, y: number, layer: DisplayLayer) => Tile | Prefab;
+  getTileOrPrefabByCoordinate(state: MapStateTypes): (x: number, y: number, layer: DisplayLayer) => Tile | Prefab | undefined;
+
+  /**
+   * 取得道具列表
+   */
+  getItems(state: MapStateTypes): Dictionary<number, Tile | Prefab>;
 };
 
 export type MapMutationsTypes<S = MapStateTypes> = {
+  /**
+   * 在画布上画点
+   * @param x 插入的位置
+   * @param y 插入的位置
+   * @param data 插入的数据
+   * @param layer 要修改的层
+   */
   [MapM1Types.MAP_CHANGE_POINT](
     state: S,
     payload: {
       x: number;
       y: number;
-      data: string;
+      data: Tile | Prefab;
     }
   ): void;
 };
@@ -172,7 +184,7 @@ export interface MapActionsTypes {
     payload: {
       x: number;
       y: number;
-      data: string;
+      data: Tile | Prefab;
     }
   ): Promise<void>;
 }

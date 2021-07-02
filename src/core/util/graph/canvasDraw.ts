@@ -1,4 +1,6 @@
-import { GridParamType, DataParamType } from '@/core/util/graph';
+import { AllItemParamType, GridParamType, SingleItemParamType } from '@/core/util/graph';
+import { blockCoordinateToCoordinate, CoordinateToPix } from '@/core/util/graph/canvasPoint';
+import Constants from '@/core/util/Constants';
 /**
  * 这里专门用来绘制网格
  *
@@ -73,23 +75,130 @@ export const drawGrid = (item: GridParamType): void => {
 };
 
 /**
- * 绘制内容
+ * 绘制单个格子
  *
  * @param item 绘制格子的参数
  */
-export const drawData = (item: DataParamType): void => {
+export const drawSingleItem = (item: SingleItemParamType): void => {
+  if (item.data == undefined) return;
+
   // 计算当前要修改的具体位置(有正负)
   const pixX = item.changeX * item.size + item.x;
   const pixY = item.changeY * item.size + item.y;
+  const data = item.data;
 
-  // 如果要修改的格子在画布外面则不需要绘制，注意它的起始坐标在左上角，所以要比对四个角完全不在画布里面才不需要绘制
-  if (pixX > item.width || pixX + item.size < 0 || pixY > item.height || pixY + item.size < 0) return;
-  // 先清空指定位置
-  item.ctx.clearRect(pixX, pixY, item.size, item.size);
-  // ctx.strokeStyle = data; // 这种是轮廓颜色
-  item.ctx.fillStyle = item.data;
-  // 绘制色块
-  item.ctx.fillRect(pixX, pixY, item.size, item.size);
+  if ('tileSpriteId' in data) {
+    // 如果要修改的格子在画布外面则不需要绘制，注意它的起始坐标在左上角，所以要比对四个角完全不在画布里面才不需要绘制
+    if (pixX > item.width || pixX + item.size < 0 || pixY > item.height || pixY + item.size < 0) return;
+    // 先清空指定位置
+    item.ctx.clearRect(pixX, pixY, item.size, item.size);
+    // ctx.strokeStyle = data; // 这种是轮廓颜色
+    item.ctx.fillStyle = data.color;
+    // 绘制色块
+    item.ctx.fillRect(pixX, pixY, item.size, item.size);
+  }
+};
+
+/**
+ * 绘制整个画布
+ *
+ * @param data 绘制整个 Block
+ */
+export const drawAllItem = (data: AllItemParamType): void => {
+  const items = data.items;
+  const blocks = data.data;
+  const ctx = data.ctx;
+  const width = data.width;
+  const height = data.height;
+  const size = data.size;
+  const x = data.x;
+  const y = data.y;
+  const bsize = Constants.BLOCK_SIZE;
+
+  for (const block of blocks) {
+    // 这块顺便给 Block 绘制一个边框
+    drawBlockBox(ctx, size, x, y, block.x, block.y);
+
+    // 开始遍历绘制
+    for (let iy = 0; iy < block.data.length; iy++) {
+      for (let ix = 0; ix < block.data[iy].length; ix++) {
+        const value = block.data[iy][ix];
+        if (value != -1) {
+          const tile = items.getValue(value);
+          // 因为这里的 block.x 是数组最末值，所以需要转换一下，而且需要考虑正负
+          const point = blockCoordinateToCoordinate(bsize, block.x, block.y, ix, iy);
+          drawSingleItem({
+            ctx: ctx,
+            width,
+            height,
+            size,
+            x,
+            y,
+            changeX: point.x,
+            changeY: point.y,
+            data: tile
+          });
+        }
+      }
+    }
+  }
+};
+
+/**
+ * 绘制 Block 盒子（边框）
+ * @param ctx 画布元素
+ * @param size 单元格宽度
+ * @param sx 像素起始点
+ * @param sy 像素起始点
+ * @param x Block 的终点坐标
+ * @param y Block 的终点坐标
+ */
+export const drawBlockBox = (ctx: CanvasRenderingContext2D, size: number, sx: number, sy: number, x: number, y: number): void => {
+  const boxW = size * Constants.BLOCK_SIZE;
+  const bsize = Constants.BLOCK_SIZE;
+
+  // 取出基准点
+  // const bsx = x + (x > 0 ? -(bsize - 1) : bsize - 1);
+  // const bsy = y + (y > 0 ? -(bsize - 1) : bsize - 1);
+
+  // 因为负数是从 -1 开始的，所以需要移动一位
+  const fx = x > 0;
+  const fy = y > 0;
+  const dx = fx ? bsize - 1 : -bsize;
+  const dy = fy ? bsize - 1 : -bsize;
+
+  // console.log({
+  //   dx,
+  //   dy
+  // });
+
+  const bsx = x - dx;
+  const bsy = y - dy;
+
+  // console.log({
+  //   bsx,
+  //   bsy
+  // });
+
+  const boxPoint = CoordinateToPix(size, sx, sy, bsx, bsy);
+
+  // console.log(boxPoint);
+  const xBoxW = boxW * (x > 0 ? 1 : -1);
+  const yBoxW = boxW * (y > 0 ? 1 : -1);
+
+  ctx.beginPath();
+  ctx.moveTo(boxPoint.x, boxPoint.y);
+  ctx.lineTo(boxPoint.x + xBoxW, boxPoint.y);
+
+  ctx.moveTo(boxPoint.x, boxPoint.y);
+  ctx.lineTo(boxPoint.x, boxPoint.y + yBoxW);
+
+  ctx.moveTo(boxPoint.x + xBoxW, boxPoint.y + yBoxW);
+  ctx.lineTo(boxPoint.x, boxPoint.y + yBoxW);
+
+  ctx.moveTo(boxPoint.x + xBoxW, boxPoint.y + yBoxW);
+  ctx.lineTo(boxPoint.x + xBoxW, boxPoint.y);
+  ctx.stroke();
 };
 
 /**
@@ -105,5 +214,7 @@ export const clearAllCanvas = (ctx: CanvasRenderingContext2D, width: number, hei
 export default {
   drawGrid,
   clearAllCanvas,
-  drawData
+  drawSingleItem,
+  drawAllItem,
+  drawBlockBox
 };

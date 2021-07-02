@@ -1,12 +1,13 @@
 import * as Vue from 'vue';
 import bus from '@/core/util/bus';
 import Constants from '@/core/util/Constants';
-import graph from '@/core/util/graph';
-import { GridParamType, DataParamType } from '@/core/util/graph';
+import graph, { AllItemParamType } from '@/core/util/graph';
+import { GridParamType, SingleItemParamType } from '@/core/util/graph';
 import process from '@/core/util/process';
 import manipulate from '@/core/util/manipulate';
 // import { useStore } from 'vuex';
 import { useStore } from '@/use/useStore';
+import { DisplayLayer } from '@/store/modules/map/map.types';
 
 export enum displayLayer {
   FRONT = 'FRONT',
@@ -18,13 +19,11 @@ export default Vue.defineComponent({
   setup() {
     const store = useStore();
     const GRID_CANVAS = Vue.ref(null) as Vue.Ref<HTMLCanvasElement | null>;
-
     const canvasBox = {
       [displayLayer.FRONT]: Vue.ref(null) as Vue.Ref<HTMLCanvasElement | null>,
       [displayLayer.MIDDLE]: Vue.ref(null) as Vue.Ref<HTMLCanvasElement | null>,
       [displayLayer.BACKGROUND]: Vue.ref(null) as Vue.Ref<HTMLCanvasElement | null>
     };
-
     const canvasGetters = Vue.computed(() => {
       return {
         state: store.getters.status,
@@ -40,14 +39,22 @@ export default Vue.defineComponent({
         isAlt: store.getters.isAlt
       };
     });
-
     const width = Constants.CANVAS_WIDTH;
     const height = Constants.CANVAS_HEIGHT;
     const currentX = Vue.ref(0);
     const currentY = Vue.ref(0); //TODO: 替换成 state 里面的
     const dragging = Vue.ref(false); //是否激活拖拽状态
-
     const canvasEvent = new manipulate.CanvasEventShape(dragging, currentX, currentY);
+
+    const tmpTile = {
+      id: 0,
+      displayModel: DisplayLayer.FRONT,
+      // 通过 id 去另一个存储图片的 State 查找图片
+      tileSpriteId: 0,
+      color: '#ffc107',
+      effectKeys: [],
+      tags: []
+    };
 
     /**
      * 会在组件更新后调用，只有 data 里的变量改变并且要在页面重新渲染完成之后，才会进 updated 生命周期，
@@ -80,7 +87,7 @@ export default Vue.defineComponent({
         y: currentY.value
       });
 
-      graph.canvasDraw.drawData({
+      graph.canvasDraw.drawSingleItem({
         ctx: GRID_ctx,
         width,
         height,
@@ -89,7 +96,7 @@ export default Vue.defineComponent({
         y: currentY.value,
         changeX: 1,
         changeY: 1,
-        data: '#ffc107'
+        data: tmpTile
       });
 
       // 监听键盘事件
@@ -104,13 +111,13 @@ export default Vue.defineComponent({
         }
       );
 
-      const graphGridWord = new Array<GridParamType | DataParamType>();
+      const graphGridQueues = new Array<GridParamType | AllItemParamType>();
       bus.on('refreshCanvas', () => {
         // 可以通过不使用缓存的情况来比较卡顿
         // graph.canvasDraw.drawGrid(GRID_ctx, width, height, canvasGetters.value.getSize, currentX.value, currentY.value);
 
         // 绘制网格的操作入队
-        graphGridWord.push({
+        graphGridQueues.push({
           ctx: GRID_ctx,
           width,
           height,
@@ -118,27 +125,47 @@ export default Vue.defineComponent({
           x: currentX.value,
           y: currentY.value
         });
+
         // 绘制格子数据入队
-        graphGridWord.push({
-          ctx: GRID_ctx,
+        graphGridQueues.push({
+          ctx: FRONT_ctx,
           width,
           height,
           size: canvasGetters.value.getSize,
           x: currentX.value,
           y: currentY.value,
-          changeX: 1,
-          changeY: 1,
-          data: '#ffc107'
+          data: store.getters.getAllBlock(DisplayLayer.FRONT),
+          items: store.getters.getItems
         });
+
+        // graphGridQueues.push({
+        //   ctx: MIDDLE_ctx,
+        //   width,
+        //   height,
+        //   size: canvasGetters.value.getSize,
+        //   x: currentX.value,
+        //   y: currentY.value,
+        //   data: store.getters.getAllBlock(DisplayLayer.MIDDLE)
+        // });
+
+        // graphGridQueues.push({
+        //   ctx: BACKGROUND_ctx,
+        //   width,
+        //   height,
+        //   size: canvasGetters.value.getSize,
+        //   x: currentX.value,
+        //   y: currentY.value,
+        //   data: store.getters.getAllBlock(DisplayLayer.BACKGROUND)
+        // });
 
         // 执行任务
         process.jumpTimedProcessArray(
-          graphGridWord,
+          graphGridQueues,
           (item) => {
             if (item == undefined) return;
 
-            if (graph.isDataParamType(item)) {
-              graph.canvasDraw.drawData(item);
+            if (graph.isAllParamType(item)) {
+              graph.canvasDraw.drawAllItem(item);
             } else {
               graph.canvasDraw.drawGrid(item);
             }

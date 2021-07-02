@@ -11,6 +11,7 @@ export enum DisplayLayer {
  * 砖块的信息
  */
 export interface Tile {
+  id: number;
   displayModel: DisplayLayer;
   // 通过 id 去另一个存储图片的 State 查找图片
   tileSpriteId: number;
@@ -23,6 +24,7 @@ export interface Tile {
  * 预制件的信息
  */
 export interface Prefab {
+  id: number;
   spriteId: number;
   width: number;
   height: number;
