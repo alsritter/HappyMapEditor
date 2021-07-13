@@ -8,6 +8,7 @@ import manipulate from '@/core/util/manipulate';
 // import { useStore } from 'vuex';
 import { useStore } from '@/use/useStore';
 import { DisplayLayer } from '@/store/modules/map/map.types';
+import sk from '@/core/util/net/websocket';
 
 export enum displayLayer {
   FRONT = 'FRONT',
@@ -112,6 +113,7 @@ export default Vue.defineComponent({
       );
 
       const graphGridQueues = new Array<GridParamType | AllItemParamType>();
+
       bus.on('refreshCanvas', () => {
         // 可以通过不使用缓存的情况来比较卡顿
         // graph.canvasDraw.drawGrid(GRID_ctx, width, height, canvasGetters.value.getSize, currentX.value, currentY.value);
@@ -177,6 +179,15 @@ export default Vue.defineComponent({
 
         // 别忘了清除其它画布
         graph.canvasDraw.clearAllCanvas(FRONT_ctx, width, height);
+      });
+
+      const wc = new sk.SocketClient('localhost', 8080, (event) => {
+        console.log(event);
+      });
+
+      bus.on('sendData', (data) => {
+        // console.log(data);
+        wc.send(data);
       });
     });
 

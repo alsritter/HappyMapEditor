@@ -18,7 +18,7 @@ const mutations: MutationTree<MapStateTypes> & MapMutationsTypes = {
 
       // console.log('x-y', x, y);
       // console.log('rx-ry', rx, ry);
-      console.log(endPoint.x + '-' + endPoint.y);
+      // console.log(endPoint.x + '-' + endPoint.y);
 
       let block = dictionary.getValue(endPoint.x + '-' + endPoint.y);
 

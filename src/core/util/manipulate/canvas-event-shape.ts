@@ -8,6 +8,7 @@ import { useStore } from '@/use/useStore';
 import { AllActionTypes } from '@/store/action-types';
 import { AllMutationTypes } from '@/store/mutation-types';
 import { DisplayLayer } from '@/store/modules/map/map.types';
+import { Point } from '@/store/modules/canvas/canvas.types';
 
 export default class CanvasEventShape {
   dragging: Ref<boolean>;
@@ -15,9 +16,17 @@ export default class CanvasEventShape {
   currentY: Ref<number>;
   store: Store;
   canvasGetters: ComputedRef<{
-    state: any;
-    getSize: any;
-    getPoint: any;
+    state: {
+      canvasSize: {
+        size: number;
+      };
+      initPoint: {
+        x: number;
+        y: number;
+      };
+    };
+    getSize: number;
+    getPoint: Point;
   }>;
 
   /**
@@ -112,7 +121,7 @@ export default class CanvasEventShape {
     }
 
     const size = this.canvasGetters.value.getSize;
-    console.log(size);
+    // console.log(size);
 
     if (event.deltaY < 0) {
       if (size > Constants.MAX_SIZE) return;
@@ -131,6 +140,9 @@ export default class CanvasEventShape {
     bus.emit('refreshCanvas');
   };
 
+  /**
+   * 点击绘制
+   */
   drawCanvas = (canvasDOM: HTMLCanvasElement): void => {
     canvasDOM.onmousedown = (event: MouseEvent) => {
       const point = graph.canvasPoint.pixToCoordinate(
@@ -152,14 +164,17 @@ export default class CanvasEventShape {
         tags: []
       };
 
-      // console.log(this.store.getters.getTileOrPrefabByCoordinate(point.x, point.y, DisplayLayer.FRONT));
-      this.store.commit(AllMutationTypes.MAP_CHANGE_POINT, {
+      const data = {
         x: point.x,
         y: point.y,
         data: tmpTile
-      });
+      };
+      // console.log(this.store.getters.getTileOrPrefabByCoordinate(point.x, point.y, DisplayLayer.FRONT));
+      this.store.commit(AllMutationTypes.MAP_CHANGE_POINT, data);
 
-      console.log(this.store.getters.getAllBlock(DisplayLayer.FRONT));
+      // console.log(this.store.getters.getAllBlock(DisplayLayer.FRONT));
+      bus.emit('refreshCanvas');
+      bus.emit('sendData', data);
     };
   };
 }
