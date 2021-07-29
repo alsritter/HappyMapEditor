@@ -4,6 +4,8 @@ import { Dictionary } from 'typescript-collections';
 import { Tile, Prefab, Block } from '@/store/modules/map/map.types';
 
 /**
+ * 网格参数
+ *
  * @param ctx 画布元素
  * @param width 画布的高度
  * @param height 画布的宽度
@@ -21,7 +23,7 @@ export type GridParamType = {
 };
 
 /**
- * 绘制单个格子
+ * 单个格子
  *
  * @param ctx 画布元素
  * @param width 画布的高度
@@ -40,7 +42,7 @@ export type SingleItemParamType = {
 } & GridParamType;
 
 /**
- * 绘制整个面板
+ * 整个画布
  *
  * @param ctx 画布元素
  * @param width 画布的高度
@@ -57,12 +59,15 @@ export type AllItemParamType = {
 } & GridParamType;
 
 /**
- * 做个类型检查
+ * 是否是格子
  */
 export function isSingleParamType(object: AllItemParamType | SingleItemParamType | GridParamType): object is SingleItemParamType {
   return 'changeX' in object;
 }
 
+/**
+ * 是否是整个画布
+ */
 export function isAllParamType(object: AllItemParamType | SingleItemParamType | GridParamType): object is AllItemParamType {
   return 'items' in object;
 }

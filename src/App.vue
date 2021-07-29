@@ -1,5 +1,6 @@
 <template>
   <!-- <HelloWorld msg="Hello Vue 3 + TypeScript + Vite" /> -->
+  <webSocket />
   <MainCanvas />
 </template>
 
@@ -9,12 +10,14 @@ import { defineComponent, onMounted, computed, onUpdated } from 'vue';
 import { useStore } from '@/use/useStore';
 import { AllActionTypes } from '@/store/action-types';
 import MainCanvas from './components/MainCanvas/MainCanvas.vue';
+import WebSocket from './components/WebSocket/WebSocket.vue';
 // import HelloWorld from './components/HelloWorld.vue';
 
 export default defineComponent({
   name: 'App',
   components: {
-    MainCanvas
+    MainCanvas,
+    WebSocket
   },
   setup() {
     const store = useStore();

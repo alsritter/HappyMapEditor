@@ -8,7 +8,6 @@ import manipulate from '@/core/util/manipulate';
 // import { useStore } from 'vuex';
 import { useStore } from '@/use/useStore';
 import { DisplayLayer } from '@/store/modules/map/map.types';
-import sk from '@/core/util/net/websocket';
 
 export enum displayLayer {
   FRONT = 'FRONT',
@@ -112,11 +111,31 @@ export default Vue.defineComponent({
         }
       );
 
+      console.log(import.meta.env.SERVER_IP);
+      // Draw the queue
       const graphGridQueues = new Array<GridParamType | AllItemParamType>();
 
       bus.on('refreshCanvas', () => {
         // 可以通过不使用缓存的情况来比较卡顿
-        // graph.canvasDraw.drawGrid(GRID_ctx, width, height, canvasGetters.value.getSize, currentX.value, currentY.value);
+        // graph.canvasDraw.drawGrid({
+        //   ctx: GRID_ctx,
+        //   width,
+        //   height,
+        //   size: canvasGetters.value.getSize,
+        //   x: currentX.value,
+        //   y: currentY.value
+        // });
+        // graph.canvasDraw.clearAllCanvas(FRONT_ctx, width, height);
+        // graph.canvasDraw.drawAllItem({
+        //   ctx: FRONT_ctx,
+        //   width,
+        //   height,
+        //   size: canvasGetters.value.getSize,
+        //   x: currentX.value,
+        //   y: currentY.value,
+        //   data: store.getters.getAllBlock(DisplayLayer.FRONT),
+        //   items: store.getters.getItems
+        // });
 
         // 绘制网格的操作入队
         graphGridQueues.push({
@@ -140,32 +159,11 @@ export default Vue.defineComponent({
           items: store.getters.getItems
         });
 
-        // graphGridQueues.push({
-        //   ctx: MIDDLE_ctx,
-        //   width,
-        //   height,
-        //   size: canvasGetters.value.getSize,
-        //   x: currentX.value,
-        //   y: currentY.value,
-        //   data: store.getters.getAllBlock(DisplayLayer.MIDDLE)
-        // });
-
-        // graphGridQueues.push({
-        //   ctx: BACKGROUND_ctx,
-        //   width,
-        //   height,
-        //   size: canvasGetters.value.getSize,
-        //   x: currentX.value,
-        //   y: currentY.value,
-        //   data: store.getters.getAllBlock(DisplayLayer.BACKGROUND)
-        // });
-
         // 执行任务
         process.jumpTimedProcessArray(
           graphGridQueues,
           (item) => {
             if (item == undefined) return;
-
             if (graph.isAllParamType(item)) {
               graph.canvasDraw.drawAllItem(item);
             } else {
@@ -179,15 +177,6 @@ export default Vue.defineComponent({
 
         // 别忘了清除其它画布
         graph.canvasDraw.clearAllCanvas(FRONT_ctx, width, height);
-      });
-
-      const wc = new sk.SocketClient('localhost', 8080, (event) => {
-        console.log(event);
-      });
-
-      bus.on('sendData', (data) => {
-        // console.log(data);
-        wc.send(data);
       });
     });
 

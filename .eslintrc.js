@@ -23,6 +23,8 @@ module.exports = {
     'plugin:prettier/recommended' // 使用prettier中的样式规范，且如果使得ESLint会检测prettier的格式问题，同样将格式问题以error的形式抛出. 确保在最后一个.
   ],
   rules: {
-    'no-irregular-whitespace': 0
+    'no-irregular-whitespace': 0,
+    '@typescript-eslint/no-inferrable-types': 0,
+    '@typescript-eslint/no-this-alias': 0
   }
 };
