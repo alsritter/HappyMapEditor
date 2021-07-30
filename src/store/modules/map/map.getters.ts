@@ -1,5 +1,5 @@
 import { MapGettersTypes, MapStateTypes, IRootState } from '@/store/interfaces';
-import { coordinateToBlockCoordinate } from '@/core/util/graph/canvasPoint';
+import { coordinateToBlockCoordinate } from '@/core/util/graph/canvas-point';
 import Constants from '@/core/util/Constants';
 import { DisplayLayer } from './map.types';
 import { GetterTree } from 'vuex';

@@ -1,5 +1,5 @@
-import canvasDraw from './canvasDraw';
-import canvasPoint from './canvasPoint';
+import canvasDraw from './canvas-draw';
+import canvasPoint from './canvas-point';
 import { Dictionary } from 'typescript-collections';
 import { Tile, Prefab, Block } from '@/store/modules/map/map.types';
 
@@ -71,6 +71,8 @@ export function isSingleParamType(object: AllItemParamType | SingleItemParamType
 export function isAllParamType(object: AllItemParamType | SingleItemParamType | GridParamType): object is AllItemParamType {
   return 'items' in object;
 }
+
+export { canvasDraw };
 
 export default {
   canvasDraw,

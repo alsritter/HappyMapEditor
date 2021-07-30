@@ -1,10 +1,10 @@
 import * as Vue from 'vue';
 import bus from '@/core/util/bus';
 import Constants from '@/core/util/Constants';
-import graph, { AllItemParamType } from '@/core/util/graph';
+import { AllItemParamType, canvasDraw, isAllParamType } from '@/core/util/graph';
 import { GridParamType, SingleItemParamType } from '@/core/util/graph';
-import process from '@/core/util/process';
-import manipulate from '@/core/util/manipulate';
+import { jumpTimedProcessArray } from '@/core/util/process';
+import { CanvasEventShape } from '@/core/util/manipulate';
 // import { useStore } from 'vuex';
 import { useStore } from '@/use/useStore';
 import { DisplayLayer } from '@/store/modules/map/map.types';
@@ -44,7 +44,7 @@ export default Vue.defineComponent({
     const currentX = Vue.ref(0);
     const currentY = Vue.ref(0); //TODO: 替换成 state 里面的
     const dragging = Vue.ref(false); //是否激活拖拽状态
-    const canvasEvent = new manipulate.CanvasEventShape(dragging, currentX, currentY);
+    const canvasEvent = new CanvasEventShape(dragging, currentX, currentY);
 
     const tmpTile = {
       id: 0,
@@ -78,7 +78,7 @@ export default Vue.defineComponent({
       const BACKGROUND_ctx = BACKGROUND_canvas.getContext('2d') as CanvasRenderingContext2D;
 
       canvasEvent.InitCanvasEvent(GRID_canvas);
-      graph.canvasDraw.drawGrid({
+      canvasDraw.drawGrid({
         ctx: GRID_ctx,
         width,
         height,
@@ -87,7 +87,7 @@ export default Vue.defineComponent({
         y: currentY.value
       });
 
-      graph.canvasDraw.drawSingleItem({
+      canvasDraw.drawSingleItem({
         ctx: GRID_ctx,
         width,
         height,
@@ -117,7 +117,7 @@ export default Vue.defineComponent({
 
       bus.on('refreshCanvas', () => {
         // 可以通过不使用缓存的情况来比较卡顿
-        // graph.canvasDraw.drawGrid({
+        // canvasDraw.drawGrid({
         //   ctx: GRID_ctx,
         //   width,
         //   height,
@@ -125,8 +125,8 @@ export default Vue.defineComponent({
         //   x: currentX.value,
         //   y: currentY.value
         // });
-        // graph.canvasDraw.clearAllCanvas(FRONT_ctx, width, height);
-        // graph.canvasDraw.drawAllItem({
+        // canvasDraw.clearAllCanvas(FRONT_ctx, width, height);
+        // canvasDraw.drawAllItem({
         //   ctx: FRONT_ctx,
         //   width,
         //   height,
@@ -160,14 +160,14 @@ export default Vue.defineComponent({
         });
 
         // 执行任务
-        process.jumpTimedProcessArray(
+        jumpTimedProcessArray(
           graphGridQueues,
           (item) => {
             if (item == undefined) return;
-            if (graph.isAllParamType(item)) {
-              graph.canvasDraw.drawAllItem(item);
+            if (isAllParamType(item)) {
+              canvasDraw.drawAllItem(item);
             } else {
-              graph.canvasDraw.drawGrid(item);
+              canvasDraw.drawGrid(item);
             }
           },
           () => {
@@ -176,7 +176,7 @@ export default Vue.defineComponent({
         );
 
         // 别忘了清除其它画布
-        graph.canvasDraw.clearAllCanvas(FRONT_ctx, width, height);
+        canvasDraw.clearAllCanvas(FRONT_ctx, width, height);
       });
     });
 

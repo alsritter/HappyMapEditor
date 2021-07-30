@@ -1,6 +1,5 @@
-import SocketClient from './socketClient';
-
-export { default as SocketClient } from './socketClient';
+import SocketClient from './socket-client';
+export { default as SocketClient } from './socket-client';
 
 export default {
   SocketClient

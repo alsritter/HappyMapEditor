@@ -1,5 +1,5 @@
 import { AllItemParamType, GridParamType, SingleItemParamType } from '@/core/util/graph';
-import { blockCoordinateToCoordinate, CoordinateToPix } from '@/core/util/graph/canvasPoint';
+import { blockCoordinateToCoordinate, CoordinateToPix } from '@/core/util/graph/canvas-point';
 import Constants from '@/core/util/Constants';
 /**
  * 这里专门用来绘制网格

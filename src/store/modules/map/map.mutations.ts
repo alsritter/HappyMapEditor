@@ -2,7 +2,7 @@ import { MutationTree } from 'vuex';
 import Constants from '@/core/util/Constants';
 import { MutationTypes } from './map.mutation-types';
 import { MapStateTypes, MapMutationsTypes } from '@/store/interfaces';
-import { coordinateToBlockEndCoordinate, coordinateToBlockCoordinate } from '@/core/util/graph/canvasPoint';
+import { coordinateToBlockEndCoordinate, coordinateToBlockCoordinate } from '@/core/util/graph/canvas-point';
 
 const mutations: MutationTree<MapStateTypes> & MapMutationsTypes = {
   [MutationTypes.MAP_CHANGE_POINT]: (state, payload) => {
