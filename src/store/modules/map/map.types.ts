@@ -36,7 +36,13 @@ export interface Prefab {
  * 这个存储块大小确定下来就不能随便改了，它的大小位于常量那里
  */
 export interface Block {
+  /**
+   * Block X 终点坐标
+   */
   x: number;
+  /**
+   * Block Y 终点坐标
+   */
   y: number;
   size: number;
   data: number[][];

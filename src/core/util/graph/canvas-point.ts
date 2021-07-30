@@ -2,6 +2,9 @@
  * 这里用于处理平面坐标相关的问题
  */
 
+import { Block } from '@/store/modules/map/map.types';
+import Constants from '@/core/util/Constants';
+
 interface Point {
   x: number;
   y: number;
@@ -34,14 +37,8 @@ export const windowToCanvas = (canvas: HTMLCanvasElement, x: number, y: number):
  */
 export const pixToCoordinate = (canvas: HTMLCanvasElement, size: number, sx: number, sy: number, x: number, y: number): Point => {
   const tmp = windowToCanvas(canvas, x, y);
-
   const relativeX = tmp.x - sx;
   const relativeY = tmp.y - sy;
-
-  // console.log(tmp.x, tmp.y);
-  // console.log(sx, sy);
-  // console.log(relativeX, relativeY);
-
   return {
     x: Math.floor(relativeX / size),
     y: Math.floor(relativeY / size)
@@ -74,37 +71,6 @@ export const CoordinateToPix = (size: number, sx: number, sy: number, x: number,
  * @param y
  */
 export const coordinateToBlockEndCoordinate = (size: number, x: number, y: number): Point => {
-  // // 负数从 -1 开始
-  // if (x < 0) {
-  //   // 计算乘数：这里举例：-1 / 4 = 0，-4 / size = 1 但是要让其的值比真实值加一
-  //   const tx = ~~Math.abs((x < 0 ? x + 1 : x) / size) + 1;
-  //   const rx = tx * size * -1 - (x < 0 ? 1 : 0); // 负数从 -1 开始这里补零
-  // } else {
-  //   const rx = x % size;
-  //   const ry = y % size; // 0,1,2,3 但是负数是从 -1 开始的
-
-  //   if (rx == 0 && x !== 0) x = x < 0 ? x - 1 : x + 1;
-  //   if (ry == 0 && y !== 0) y = y < 0 ? y - 1 : y + 1;
-
-  //   const dx = rx == 0 ? 0 : -1;
-  //   const dy = ry == 0 ? 0 : -1;
-
-  //   // ~~ 将数据转化为 Number 类型  ~~3.141592654 // 3
-  //   const tx = ~~(x / size) + (x < 0 ? dx : 1);
-  //   const ty = ~~(y / size) + (y < 0 ? dy : 1);
-
-  //   // console.log('TY size', size);
-  //   // console.log('TY x-y', x, y);
-  //   // console.log('TY x.-y.', x / size, y / size);
-  //   console.log('TY tx-ty', tx, ty);
-
-  //   const tmp = {
-  //     x: tx * size - (x < 0 ? 0 : 1),
-  //     y: ty * size - (y < 0 ? 0 : 1)
-  //   };
-
-  //   console.log(tmp);
-
   // 计算乘数：这里举例：-1 / 4 = 0，-4 / size = 1 但是要让其的值比真实值加一
   const fx = x < 0;
   const fy = y < 0;
@@ -197,6 +163,132 @@ export const blockCoordinateToCoordinate = (size: number, bx: number, by: number
   // console.log(tmp);
 
   return tmp;
+};
+
+/**
+ * 判断某个坐标是否在屏幕外面
+ *
+ * @param canvas
+ * @param size 单元格的大小
+ * @param sx 起始点的位置
+ * @param sy 起始点的位置
+ * @param x 要判断的 x 坐标
+ * @param y 要判断的 y 坐标
+ * @returns 是否在边界外
+ */
+export const coordinateIsOffScreenByElement = (canvas: HTMLCanvasElement, size: number, sx: number, sy: number, x: number, y: number): boolean => {
+  const bbox = canvas.getBoundingClientRect();
+  return coordinateIsOffScreen(bbox.width, bbox.height, size, sx, sy, x, y);
+};
+
+/**
+ * 判断某个坐标是否在屏幕外面
+ *
+ * @param width 画布的高度
+ * @param height 画布的宽度
+ * @param size 单元格的大小
+ * @param sx 起始点的位置
+ * @param sy 起始点的位置
+ * @param x 要判断的 x 坐标
+ * @param y 要判断的 y 坐标
+ * @returns 是否在边界外
+ */
+export const coordinateIsOffScreen = (width: number, height: number, size: number, sx: number, sy: number, x: number, y: number): boolean => {
+  const point = CoordinateToPix(size, sx, sy, x, y);
+  // console.log(point, x, y);
+
+  if (point.x > width || point.x < 0) return true;
+  if (point.y > height || point.y < 0) return true;
+  return false;
+};
+
+/**
+ * 判断某个坐标是否在屏幕外面
+ *
+ * @param width 画布的高度
+ * @param height 画布的宽度
+ * @param size 单元格的大小
+ * @param sx 起始点的位置
+ * @param sy 起始点的位置
+ * @param point 要判断的 “像素” 位置
+ * @returns 是否在边界外
+ */
+export const coordinateIsOffScreenByPix = (width: number, height: number, size: number, sx: number, sy: number, point: Point): boolean => {
+  // console.log(point);
+  if (point.x > width || point.x < 0) return true;
+  if (point.y > height || point.y < 0) return true;
+  return false;
+};
+
+/**
+ * 判断某个 Block 是否完全在屏幕外面
+ *
+ * @param width 画布的高度
+ * @param height 画布的宽度
+ * @param size 单元格的大小
+ * @param sx 起始点的位置
+ * @param sy 起始点的位置
+ * @param block 要判断的 Block
+ * @returns 是否在边界外
+ */
+export const blockIsOffScreen = (width: number, height: number, size: number, sx: number, sy: number, block: Block): boolean => {
+  const boxW = size * Constants.BLOCK_SIZE;
+  const bsize = Constants.BLOCK_SIZE;
+  const fx = block.x > 0;
+  const fy = block.y > 0;
+  const dx = fx ? bsize - 1 : -bsize;
+  const dy = fy ? bsize - 1 : -bsize;
+  const bsx = block.x - dx;
+  const bsy = block.y - dy;
+
+  const boxPoint = CoordinateToPix(size, sx, sy, bsx, bsy);
+  const xBoxW = boxW * (block.x > 0 ? 1 : -1);
+  const yBoxW = boxW * (block.y > 0 ? 1 : -1);
+
+  const pointA = {
+    x: boxPoint.x,
+    y: boxPoint.y
+  };
+
+  const pointB = {
+    x: boxPoint.x + xBoxW,
+    y: boxPoint.y
+  };
+
+  const pointC = {
+    x: boxPoint.x,
+    y: boxPoint.y + yBoxW
+  };
+  const pointD = {
+    x: boxPoint.x + xBoxW,
+    y: boxPoint.y + yBoxW
+  };
+
+  // 再判断
+  const pointAR = coordinateIsOffScreenByPix(width, height, size, sx, sy, pointA);
+  const pointBR = coordinateIsOffScreenByPix(width, height, size, sx, sy, pointB);
+  const pointCR = coordinateIsOffScreenByPix(width, height, size, sx, sy, pointC);
+  const pointDR = coordinateIsOffScreenByPix(width, height, size, sx, sy, pointD);
+  // console.log(pointAR, pointBR, pointCR, pointDR, '结果：', pointAR && pointBR && pointCR && pointDR, block.x, block.y);
+
+  // 四个角全部溢出才算溢出
+  if (pointAR && pointBR && pointCR && pointDR) return true;
+  return false;
+};
+
+/**
+ * 判断某个 Block 是否完全在屏幕外面
+ *
+ * @param canvas
+ * @param size 单元格的大小
+ * @param sx 起始点的位置
+ * @param sy 起始点的位置
+ * @param block 要判断的 Block
+ * @returns 是否在边界外
+ */
+export const blockIsOffScreenByElement = (canvas: HTMLCanvasElement, size: number, sx: number, sy: number, block: Block): boolean => {
+  const bbox = canvas.getBoundingClientRect();
+  return blockIsOffScreen(bbox.width, bbox.height, size, sx, sy, block);
 };
 
 export default {

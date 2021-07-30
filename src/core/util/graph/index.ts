@@ -3,6 +3,12 @@ import canvasPoint from './canvas-point';
 import { Dictionary } from 'typescript-collections';
 import { Tile, Prefab, Block } from '@/store/modules/map/map.types';
 
+export enum GridRuntimeType {
+  GRID,
+  SINGLE,
+  ALL
+}
+
 /**
  * 网格参数
  *
@@ -20,6 +26,7 @@ export type GridParamType = {
   size: number;
   x: number;
   y: number;
+  gridType: GridRuntimeType;
 };
 
 /**
@@ -56,20 +63,28 @@ export type SingleItemParamType = {
 export type AllItemParamType = {
   data: Block[];
   items: Dictionary<number, Tile | Prefab>;
+  isAllItemParamType: null;
 } & GridParamType;
 
 /**
- * 是否是格子
+ * is GridParamType
  */
-export function isSingleParamType(object: AllItemParamType | SingleItemParamType | GridParamType): object is SingleItemParamType {
-  return 'changeX' in object;
+export function isGridParamType(object: any): object is GridParamType {
+  return 'gridType' in object && object.gridType == GridRuntimeType.GRID;
 }
 
 /**
- * 是否是整个画布
+ * is SingleParamType
  */
-export function isAllParamType(object: AllItemParamType | SingleItemParamType | GridParamType): object is AllItemParamType {
-  return 'items' in object;
+export function isSingleParamType(object: any): object is SingleItemParamType {
+  return 'gridType' in object && object.gridType == GridRuntimeType.SINGLE;
+}
+
+/**
+ * is AllParamType
+ */
+export function isAllParamType(object: any): object is AllItemParamType {
+  return 'gridType' in object && object.gridType == GridRuntimeType.ALL;
 }
 
 export { canvasDraw };

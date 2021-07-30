@@ -12,5 +12,8 @@ export default {
   MAX_SIZE,
   CANVAS_WIDTH,
   CANVAS_HEIGHT,
+  /**
+   * 一个存储块的宽高
+   */
   BLOCK_SIZE
 };

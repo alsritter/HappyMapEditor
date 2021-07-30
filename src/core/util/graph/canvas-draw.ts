@@ -1,5 +1,5 @@
-import { AllItemParamType, GridParamType, SingleItemParamType } from '@/core/util/graph';
-import { blockCoordinateToCoordinate, CoordinateToPix } from '@/core/util/graph/canvas-point';
+import { AllItemParamType, GridParamType, SingleItemParamType, GridRuntimeType } from '@/core/util/graph';
+import { blockCoordinateToCoordinate, CoordinateToPix, blockIsOffScreen } from '@/core/util/graph/canvas-point';
 import Constants from '@/core/util/Constants';
 /**
  * 这里专门用来绘制网格
@@ -116,6 +116,8 @@ export const drawAllItem = (data: AllItemParamType): void => {
   const bsize = Constants.BLOCK_SIZE;
 
   for (const block of blocks) {
+    // 判断位置，如果超出边界直接无需遍历
+    if (blockIsOffScreen(width, height, size, x, y, block)) continue;
     // 这块顺便给 Block 绘制一个边框
     drawBlockBox(ctx, size, x, y, block.x, block.y);
 
@@ -136,7 +138,8 @@ export const drawAllItem = (data: AllItemParamType): void => {
             y,
             changeX: point.x,
             changeY: point.y,
-            data: tile
+            data: tile,
+            gridType: GridRuntimeType.SINGLE
           });
         }
       }
@@ -167,18 +170,8 @@ export const drawBlockBox = (ctx: CanvasRenderingContext2D, size: number, sx: nu
   const dx = fx ? bsize - 1 : -bsize;
   const dy = fy ? bsize - 1 : -bsize;
 
-  // console.log({
-  //   dx,
-  //   dy
-  // });
-
   const bsx = x - dx;
   const bsy = y - dy;
-
-  // console.log({
-  //   bsx,
-  //   bsy
-  // });
 
   const boxPoint = CoordinateToPix(size, sx, sy, bsx, bsy);
 

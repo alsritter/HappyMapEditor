@@ -79,27 +79,28 @@ export const timedProcessArray = <T>(items: Array<T>, process: (item: T | undefi
  *
  * 优点是避免了第一种情况出现的问题，缺点是多出了一个时间比较的运算，额外的运算过程也可能影响到性能
  *
- * @param items 这个就是一个参数对象的队列，每个参数代表一次任务
- * @param process 执行上面参数的回调函数
- * @param callback 全部任务执行完成时调用的回调函数
+ * @param items This is a queue of parameter objects, each parameter representing a task
+ * @param process The callback function that executes the task
+ * @param callback Callback function called when all tasks have completed
  */
-export const jumpTimedProcessArray = <T>(items: Array<T>, process: (item: T | undefined) => void, callback: (items: Array<T>) => void): void => {
+export const jumpTimedProcessArray = (items: Array<Task>, process: (item: Task | undefined) => void, callback: (items: Array<Task>) => void): void => {
   // const todo = items.concat();
   const todo = items;
-  // 只有队列里面没有任务了才再次执行(这里最大缓存 2 帧)
+  // Only if there are no more tasks in the queue (Max cache 2 frames)
   if (todo.length < 3) {
     setTimeout(function fun() {
-      // 开始计时
-      const start = +new Date(); // JavaScript 中可以在某个元素前使用 ‘+’ 号，这个操作是将该元素转换成 Number 类型
-      // 如果单个数据处理时间小于 50ms ，则无需分解任务
-
+      const start = +new Date(); // JavaScript can use a '+' sign in front of an element, which converts the element to type Number
+      // If the processing time of a single data is less than 50ms, it do not need to decompose the task
       do {
-        process(todo.shift());
-        // console.log(+new Date() - start, todo.length);
-        // 如果大于3 帧数
+        const item = todo.shift();
+
+        process(item);
+        // console.log('当前优先级', item?.priority, '当前队列长度：', items.length);
         if (todo.length > 3) {
-          // 去掉前面不必要的帧
+          // Just keep the last 3 frames
           todo.splice(0, todo.length - 3);
+          // sort from largest to smallest
+          todo.sort((a, b) => a.priority - b.priority);
         }
       } while (todo.length && +new Date() - start < 50);
 
@@ -110,6 +111,14 @@ export const jumpTimedProcessArray = <T>(items: Array<T>, process: (item: T | un
       }
     });
   }
+};
+
+/**
+ * In the jumpTimedProcessArray method, higher-priority projects are executed as best they can
+ */
+export type Task = {
+  data: any;
+  priority: number;
 };
 
 export default {
