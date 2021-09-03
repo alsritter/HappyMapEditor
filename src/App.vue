@@ -1,7 +1,15 @@
 <template>
-  <!-- <HelloWorld msg="Hello Vue 3 + TypeScript + Vite" /> -->
-  <webSocket />
-  <MainCanvas />
+  <div id="app">
+    <!-- <webSocket /> -->
+    <!-- <MainCanvas /> -->
+    <el-container>
+      <el-header>Header</el-header>
+      <el-container>
+        <el-aside width="200px">Aside</el-aside>
+        <el-main><MainCanvas /></el-main>
+      </el-container>
+    </el-container>
+  </div>
 </template>
 
 <script lang="ts">
@@ -10,14 +18,13 @@ import { defineComponent, onMounted, computed, onUpdated } from 'vue';
 import { useStore } from '@/use/useStore';
 import { AllActionTypes } from '@/store/action-types';
 import MainCanvas from './components/MainCanvas/MainCanvas.vue';
-import WebSocket from './components/WebSocket/WebSocket.vue';
+// import WebSocket from './components/WebSocket/WebSocket.vue';
 // import HelloWorld from './components/HelloWorld.vue';
 
 export default defineComponent({
   name: 'App',
   components: {
-    MainCanvas,
-    WebSocket
+    MainCanvas
   },
   setup() {
     const store = useStore();
@@ -82,13 +89,55 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style lang="scss">
+/* 此处一定要加上~，在dom中使用也要加~ */
+@import url('@/assets/css/normalize.css');
+
+// pc端
+@media (min-width: $action-width) {
+  main {
+    width: 90%;
+    max-width: 1400px;
+    margin: 15px auto;
+    display: flex;
+  }
+  .main-left {
+    flex: 1;
+    margin-right: 15px;
+  }
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
+
+.el-header,
+.el-footer {
+  background-color: #b3c0d1;
+  color: var(--el-text-color-primary);
+  text-align: center;
+  line-height: 60px;
+}
+
+.el-aside {
+  background-color: #d3dce6;
+  color: var(--el-text-color-primary);
+  text-align: center;
+  line-height: 200px;
+}
+
+.el-main {
+  background-color: #e9eef3;
+  color: var(--el-text-color-primary);
+  text-align: center;
+  line-height: 160px;
+}
+
+// body > .el-container {
+//   margin-bottom: 40px;
+// }
 </style>

@@ -18,5 +18,12 @@ export default defineConfig({
       '@': path.join(__dirname, './src'),
       '@components': path.join(__dirname, './src/components')
     }
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@import "@/assets/css/global.scss";` // 添加公共样式
+      }
+    }
   }
 });

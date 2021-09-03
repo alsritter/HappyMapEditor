@@ -1,4 +1,8 @@
 .map__container {
+  width: 800px;
+  height: 800px;
+  transform: translateX(50%);
+
   // 公共块
   .canvaseffect {
     position: absolute;
@@ -6,28 +10,27 @@
   }
 
   #GRID_CANVAS {
-    .canvaseffect();
+    @extend .canvaseffect;
     z-index: 3;
   }
   #FRONT {
     border: 1px solid black;
-    .canvaseffect();
+    @extend .canvaseffect;
     z-index: 2;
   }
   #MIDDLE {
     border: 2px solid rgb(204, 110, 110);
-    .canvaseffect();
+    @extend .canvaseffect;
     z-index: 1;
   }
   #BACKGROUND {
     border: 3px solid rgb(20, 168, 87);
-    .canvaseffect();
+    @extend .canvaseffect;
     z-index: 0;
     background-color: aquamarine;
   }
 
   // 禁止文字被鼠标选中
-  moz-user-select: -moz-none;
   -moz-user-select: none;
   -o-user-select: none;
   -khtml-user-select: none;
