@@ -121,6 +121,8 @@ export type Task = {
   priority: number;
 };
 
+// 7分钟理解JS的节流、防抖及使用场景 https://juejin.cn/post/6844903669389885453#comment
+// TODO: 改进
 export default {
   processArray,
   timedProcessArray,
