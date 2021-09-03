@@ -15,11 +15,8 @@
 <script lang="ts">
 import { defineComponent, onMounted, computed, onUpdated } from 'vue';
 // import { useStore } from 'vuex';
-import { useStore } from '@/use/useStore';
-import { AllActionTypes } from '@/store/action-types';
+import { useStore } from '@/mystore';
 import MainCanvas from './components/MainCanvas/MainCanvas.vue';
-// import WebSocket from './components/WebSocket/WebSocket.vue';
-// import HelloWorld from './components/HelloWorld.vue';
 
 export default defineComponent({
   name: 'App',
@@ -28,17 +25,6 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
-    const KeyGetters = computed(() => {
-      return {
-        isRecall: store.getters.isRecall,
-        selectKeys: store.getters.selectKeys,
-        pressedKeys: store.getters.selectPressedKeys,
-        isAlt: store.getters.isAlt
-      };
-    });
-
-    // const tmp = computed(() => store.getters.selectKeys);
-
     const methods = {
       // 这里进行全局初始化
       init() {
@@ -51,21 +37,17 @@ export default defineComponent({
       },
       onKeyDown(e: KeyboardEvent) {
         e.preventDefault();
-        // store.dispatch('keyboard/KEY_DOWN', e.key);
-        // console.log(e.key);
-
-        store.dispatch(AllActionTypes.KEYBOARD_KEY_DOWN, e.key);
+        store.action.keyboardKeyDown(e.key);
         methods.onShortcutKey();
       },
       onKeyUp(e: KeyboardEvent) {
         e.preventDefault();
-        // store.dispatch('keyboard/KEY_UP', e.key);
-        store.dispatch(AllActionTypes.KEYBOARD_KEY_UP, e.key);
+        store.action.keyboardKeyUp(e.key);
       },
       // 监听快捷键
       onShortcutKey() {
         // console.log(tmp);
-        if (KeyGetters.value.isRecall) {
+        if (store.getters.isRecall()) {
           console.log('按下了撤回键');
         }
       }
@@ -73,8 +55,7 @@ export default defineComponent({
 
     const update = {
       refresh() {
-        // store.dispatch('keyboard/REFRESH', undefined);
-        store.dispatch(AllActionTypes.KEYBOARD_REFRESH);
+        store.action.keyboardRefresh();
       }
     };
 

@@ -15,7 +15,10 @@ export const State: IState = {
     x: 0,
     y: 0
   },
+  dragging: false,
+  //
   keys: prepareKeys(),
+  //
   blocks: initBlocks(),
   items: initItem()
 };

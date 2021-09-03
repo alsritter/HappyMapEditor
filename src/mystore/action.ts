@@ -1,5 +1,5 @@
 import { IState } from './state';
-import { canvasUpdateSize, canvasUpdatePoint } from '@/mystore/modules/canvas/canvas.actions';
+import { canvasUpdateSize, canvasUpdatePoint, canvasInit_X, canvasInit_Y, canvasModifyDragState } from '@/mystore/modules/canvas/canvas.actions';
 import { keyboardKeyDown, keyboardKeyUp, keyboardRefresh } from '@/mystore/modules/keyboard/keyboard.actions';
 import { mapModifyPoint } from '@/mystore/modules/map/map.actions';
 
@@ -9,6 +9,9 @@ import { mapModifyPoint } from '@/mystore/modules/map/map.actions';
  */
 export function createAction(state: IState) {
   return {
+    canvasInit_X: canvasInit_X(state),
+    canvasInit_Y: canvasInit_Y(state),
+    canvasModifyDragState: canvasModifyDragState(state),
     canvasUpdateSize: canvasUpdateSize(state),
     canvasUpdatePoint: canvasUpdatePoint(state),
     //

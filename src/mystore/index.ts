@@ -11,7 +11,8 @@ const getters = createGetter(state as IState);
 
 export const useStore = () => {
   const store = {
-    state: createPersistStorage<IState>(state),
+    // state: createPersistStorage<IState>(state),
+    state: readonly(state),
     action: readonly(action),
     getters: readonly(getters)
   };

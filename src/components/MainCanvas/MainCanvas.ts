@@ -1,15 +1,12 @@
-import { defineComponent, ref, computed, onUpdated, onMounted, watch, Ref } from 'vue';
+import { defineComponent, ref, onMounted, watch, Ref } from 'vue';
 import bus from '@/core/util/bus';
 import Constants from '@/core/util/Constants';
-import { AllItemParamType, canvasDraw, isAllParamType, isGridParamType, GridRuntimeType } from '@/core/util/graph';
-import { GridParamType, SingleItemParamType } from '@/core/util/graph';
+import { canvasDraw, isAllParamType, isGridParamType, GridRuntimeType } from '@/core/util/graph';
 import { jumpTimedProcessArray, Task } from '@/core/util/process';
 import { CanvasEventShape } from '@/core/util/manipulate';
-// import { useStore } from 'vuex';
-import { useStore } from '@/use/useStore';
-import { DisplayLayer } from '@/store/modules/map/map.types';
+import { useStore } from '@/mystore';
 
-export enum displayLayer {
+enum DisplayLayer {
   FRONT = 'FRONT',
   MIDDLE = 'MIDDLE',
   BACKGROUND = 'BACKGROUND'
@@ -18,44 +15,18 @@ export enum displayLayer {
 export default defineComponent({
   setup() {
     const store = useStore();
+    // 引用页面的画布
     const GRID_CANVAS = ref(null) as Ref<HTMLCanvasElement | null>;
     const canvasBox = {
-      [displayLayer.FRONT]: ref(null) as Ref<HTMLCanvasElement | null>,
-      [displayLayer.MIDDLE]: ref(null) as Ref<HTMLCanvasElement | null>,
-      [displayLayer.BACKGROUND]: ref(null) as Ref<HTMLCanvasElement | null>
+      [DisplayLayer.FRONT]: ref(null) as Ref<HTMLCanvasElement | null>,
+      [DisplayLayer.MIDDLE]: ref(null) as Ref<HTMLCanvasElement | null>,
+      [DisplayLayer.BACKGROUND]: ref(null) as Ref<HTMLCanvasElement | null>
     };
-    const canvasGetters = computed(() => {
-      return {
-        state: store.getters.status,
-        getSize: store.getters.getSize,
-        getPoint: store.getters.getPoint
-      };
-    });
-    const KeyGetters = computed(() => {
-      return {
-        isRecall: store.getters.isRecall,
-        selectKeys: store.getters.selectKeys,
-        pressedKeys: store.getters.selectPressedKeys,
-        isAlt: store.getters.isAlt
-      };
-    });
+
     const width = Constants.CANVAS_WIDTH;
     const height = Constants.CANVAS_HEIGHT;
     // The starting position of the current coordinate
-    const currentX = ref(0);
-    const currentY = ref(0); //TODO: 替换成 state 里面的
-    const dragging = ref(false); // Whether it is in the drag and drop state
-    const canvasEvent = new CanvasEventShape(dragging, currentX, currentY);
-
-    const tmpTile = {
-      id: 0,
-      displayModel: DisplayLayer.FRONT,
-      // 通过 id 去另一个存储图片的 State 查找图片
-      tileSpriteId: 0,
-      color: '#ffc107',
-      effectKeys: [],
-      tags: []
-    };
+    const canvasEvent = new CanvasEventShape();
 
     onMounted(() => {
       const GRID_canvas = GRID_CANVAS.value as unknown as HTMLCanvasElement;
@@ -73,15 +44,15 @@ export default defineComponent({
         ctx: GRID_ctx,
         width,
         height,
-        size: canvasGetters.value.getSize,
-        x: currentX.value,
-        y: currentY.value,
+        size: store.state.canvasSize,
+        x: store.state.initPoint.x,
+        y: store.state.initPoint.y,
         gridType: GridRuntimeType.GRID
       });
 
       // Listen for keyboard events
       watch(
-        () => KeyGetters.value.isAlt,
+        () => store.getters.isAlt(),
         (newValue, oldValue) => {
           if (newValue) {
             canvasEvent.dragCanvas(GRID_canvas);
@@ -96,36 +67,15 @@ export default defineComponent({
       const graphGridQueues = new Array<Task>();
 
       bus.on('refreshCanvas', () => {
-        // 可以通过不使用缓存的情况来比较卡顿
-        // canvasDraw.drawGrid({
-        //   ctx: GRID_ctx,
-        //   width,
-        //   height,
-        //   size: canvasGetters.value.getSize,
-        //   x: currentX.value,
-        //   y: currentY.value
-        // });
-        // canvasDraw.clearAllCanvas(FRONT_ctx, width, height);
-        // canvasDraw.drawAllItem({
-        //   ctx: FRONT_ctx,
-        //   width,
-        //   height,
-        //   size: canvasGetters.value.getSize,
-        //   x: currentX.value,
-        //   y: currentY.value,
-        //   data: store.getters.getAllBlock(DisplayLayer.FRONT),
-        //   items: store.getters.getItems
-        // });
-
         // 绘制网格的操作入队
         graphGridQueues.push({
           data: {
             ctx: GRID_ctx,
             width,
             height,
-            size: canvasGetters.value.getSize,
-            x: currentX.value,
-            y: currentY.value,
+            size: store.state.canvasSize,
+            x: store.state.initPoint.x,
+            y: store.state.initPoint.y,
             gridType: GridRuntimeType.GRID
           },
           priority: 0
@@ -137,11 +87,11 @@ export default defineComponent({
             ctx: FRONT_ctx,
             width,
             height,
-            size: canvasGetters.value.getSize,
-            x: currentX.value,
-            y: currentY.value,
+            size: store.state.canvasSize,
+            x: store.state.initPoint.x,
+            y: store.state.initPoint.y,
             data: store.getters.getAllBlock(DisplayLayer.FRONT),
-            items: store.getters.getItems,
+            items: store.getters.getItems(),
             gridType: GridRuntimeType.ALL
           },
           priority: 1
@@ -170,6 +120,6 @@ export default defineComponent({
       });
     });
 
-    return { ...canvasBox, currentX, currentY, GRID_CANVAS, width, height, scrollBarWheel: canvasEvent.scrollBarWheel };
+    return { ...canvasBox, GRID_CANVAS, width, height, scrollBarWheel: canvasEvent.scrollBarWheel };
   }
 });

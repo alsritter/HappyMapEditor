@@ -12,6 +12,11 @@ export interface ICanvasState {
    * 起始点
    */
   initPoint: Point;
+
+  /**
+   * 是否正在拖动
+   */
+  dragging: boolean;
 }
 
 export default CanvasState;
