@@ -1,9 +1,10 @@
 import { watch, toRaw, readonly } from 'vue';
+import { IState } from './state';
 
 export function createPersistStorage<T>(state: any, key = 'default'): T {
   const STORAGE_KEY = '--APP-STORAGE--';
 
-  // init value
+  // init value 其中 Object.entries() 方法返回一个给定对象自身可枚举属性的键值对数组
   Object.entries(getItem(key)).forEach(([key, value]) => {
     state[key] = value;
   });
@@ -18,6 +19,7 @@ export function createPersistStorage<T>(state: any, key = 'default'): T {
   function getItem(key?: string) {
     const stateStr = localStorage.getItem(STORAGE_KEY) || '{}';
     const stateRow = JSON.parse(stateStr) || {};
+
     return key ? stateRow[key] || {} : stateRow;
   }
 

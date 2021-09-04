@@ -21,3 +21,14 @@ body {
   background-color: #e1e1e1;
   font-size: 14px;
 }
+
+
+html,
+body {
+  height: 100%;
+  /* background-color: azure; */
+}
+
+#app {
+  height: 100%;
+}

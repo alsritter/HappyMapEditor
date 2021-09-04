@@ -12,7 +12,8 @@ export const drawGrid = (item: GridParamType): void => {
 
   // 计算数量
   const _cols = item.width / item.size;
-  const _rows = _cols;
+  // const _rows = _cols;
+  const _rows = item.height / item.size;
 
   // CanvasRenderingContext2D.beginPath() 是 Canvas 2D API 通过清空子路径列表开始一个新路径的方法。 当你想创建一个新的路径时，调用此方法。
   // ctx.beginPath(); // 开始绘制线条，若不使用 beginPath，则不能绘制多条线条

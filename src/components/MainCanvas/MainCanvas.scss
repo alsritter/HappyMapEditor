@@ -1,12 +1,12 @@
 .map__container {
-  width: 800px;
-  height: 800px;
-  // transform: translateX(50%);
+  width: 1100px;
+  height: 780px;
+  position: relative;
+  justify-content: center;
 
   // 公共块
   .canvaseffect {
     position: absolute;
-    transform: translateX(-50%);
   }
 
   #GRID_CANVAS {

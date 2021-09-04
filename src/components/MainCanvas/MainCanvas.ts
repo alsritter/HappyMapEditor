@@ -61,8 +61,6 @@ export default defineComponent({
           }
         }
       );
-
-      console.log(import.meta.env.SERVER_IP);
       // Draw the queue
       const graphGridQueues = new Array<Task>();
 
@@ -114,9 +112,6 @@ export default defineComponent({
             // console.log('任务完成');
           }
         );
-
-        // 别忘了清除其它画布
-        // canvasDraw.clearAllCanvas(FRONT_ctx, width, height);
       });
     });
 

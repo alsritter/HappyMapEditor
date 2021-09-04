@@ -1,15 +1,24 @@
 <template>
-  <div id="app">
-    <!-- <webSocket /> -->
-    <!-- <MainCanvas /> -->
+  <!-- <index-header /> -->
+  <!-- <main> -->
+  <!-- <MainCanvas /> -->
+  <!-- <router-view class="main-left"></router-view> -->
+  <!-- <index-aside class="main-right" /> -->
+  <!-- </main> -->
+  <!-- <index-footer /> -->
+
+  <el-container>
+    <el-header><index-header /></el-header>
     <el-container>
-      <el-header>Header</el-header>
+      <el-aside width="450px"><index-left-aside /></el-aside>
       <el-container>
-        <el-aside width="200px">Aside</el-aside>
-        <el-main><MainCanvas /></el-main>
+        <el-header height="20px">ces</el-header>
+        <el-main><router-view></router-view></el-main>
+        <el-footer><index-footer /></el-footer>
       </el-container>
+      <el-aside width="300px"><index-right-aside /></el-aside>
     </el-container>
-  </div>
+  </el-container>
 </template>
 
 <script lang="ts">
@@ -17,11 +26,19 @@ import { defineComponent, onMounted, computed, onUpdated } from 'vue';
 // import { useStore } from 'vuex';
 import { useStore } from '@/mystore';
 import MainCanvas from './components/MainCanvas/MainCanvas.vue';
+import IndexHeader from '@/views/indexHeader/IndexHeader.vue';
+import IndexLeftAside from '@/views/indexAside/IndexLeftAside.vue';
+import IndexRightAside from '@/views/indexAside/IndexRightAside.vue';
+import IndexFooter from '@/views/indexFooter/IndexFooter.vue';
 
 export default defineComponent({
   name: 'App',
   components: {
-    MainCanvas
+    // MainCanvas,
+    IndexHeader,
+    IndexLeftAside,
+    IndexRightAside,
+    IndexFooter
   },
   setup() {
     const store = useStore();
@@ -77,7 +94,7 @@ export default defineComponent({
 // pc端
 @media (min-width: $action-width) {
   main {
-    width: 90%;
+    width: 97%;
     max-width: 1400px;
     margin: 15px auto;
     display: flex;
@@ -88,37 +105,11 @@ export default defineComponent({
   }
 }
 
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-.el-header,
-.el-footer {
-  background-color: #b3c0d1;
-  color: var(--el-text-color-primary);
-  text-align: center;
-  line-height: 60px;
-}
-
-.el-aside {
-  background-color: #d3dce6;
-  color: var(--el-text-color-primary);
-  text-align: center;
-  line-height: 200px;
+.el-header {
+  --el-header-padding: 0 0px !important;
 }
 
 .el-main {
-  background-color: #e9eef3;
-  color: var(--el-text-color-primary);
-  text-align: center;
-  line-height: 160px;
+  --el-main-padding: 0 !important;
 }
-
-// body > .el-container {
-//   margin-bottom: 40px;
-// }
 </style>
