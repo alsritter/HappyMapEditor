@@ -3,18 +3,18 @@
     <el-card class="box-card">
       <template #header>
         <div class="card-header">
-          <span>选择项目</span>
+          <span>收藏的 Tile</span>
         </div>
       </template>
-      <div>选择项目</div>
+      <div><canvas class="current-tile"></canvas></div>
     </el-card>
     <el-card class="box-card">
       <template #header>
         <div class="card-header">
-          <span>已经选择的 Tile</span>
+          <span>图层</span>
         </div>
       </template>
-      <div><canvas class="current-tile"></canvas></div>
+      <div></div>
     </el-card>
   </div>
 </template>
@@ -35,5 +35,8 @@ export default defineComponent({
   height: 400px;
   background-color: #56553f;
   margin-bottom: 18px;
+}
+.el-card {
+  margin-bottom: 10px;
 }
 </style>

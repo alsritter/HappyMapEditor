@@ -8,16 +8,16 @@
   <!-- <index-footer /> -->
 
   <el-container>
-    <el-header><index-header /></el-header>
+    <el-header height="50px"><index-header /></el-header>
     <el-container>
       <el-aside width="450px"><index-left-aside /></el-aside>
       <el-container>
-        <el-header height="20px">ces</el-header>
+        <el-header height="50px"><inline-header /></el-header>
         <el-main><router-view></router-view></el-main>
-        <el-footer><index-footer /></el-footer>
       </el-container>
       <el-aside width="300px"><index-right-aside /></el-aside>
     </el-container>
+    <el-footer><index-footer /></el-footer>
   </el-container>
 </template>
 
@@ -25,8 +25,8 @@
 import { defineComponent, onMounted, computed, onUpdated } from 'vue';
 // import { useStore } from 'vuex';
 import { useStore } from '@/mystore';
-import MainCanvas from './components/MainCanvas/MainCanvas.vue';
 import IndexHeader from '@/views/indexHeader/IndexHeader.vue';
+import InlineHeader from '@/views/indexHeader/inlineHeader/InlineHeader.vue';
 import IndexLeftAside from '@/views/indexAside/IndexLeftAside.vue';
 import IndexRightAside from '@/views/indexAside/IndexRightAside.vue';
 import IndexFooter from '@/views/indexFooter/IndexFooter.vue';
@@ -38,7 +38,8 @@ export default defineComponent({
     IndexHeader,
     IndexLeftAside,
     IndexRightAside,
-    IndexFooter
+    IndexFooter,
+    InlineHeader
   },
   setup() {
     const store = useStore();

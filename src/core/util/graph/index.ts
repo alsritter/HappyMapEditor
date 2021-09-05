@@ -1,7 +1,7 @@
 import canvasDraw from './canvas-draw';
 import canvasPoint from './canvas-point';
 import { Dictionary } from 'typescript-collections';
-import { Tile, Prefab, Block } from '@/store/modules/map/map.types';
+import { Tile, Prefab, Block } from '@/mystore/modules/map/map.state';
 
 export enum GridRuntimeType {
   GRID,

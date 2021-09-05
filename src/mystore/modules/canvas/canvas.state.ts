@@ -19,4 +19,4 @@ export interface ICanvasState {
   dragging: boolean;
 }
 
-export default CanvasState;
+export default ICanvasState;
