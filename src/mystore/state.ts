@@ -1,5 +1,7 @@
 import { reactive } from 'vue';
 import Constants from '@/core/util/Constants';
+import { Layer, ItemType } from '@/mystore/types';
+// modules
 import { ICanvasState } from '@/mystore/modules/canvas/canvas.state';
 import { IKeyboradState, prepareKeys } from '@/mystore/modules/keyboard/keyboard.state';
 import { IMapState, initBlocks, initItem } from '@/mystore/modules/map/map.state';
@@ -26,8 +28,19 @@ export const State: IState = {
   tile: {
     path: '',
     name: '',
-    desc: ''
-  }
+    desc: '',
+    index: 0
+  },
+  prefab: {
+    path: '',
+    name: '',
+    desc: '',
+    width: 0,
+    height: 0,
+    index: 0
+  },
+  itemType: ItemType.TILE,
+  currentLayer: Layer.FRONT
 };
 
 export function createState() {

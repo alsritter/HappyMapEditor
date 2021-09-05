@@ -11,7 +11,7 @@
     <el-card class="box-card">
       <template #header>
         <div class="card-header">
-          <span>图层</span>
+          <layer-select />
         </div>
       </template>
       <div></div>
@@ -21,8 +21,12 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import LayerSelect from '@/components/layerSelect/LayerSelect.vue';
 
 export default defineComponent({
+  components: {
+    LayerSelect
+  },
   setup() {
     return {};
   }

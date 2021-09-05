@@ -6,7 +6,7 @@ import { jumpTimedProcessArray, Task } from '@/core/util/process';
 import { CanvasEventShape } from '@/core/util/manipulate';
 import { useStore } from '@/mystore';
 
-enum DisplayLayer {
+enum Layer {
   FRONT = 'FRONT',
   MIDDLE = 'MIDDLE',
   BACKGROUND = 'BACKGROUND'
@@ -18,9 +18,9 @@ export default defineComponent({
     // 引用页面的画布
     const GRID_CANVAS = ref(null) as Ref<HTMLCanvasElement | null>;
     const canvasBox = {
-      [DisplayLayer.FRONT]: ref(null) as Ref<HTMLCanvasElement | null>,
-      [DisplayLayer.MIDDLE]: ref(null) as Ref<HTMLCanvasElement | null>,
-      [DisplayLayer.BACKGROUND]: ref(null) as Ref<HTMLCanvasElement | null>
+      [Layer.FRONT]: ref(null) as Ref<HTMLCanvasElement | null>,
+      [Layer.MIDDLE]: ref(null) as Ref<HTMLCanvasElement | null>,
+      [Layer.BACKGROUND]: ref(null) as Ref<HTMLCanvasElement | null>
     };
 
     const width = Constants.CANVAS_WIDTH;
@@ -88,7 +88,7 @@ export default defineComponent({
             size: store.state.canvasSize,
             x: store.state.initPoint.x,
             y: store.state.initPoint.y,
-            data: store.getters.getAllBlock(DisplayLayer.FRONT),
+            data: store.getters.getAllBlock(Layer.FRONT),
             items: store.getters.getItems(),
             gridType: GridRuntimeType.ALL
           },

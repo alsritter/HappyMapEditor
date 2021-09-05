@@ -2,7 +2,7 @@
  * 这里用于处理平面坐标相关的问题
  */
 
-import { Block } from '@/mystore/modules/map/map.state';
+import { Block } from '@/mystore/types';
 import Constants from '@/core/util/Constants';
 
 interface Point {

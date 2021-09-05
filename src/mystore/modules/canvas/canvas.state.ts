@@ -1,7 +1,4 @@
-export type Point = {
-  x: number;
-  y: number;
-};
+import { Point, Layer } from '@/mystore/types';
 
 export interface ICanvasState {
   /**
@@ -17,6 +14,11 @@ export interface ICanvasState {
    * 是否正在拖动
    */
   dragging: boolean;
+
+  /**
+   * 选中的图层
+   */
+  currentLayer: Layer;
 }
 
 export default ICanvasState;

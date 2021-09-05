@@ -1,6 +1,7 @@
 import { coordinateToBlockCoordinate } from '@/core/util/graph/canvas-point';
 import Constants from '@/core/util/Constants';
-import { DisplayLayer, IMapState } from './map.state';
+import { IMapState } from './map.state';
+import { Layer } from '@/mystore/types';
 
 /**
  * 根据坐标位置取得对应的 Block
@@ -10,20 +11,11 @@ import { DisplayLayer, IMapState } from './map.state';
  * @param layer 要取的图层
  */
 export function getBlockByCoordinate(state: IMapState) {
-  return (x: number, y: number, layer: DisplayLayer) => {
+  return (x: number, y: number, layer: Layer) => {
     const dictionary = state.blocks[layer];
     const size = Constants.BLOCK_SIZE;
     const tmpx = x - (x % size);
     const tmpy = y - (y % size);
-    // console.log(tmpx + '-' + tmpy);
-
-    // // 这里返回测试数据
-    // return {
-    //   x: tmpx,
-    //   y: tmpy,
-    //   size: 2,
-    //   data: [[]]
-    // };
     return dictionary.getValue(tmpx + '-' + tmpy);
   };
 }
@@ -33,7 +25,7 @@ export function getBlockByCoordinate(state: IMapState) {
  * @param layer 要取的图层
  */
 export function getAllBlock(state: IMapState) {
-  return (layer: DisplayLayer) => {
+  return (layer: Layer) => {
     return state.blocks[layer].values();
   };
 }
@@ -55,7 +47,7 @@ export function getItems(state: IMapState) {
  * @param layer 要取的图层
  */
 export function getTileOrPrefabByCoordinate(state: IMapState) {
-  return (x: number, y: number, layer: DisplayLayer) => {
+  return (x: number, y: number, layer: Layer) => {
     const dictionary = state.blocks[layer];
     const size = Constants.BLOCK_SIZE;
     const rx = x % size;

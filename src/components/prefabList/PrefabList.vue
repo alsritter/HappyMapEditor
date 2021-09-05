@@ -1,15 +1,17 @@
 <template>
   <div class="prefab-list">
-    <el-image v-for="item of items" :key="item.name" :src="item.path" :title="item.desc" fit="contain"></el-image>
+    <el-image v-for="item of items" :key="item.name" :src="item.path" :title="item.desc" fit="contain" @click="selectedPrefab(item)"></el-image>
   </div>
 </template>
 
 <script lang="ts">
+import { useStore } from '@/mystore';
 import axios from '@/network';
 import { defineComponent, ref } from 'vue';
 
 export default defineComponent({
   setup() {
+    const store = useStore();
     const items = ref([]) as any;
     axios.getData
       .getPrefabList()
@@ -20,7 +22,18 @@ export default defineComponent({
         console.error(error);
       });
 
-    return { items };
+    function selectedPrefab(prefab: any) {
+      store.action.currentPrefabModify({
+        index: prefab.index,
+        width: prefab.width,
+        height: prefab.height,
+        path: prefab.path,
+        name: prefab.name,
+        desc: prefab.desc
+      });
+    }
+
+    return { items, selectedPrefab };
   }
 });
 </script>

@@ -24,7 +24,12 @@ export default defineComponent({
       });
 
     function selectedTile(tile: any) {
-      store.action.currentTileModify(tile.index, tile.path, tile.name, tile.desc);
+      store.action.currentTileModify({
+        index: tile.index,
+        path: tile.path,
+        name: tile.name,
+        desc: tile.desc
+      });
     }
 
     return { items, selectedTile };

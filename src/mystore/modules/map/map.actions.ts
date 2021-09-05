@@ -1,4 +1,5 @@
-import { IMapState, Tile, Prefab } from './map.state';
+import { IMapState } from './map.state';
+import { Tile, Prefab } from '@/mystore/types';
 import Constants from '@/core/util/Constants';
 import { coordinateToBlockEndCoordinate, coordinateToBlockCoordinate } from '@/core/util/graph/canvas-point';
 

@@ -1,29 +1,29 @@
 <template>
   <div class="index-aside">
     <el-card class="selector-box">
-      <!-- <template #header>
-        <div class="card-header">
-          <span>选择 Tile</span>
-        </div>
-      </template> -->
-      <!-- <canvas class="tile-selector"></canvas> -->
       <el-tabs v-model="activeName" type="card">
         <el-tab-pane label="单砖块" name="tiles"><tile-list /></el-tab-pane>
         <el-tab-pane label="预制件" name="prefab"><prefab-list /></el-tab-pane>
       </el-tabs>
     </el-card>
     <el-card>
-      <template #header>
-        <div class="card-header">
-          <span>当前属性</span>
-        </div>
-      </template>
       <div>
         <el-divider>选中道具</el-divider>
-        <el-image :src="store.state.tile.path"></el-image>
-        <div>编号：{{ store.state.tile.index }}</div>
-        <div>名称：{{ store.state.tile.name }}</div>
-        <div>详情：{{ store.state.tile.desc }}</div>
+        <div v-if="store.state.itemType == 'TILE'">
+          <el-image :src="store.state.tile.path"></el-image>
+          <div>编号：{{ store.state.tile.index }}</div>
+          <div>名称：{{ store.state.tile.name }}</div>
+          <div>详情：{{ store.state.tile.desc }}</div>
+        </div>
+        <div v-else>
+          <el-image :src="store.state.prefab.path"></el-image>
+          <div>编号：{{ store.state.prefab.index }}</div>
+          <div>名称：{{ store.state.prefab.name }}</div>
+          <div>详情：{{ store.state.prefab.desc }}</div>
+          <div>宽度：{{ store.state.prefab.width }}</div>
+          <div>高度：{{ store.state.prefab.height }}</div>
+        </div>
+
         <el-divider>画布属性</el-divider>
         <span>x: {{ store.state.initPoint.x }}-</span>
         <span>y: {{ store.state.initPoint.y }}</span>

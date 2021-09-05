@@ -1,8 +1,15 @@
 import { IState } from './state';
-import { canvasUpdateSize, canvasUpdatePoint, canvasInit_X, canvasInit_Y, canvasModifyDragState } from '@/mystore/modules/canvas/canvas.actions';
+import {
+  canvasUpdateSize,
+  canvasUpdatePoint,
+  canvasInit_X,
+  canvasInit_Y,
+  canvasModifyDragState,
+  canvasCurrentLayer
+} from '@/mystore/modules/canvas/canvas.actions';
 import { keyboardKeyDown, keyboardKeyUp, keyboardRefresh } from '@/mystore/modules/keyboard/keyboard.actions';
 import { mapModifyPoint } from '@/mystore/modules/map/map.actions';
-import { currentTileModify } from '@/mystore/modules/currentItem/item.actions';
+import { currentTileModify, currentPrefabModify } from '@/mystore/modules/currentItem/item.actions';
 
 /**
  * 创建Action
@@ -15,6 +22,7 @@ export function createAction(state: IState) {
     canvasModifyDragState: canvasModifyDragState(state),
     canvasUpdateSize: canvasUpdateSize(state),
     canvasUpdatePoint: canvasUpdatePoint(state),
+    canvasCurrentLayer: canvasCurrentLayer(state),
     //
     keyboardKeyDown: keyboardKeyDown(state),
     keyboardKeyUp: keyboardKeyUp(state),
@@ -22,6 +30,7 @@ export function createAction(state: IState) {
     //
     mapModifyPoint: mapModifyPoint(state),
     //
-    currentTileModify: currentTileModify(state)
+    currentTileModify: currentTileModify(state),
+    currentPrefabModify: currentPrefabModify(state)
   };
 }

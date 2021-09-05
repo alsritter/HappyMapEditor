@@ -1,10 +1,18 @@
 import { IItemState } from './item.state';
+import { ItemType, ICurrentTile, ICurrentPrefab } from '@/mystore/types';
 
 export function currentTileModify(state: IItemState) {
-  return (index: number, path: string, name: string, desc: string) => {
-    state.tile.path = path;
-    state.tile.name = name;
-    state.tile.desc = desc;
-    state.tile.index = index;
+  return (tile: ICurrentTile) => {
+    state.tile = tile;
+    // 修改模式
+    state.itemType = ItemType.TILE;
+  };
+}
+
+export function currentPrefabModify(state: IItemState) {
+  return (prefab: ICurrentPrefab) => {
+    state.prefab = prefab;
+
+    state.itemType = ItemType.PREFAB;
   };
 }

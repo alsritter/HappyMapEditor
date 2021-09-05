@@ -1,4 +1,5 @@
-import { Point, ICanvasState } from './canvas.state';
+import { ICanvasState } from './canvas.state';
+import { Point, Layer } from '@/mystore/types';
 
 export function canvasUpdateSize(state: ICanvasState) {
   return (nSize: number) => {
@@ -27,5 +28,11 @@ export function canvasInit_Y(state: ICanvasState) {
 export function canvasModifyDragState(state: ICanvasState) {
   return (isDrag: boolean) => {
     state.dragging = isDrag;
+  };
+}
+
+export function canvasCurrentLayer(state: ICanvasState) {
+  return (layer: Layer) => {
+    state.currentLayer = layer;
   };
 }
