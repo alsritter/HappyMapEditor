@@ -71,20 +71,11 @@ export const timedProcessArray = <T>(items: Array<T>, process: (item: T | undefi
 /**
  * 根据运行时间分配，这个主要用来做绘图任务的缓存，它和 timedProcessArray 的区别就是，它只保留最后两帧，
  *
- * ====所以适合绘制网格这种不重要的任务调用====
- *
- * 例如运行一个千万级别的运算总任务，不直接确定分配为多少个子任务，或者分配的颗粒度比较小，
- * 在每一个或几个计算完成后，查看此段运算消耗的时间，如果时间小于某个临界值，比如 10ms，
- * 那么就继续进行运算，否则就暂停，等到下一个轮询再进行进行
- *
- * 优点是避免了第一种情况出现的问题，缺点是多出了一个时间比较的运算，额外的运算过程也可能影响到性能
- *
  * @param items This is a queue of parameter objects, each parameter representing a task
  * @param process The callback function that executes the task
  * @param callback Callback function called when all tasks have completed
  */
 export const jumpTimedProcessArray = (items: Array<Task>, process: (item: Task | undefined) => void, callback: (items: Array<Task>) => void): void => {
-  // const todo = items.concat();
   const todo = items;
   // Only if there are no more tasks in the queue (Max cache 2 frames)
   if (todo.length < 3) {
@@ -95,7 +86,6 @@ export const jumpTimedProcessArray = (items: Array<Task>, process: (item: Task |
         const item = todo.shift();
 
         process(item);
-        // console.log('当前优先级', item?.priority, '当前队列长度：', items.length);
         if (todo.length > 3) {
           // Just keep the last 3 frames
           todo.splice(0, todo.length - 3);

@@ -67,9 +67,8 @@ export default class CanvasEventShape {
   /**
    * 初始事件
    */
-  InitCanvasEvent = (canvasDOM: HTMLCanvasElement): void => {
+  initCanvasEvent = (canvasDOM: HTMLCanvasElement): void => {
     this.drawCanvas(canvasDOM);
-
     canvasDOM.onmouseup = null;
     canvasDOM.onmousemove = null;
     canvasDOM.onmouseout = null;
