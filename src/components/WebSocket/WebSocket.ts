@@ -5,7 +5,6 @@ import { SocketClient } from '@/core/util/net/websocket';
 export default defineComponent({
   setup() {
     // 服务器返回的数据
-
     bus.on('sendData', (data) => {
       console.log(data);
     });

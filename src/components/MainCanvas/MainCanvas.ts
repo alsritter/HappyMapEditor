@@ -1,9 +1,7 @@
-import { defineComponent, ref, onMounted, watch, Ref } from 'vue';
+import { defineComponent, ref, onMounted, Ref } from 'vue';
 import bus from '@/core/util/bus';
 import Constants from '@/core/util/Constants';
-import { canvasDraw, isAllParamType, isGridParamType, GridRuntimeType } from '@/core/util/graph';
-import { jumpTimedProcessArray, Task } from '@/core/util/process';
-import { CanvasEventShape } from '@/core/util/manipulate';
+import { CanvasEventShape, DrawEventShape } from '@/core/util/manipulate';
 import { useStore } from '@/mystore';
 import { Layer } from '@/mystore/types';
 
@@ -21,7 +19,27 @@ export default defineComponent({
     const width = Constants.CANVAS_WIDTH;
     const height = Constants.CANVAS_HEIGHT;
     // The starting position of the current coordinate
-    const canvasEvent = new CanvasEventShape();
+
+    /**
+     * 放大缩小画布
+     */
+    function scrollBarWheel(event: WheelEventInit): void {
+      if (event.deltaY == undefined) return;
+      const size = store.state.canvasSize;
+      if (event.deltaY < 0) {
+        if (size > Constants.MAX_SIZE) return;
+        //上滚
+        store.action.canvasUpdateSize(size + 1);
+      } else if (event.deltaY > 0) {
+        //下滚
+        if (size < Constants.MIN_SIZE) return;
+        store.action.canvasUpdateSize(size - 1);
+      } else {
+        console.error('Mouse wheel zooming in and out status acquisition failed!');
+      }
+
+      bus.emit('refreshCanvas');
+    }
 
     onMounted(() => {
       const gridElement = GRID_CANVAS.value as unknown as HTMLCanvasElement;
@@ -33,84 +51,11 @@ export default defineComponent({
       const frontCtx = frontElement.getContext('2d') as CanvasRenderingContext2D;
       const middleCtx = middleElement.getContext('2d') as CanvasRenderingContext2D;
       const backgroundCtx = backgroundElement.getContext('2d') as CanvasRenderingContext2D;
-
-      canvasEvent.initCanvasEvent(gridElement);
-      canvasDraw.drawGrid({
-        ctx: gridCtx,
-        width,
-        height,
-        size: store.state.canvasSize,
-        x: store.state.initPoint.x,
-        y: store.state.initPoint.y,
-        gridType: GridRuntimeType.GRID
-      });
-
-      // Listen for keyboard events
-      watch(
-        () => store.getters.isAlt(),
-        (newValue, oldValue) => {
-          if (newValue) {
-            canvasEvent.dragCanvas(gridElement);
-          } else {
-            canvasEvent.initCanvasEvent(gridElement);
-          }
-        }
-      );
-
-      // Draw the queue
-      const graphGridQueues = new Array<Task>();
-
-      bus.on('refreshCanvas', () => {
-        // 绘制网格的操作入队
-        graphGridQueues.push({
-          data: {
-            ctx: gridCtx,
-            width,
-            height,
-            size: store.state.canvasSize,
-            x: store.state.initPoint.x,
-            y: store.state.initPoint.y,
-            gridType: GridRuntimeType.GRID
-          },
-          priority: 0
-        });
-
-        // 绘制格子数据入队
-        graphGridQueues.push({
-          data: {
-            ctx: frontCtx,
-            width,
-            height,
-            size: store.state.canvasSize,
-            x: store.state.initPoint.x,
-            y: store.state.initPoint.y,
-            data: store.getters.getAllBlock(Layer.FRONT),
-            items: store.getters.getItems(),
-            gridType: GridRuntimeType.ALL
-          },
-          priority: 1
-        });
-
-        // 执行任务
-        jumpTimedProcessArray(
-          graphGridQueues,
-          (item) => {
-            if (item == undefined) return;
-            // Clear the entire canvas
-            canvasDraw.clearAllCanvas(frontCtx, width, height);
-            if (isAllParamType(item.data)) {
-              canvasDraw.drawAllItem(item.data);
-            } else if (isGridParamType(item.data)) {
-              canvasDraw.drawGrid(item.data);
-            }
-          },
-          () => {
-            // console.log('任务完成');
-          }
-        );
-      });
+      // Initialization event
+      new CanvasEventShape(gridElement);
+      new DrawEventShape(gridElement, frontCtx, middleCtx, backgroundCtx);
     });
 
-    return { ...canvasBox, GRID_CANVAS, width, height, scrollBarWheel: canvasEvent.scrollBarWheel };
+    return { ...canvasBox, GRID_CANVAS, width, height, scrollBarWheel };
   }
 });

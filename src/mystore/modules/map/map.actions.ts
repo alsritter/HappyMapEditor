@@ -1,50 +1,44 @@
 import { IMapState } from './map.state';
-import { Tile, Prefab } from '@/mystore/types';
-import Constants from '@/core/util/Constants';
-import { coordinateToBlockEndCoordinate, coordinateToBlockCoordinate } from '@/core/util/graph/canvas-point';
+import { Point, Tile } from '@/mystore/types';
+import { SortedMap } from 'sweet-collections';
 
-export function mapModifyPoint(state: IMapState) {
-  return (payload: { x: number; y: number; data: Tile | Prefab }) => {
-    // 类型检查，这个参数只有 Tile 才有
-    if ('tileSpriteId' in payload.data) {
-      const tile = payload.data;
-      const dictionary = state.blocks[tile.displayModel];
-      const x = payload.x;
-      const y = payload.y;
-      const size = Constants.BLOCK_SIZE;
-
-      const endPoint = coordinateToBlockEndCoordinate(size, x, y);
-
-      // console.log('x-y', x, y);
-      // console.log('rx-ry', rx, ry);
-      // console.log(endPoint.x + '-' + endPoint.y);
-
-      let block = dictionary.getValue(endPoint.x + '-' + endPoint.y);
-
-      // 如果不存在则需要创建一个
-      if (typeof block === 'undefined') {
-        const tmpData = Array.from(Array(size), () => {
-          const arr = new Array(size);
-          arr.fill(-1);
-          return arr;
-        });
-
-        const tmpBlock = {
-          x: endPoint.x,
-          y: endPoint.y,
-          size: size,
-          data: tmpData
-        };
-
-        dictionary.setValue(endPoint.x + '-' + endPoint.y, tmpBlock);
-
-        block = tmpBlock;
-      }
-
-      state.items.setValue(tile.id, tile);
-      const map = block.data;
-      const inPoint = coordinateToBlockCoordinate(size, x, y);
-      map[inPoint.y][inPoint.x] = tile.id;
+/**
+ * 添加 Tile
+ */
+export function mapAddTile(state: IMapState) {
+  return (tile: Tile, point: Point) => {
+    // 先检查是否存在这个 Tile
+    const cacheTile = state.tileInstancesCache.get(tile.data.index);
+    if (!state.mapTiles.has(point.y)) {
+      state.mapTiles.set(point.y, new SortedMap<number, Tile>((a: number, b: number) => a - b));
     }
+    const xStore = state.mapTiles.get(point.y);
+    if (cacheTile == undefined) {
+      // 先插入缓存
+      state.tileInstancesCache.set(tile.data.index, tile.data);
+      xStore?.set(point.x, tile);
+    } else {
+      tile.data = cacheTile;
+      xStore?.set(point.x, tile);
+    }
+  };
+}
+
+/**
+ * 删除指定位置的 Tile
+ */
+export function mapDeleteTile(state: IMapState) {
+  return (point: Point) => {
+    if (!state.mapTiles.has(point.y)) {
+      return;
+    }
+
+    const xStore = state.mapTiles.get(point.y);
+    if (xStore?.size == 0) {
+      state.mapTiles.delete(point.y);
+      return;
+    }
+
+    xStore?.delete(point.x);
   };
 }

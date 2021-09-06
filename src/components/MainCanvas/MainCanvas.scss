@@ -14,17 +14,17 @@
     z-index: 3;
   }
   #FRONT {
-    border: 1px solid black;
+    // border: 1px solid black;
     @extend .canvaseffect;
     z-index: 2;
   }
   #MIDDLE {
-    border: 2px solid rgb(204, 110, 110);
+    // border: 2px solid rgb(204, 110, 110);
     @extend .canvaseffect;
     z-index: 1;
   }
   #BACKGROUND {
-    border: 3px solid rgb(20, 168, 87);
+    // border: 3px solid rgb(20, 168, 87);
     @extend .canvaseffect;
     z-index: 0;
     background-color: rgb(205, 214, 211);

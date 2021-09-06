@@ -8,7 +8,7 @@ import {
   canvasCurrentLayer
 } from '@/mystore/modules/canvas/canvas.actions';
 import { keyboardKeyDown, keyboardKeyUp, keyboardRefresh } from '@/mystore/modules/keyboard/keyboard.actions';
-import { mapModifyPoint } from '@/mystore/modules/map/map.actions';
+import { mapAddTile, mapDeleteTile } from '@/mystore/modules/map/map.actions';
 import { currentTileModify, currentPrefabModify } from '@/mystore/modules/currentItem/item.actions';
 
 /**
@@ -28,7 +28,9 @@ export function createAction(state: IState) {
     keyboardKeyUp: keyboardKeyUp(state),
     keyboardRefresh: keyboardRefresh(state),
     //
-    mapModifyPoint: mapModifyPoint(state),
+    // mapModifyPoint: mapModifyPoint(state),
+    mapAddTile: mapAddTile(state),
+    mapDeleteTile: mapDeleteTile(state),
     //
     currentTileModify: currentTileModify(state),
     currentPrefabModify: currentPrefabModify(state)

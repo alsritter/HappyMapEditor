@@ -1,10 +1,10 @@
 import { reactive } from 'vue';
 import Constants from '@/core/util/Constants';
-import { Layer, ItemType } from '@/mystore/types';
+import { Layer, ItemType, TileData } from '@/mystore/types';
 // modules
 import { ICanvasState } from '@/mystore/modules/canvas/canvas.state';
 import { IKeyboradState, prepareKeys } from '@/mystore/modules/keyboard/keyboard.state';
-import { IMapState, initBlocks, initItem } from '@/mystore/modules/map/map.state';
+import { IMapState, initMap } from '@/mystore/modules/map/map.state';
 import { IItemState } from '@/mystore/modules/currentItem/item.state';
 
 /**
@@ -22,8 +22,7 @@ export const State: IState = {
   //
   keys: prepareKeys(),
   //
-  blocks: initBlocks(),
-  items: initItem(),
+  mapTiles: initMap(),
   //
   tile: {
     path: '',
@@ -40,7 +39,8 @@ export const State: IState = {
     index: 0
   },
   itemType: ItemType.TILE,
-  currentLayer: Layer.FRONT
+  currentLayer: Layer.FRONT,
+  tileInstancesCache: new Map<number, TileData>()
 };
 
 export function createState() {

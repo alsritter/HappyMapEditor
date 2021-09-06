@@ -1,6 +1,6 @@
 import { IState } from './state';
 import { selectKeys, selectPressedKeys, isRecall, isAlt } from '@/mystore/modules/keyboard/keyboard.getters';
-import { getBlockByCoordinate, getAllBlock, getItems, getTileOrPrefabByCoordinate } from '@/mystore/modules/map/map.getters';
+import { getTileByPoint, getTileRange, buildTile } from '@/mystore/modules/map/map.getters';
 
 export function createGetter(state: IState) {
   return {
@@ -9,9 +9,13 @@ export function createGetter(state: IState) {
     isRecall: isRecall(state),
     isAlt: isAlt(state),
     //
-    getBlockByCoordinate: getBlockByCoordinate(state),
-    getAllBlock: getAllBlock(state),
-    getItems: getItems(state),
-    getTileOrPrefabByCoordinate: getTileOrPrefabByCoordinate(state)
+    // getBlockByCoordinate: getBlockByCoordinate(state),
+    // getAllBlock: getAllBlock(state),
+    // getItems: getItems(state),
+    // getTileOrPrefabByCoordinate: getTileOrPrefabByCoordinate(state)
+
+    buildTile: buildTile(state),
+    getTileRange: getTileRange(state),
+    getTileByPoint: getTileByPoint(state)
   };
 }

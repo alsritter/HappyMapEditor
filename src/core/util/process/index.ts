@@ -1,3 +1,5 @@
+import { Tile, Layer } from '@/mystore/types';
+
 /**
  * 根据任务总量分配
  * 例如进行一个千万级别的运算总任务，可以将其分解为 10 个百万级别的运算小任务
@@ -15,12 +17,8 @@ export const processArray = <T>(items: Array<T>, process: (item: T | undefined) 
   if (todo.length < 2) {
     // 为了避免一直复制，这里应该使用内部函数的递归
     setTimeout(function fun() {
-      // shift 方法，删除数组中的第一个元素并返回它。如果数组为空，则返回 undefined，并且不修改数组。
       process(todo.shift());
       if (todo.length > 0) {
-        // 将当前正在执行的函数本身再次使用定时器
-        // 本来这里可以直接使用 arguments.callee 的，但是严格模式下用不了，所以这里通过调用这个 fun 来代替
-        // 注意：arguments 该对象代表正在执行的函数和调用它的函数的参数，而 caller 返回一个对函数的引用，该函数调用了当前函数。
         setTimeout(fun, 25);
       } else {
         callback(items);
@@ -45,18 +43,13 @@ export const processArray = <T>(items: Array<T>, process: (item: T | undefined) 
  * @param callback 全部任务执行完成时调用的回调函数
  */
 export const timedProcessArray = <T>(items: Array<T>, process: (item: T | undefined) => void, callback: (items: Array<T>) => void): void => {
-  // const todo = items.concat();
   const todo = items;
-  // 只有队列里面没有任务了才再次执行(这里最大缓存 2 帧)
   if (todo.length < 3) {
     setTimeout(function fun() {
-      // 开始计时
-      const start = +new Date(); // JavaScript 中可以在某个元素前使用 ‘+’ 号，这个操作是将该元素转换成 Number 类型
+      const start = +new Date();
       // 如果单个数据处理时间小于 50ms ，则无需分解任务
-
       do {
         process(todo.shift());
-        // console.log(+new Date() - start, todo.length); // 打印任务执行时间以及任务队列堆积的任务数量
       } while (todo.length && +new Date() - start < 50);
 
       if (todo.length > 0) {
@@ -80,8 +73,7 @@ export const jumpTimedProcessArray = (items: Array<Task>, process: (item: Task |
   // Only if there are no more tasks in the queue (Max cache 2 frames)
   if (todo.length < 3) {
     setTimeout(function fun() {
-      const start = +new Date(); // JavaScript can use a '+' sign in front of an element, which converts the element to type Number
-      // If the processing time of a single data is less than 50ms, it do not need to decompose the task
+      const start = +new Date();
       do {
         const item = todo.shift();
 
@@ -103,11 +95,18 @@ export const jumpTimedProcessArray = (items: Array<Task>, process: (item: Task |
   }
 };
 
-/**
- * In the jumpTimedProcessArray method, higher-priority projects are executed as best they can
- */
 export type Task = {
-  data: any;
+  data: {
+    frontCtx: CanvasRenderingContext2D;
+    middleCtx: CanvasRenderingContext2D;
+    backgroundCtx: CanvasRenderingContext2D;
+    size: number;
+    initX: number;
+    initY: number;
+    width: number;
+    height: number;
+    tiles: Tile[];
+  };
   priority: number;
 };
 
