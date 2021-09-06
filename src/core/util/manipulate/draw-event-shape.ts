@@ -1,6 +1,6 @@
 import bus from '@/core/util/bus';
 import { canvasDraw, canvasPoint } from '@/core/util/graph';
-import { Layer, Point, Tile } from '@/mystore/types';
+import { Layer, Point, Tile, TileData } from '@/mystore/types';
 import { jumpTimedProcessArray, Task } from '@/core/util/process';
 import { useStore } from '@/mystore';
 import Constants from '@/core/util/Constants';
@@ -38,14 +38,22 @@ export default class DrawEventShape {
    */
   initDraw() {
     const gridCtx = this.gridElement.getContext('2d') as CanvasRenderingContext2D;
-    canvasDraw.drawGrid(gridCtx, this.width, this.height, Constants.DEFAULT_SIZE, this.store.state.initPoint.x, this.store.state.initPoint.y);
+    canvasDraw.drawGrid(
+      gridCtx,
+      this.width,
+      this.height,
+      Constants.DEFAULT_SIZE,
+      this.store.state.initPoint.x,
+      this.store.state.initPoint.y,
+      this.store.state.showGrid,
+      this.store.state.showAxis
+    );
   }
 
   handleDrawTileEvent() {
-    bus.on('drawTile', (data) => {
+    bus.on('pen', (data) => {
       const point = data as Point;
-      const tile = this.store.getters.buildTile(point);
-      this.store.action.mapAddTile(tile, point);
+      const tile = this.store.action.mapAddTile(point);
       const layer = this.store.state.currentLayer;
       switch (layer) {
         case Layer.FRONT:
@@ -56,6 +64,42 @@ export default class DrawEventShape {
           break;
         case Layer.BACKGROUND:
           this.drawTile(tile, this.backgroundCtx);
+          break;
+      }
+    });
+
+    bus.on('eraser', (data) => {
+      const point = data as Point;
+      this.store.action.mapDeleteTile(point);
+      const layer = this.store.state.currentLayer;
+      switch (layer) {
+        case Layer.FRONT:
+          this.deleteTile(point, this.frontCtx);
+          break;
+        case Layer.MIDDLE:
+          this.deleteTile(point, this.backgroundCtx);
+          break;
+        case Layer.BACKGROUND:
+          this.deleteTile(point, this.backgroundCtx);
+          break;
+      }
+      bus.emit('refreshCanvas');
+    });
+
+    bus.on('areaPen', (data) => {
+      const start = data.start as Point;
+      const end = data.end as Point;
+      const tileData = this.store.action.mapAddAreaTile(start, end);
+      const layer = this.store.state.currentLayer;
+      switch (layer) {
+        case Layer.FRONT:
+          this.drawAreaTile(tileData as TileData, start, end, this.frontCtx);
+          break;
+        case Layer.MIDDLE:
+          this.drawAreaTile(tileData as TileData, start, end, this.backgroundCtx);
+          break;
+        case Layer.BACKGROUND:
+          this.drawAreaTile(tileData as TileData, start, end, this.backgroundCtx);
           break;
       }
     });
@@ -71,26 +115,35 @@ export default class DrawEventShape {
       this.store.state.initPoint.y,
       tile.point.x,
       tile.point.y,
-      tile
+      tile.data
     );
+  }
+
+  private drawAreaTile(data: TileData, start: Point, end: Point, ctx: CanvasRenderingContext2D) {
+    canvasDraw.drawAreaItem(
+      ctx,
+      this.width,
+      this.height,
+      this.store.state.canvasSize,
+      this.store.state.initPoint.x,
+      this.store.state.initPoint.y,
+      start,
+      end,
+      data
+    );
+  }
+
+  private deleteTile(point: Point, ctx: CanvasRenderingContext2D) {
+    canvasDraw.clearCanvasPoint(ctx, this.store.state.initPoint.x, this.store.state.initPoint.y, point, this.store.state.canvasSize);
   }
 
   handleRefreshCanvas() {
     bus.on('refreshCanvas', () => {
-      const startPoint = canvasPoint.canvasPixToCoordinate(this.store.state.canvasSize, this.store.state.initPoint.x, this.store.state.initPoint.y, 0, 0);
-      const endPoint = canvasPoint.canvasPixToCoordinate(
-        this.store.state.canvasSize,
-        this.store.state.initPoint.x,
-        this.store.state.initPoint.y,
-        this.width,
-        this.height
-      );
-      const tiles = this.store.getters.getTileRange(startPoint, endPoint) as Tile[];
-      this.addTask(tiles);
+      this.addTask();
     });
   }
 
-  private addTask(tiles: Tile[]) {
+  private addTask() {
     // Draw the queue
     const queues = new Array<Task>();
     // 绘制格子数据入队
@@ -103,8 +156,7 @@ export default class DrawEventShape {
         initX: this.store.state.initPoint.x,
         initY: this.store.state.initPoint.y,
         width: this.width,
-        height: this.height,
-        tiles
+        height: this.height
       },
       priority: 1
     });
@@ -114,8 +166,27 @@ export default class DrawEventShape {
       queues,
       (item) => {
         if (item == undefined) return;
+        const startPoint = canvasPoint.canvasPixToCoordinate(this.store.state.canvasSize, this.store.state.initPoint.x, this.store.state.initPoint.y, -50, -50);
+        const endPoint = canvasPoint.canvasPixToCoordinate(
+          this.store.state.canvasSize,
+          this.store.state.initPoint.x,
+          this.store.state.initPoint.y,
+          this.width + 50,
+          this.height + 50
+        );
+        const tiles = this.store.getters.getTileRange(startPoint, endPoint) as Tile[];
+
         const gridCtx = this.gridElement.getContext('2d') as CanvasRenderingContext2D;
-        canvasDraw.drawGrid(gridCtx, this.width, this.height, this.store.state.canvasSize, this.store.state.initPoint.x, this.store.state.initPoint.y);
+        canvasDraw.drawGrid(
+          gridCtx,
+          this.width,
+          this.height,
+          this.store.state.canvasSize,
+          this.store.state.initPoint.x,
+          this.store.state.initPoint.y,
+          this.store.state.showGrid,
+          this.store.state.showAxis
+        );
         canvasDraw.drawAllItem(
           item.data.frontCtx,
           item.data.middleCtx,
@@ -125,7 +196,7 @@ export default class DrawEventShape {
           item.data.initY,
           item.data.width,
           item.data.height,
-          item.data.tiles
+          tiles
         );
       },
       () => {

@@ -36,3 +36,15 @@ export function canvasCurrentLayer(state: ICanvasState) {
     state.currentLayer = layer;
   };
 }
+
+export function canvasShowGrid(state: ICanvasState) {
+  return (isShow: boolean) => {
+    state.showGrid = isShow;
+  };
+}
+
+export function canvasShowAxis(state: ICanvasState) {
+  return (isShow: boolean) => {
+    state.showAxis = isShow;
+  };
+}

@@ -5,11 +5,13 @@ import {
   canvasInit_X,
   canvasInit_Y,
   canvasModifyDragState,
-  canvasCurrentLayer
+  canvasCurrentLayer,
+  canvasShowGrid,
+  canvasShowAxis
 } from '@/mystore/modules/canvas/canvas.actions';
 import { keyboardKeyDown, keyboardKeyUp, keyboardRefresh } from '@/mystore/modules/keyboard/keyboard.actions';
-import { mapAddTile, mapDeleteTile } from '@/mystore/modules/map/map.actions';
-import { currentTileModify, currentPrefabModify } from '@/mystore/modules/currentItem/item.actions';
+import { mapAddTile, mapDeleteTile, mapAddAreaTile } from '@/mystore/modules/map/map.actions';
+import { currentTileModify, currentPrefabModify, currentTool } from '@/mystore/modules/currentItem/item.actions';
 
 /**
  * 创建Action
@@ -23,16 +25,19 @@ export function createAction(state: IState) {
     canvasUpdateSize: canvasUpdateSize(state),
     canvasUpdatePoint: canvasUpdatePoint(state),
     canvasCurrentLayer: canvasCurrentLayer(state),
+    canvasShowGrid: canvasShowGrid(state),
+    canvasShowAxis: canvasShowAxis(state),
     //
     keyboardKeyDown: keyboardKeyDown(state),
     keyboardKeyUp: keyboardKeyUp(state),
     keyboardRefresh: keyboardRefresh(state),
     //
-    // mapModifyPoint: mapModifyPoint(state),
     mapAddTile: mapAddTile(state),
     mapDeleteTile: mapDeleteTile(state),
+    mapAddAreaTile: mapAddAreaTile(state),
     //
     currentTileModify: currentTileModify(state),
-    currentPrefabModify: currentPrefabModify(state)
+    currentPrefabModify: currentPrefabModify(state),
+    currentTool: currentTool(state)
   };
 }

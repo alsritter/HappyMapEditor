@@ -40,15 +40,6 @@ export function getTileRange(state: IMapState) {
 }
 
 /**
- * 构建一个 Tile
- */
-export function buildTile(state: IState) {
-  return (point: Point) => {
-    return new Tile(point, state.currentLayer, new TileData(state.tile.path, state.tile.index));
-  };
-}
-
-/**
  * 用于二分查找一个范围
  */
 function binarySearch(array: number[], min: number, max: number) {

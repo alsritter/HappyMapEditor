@@ -1,6 +1,6 @@
 import { reactive } from 'vue';
 import Constants from '@/core/util/Constants';
-import { Layer, ItemType, TileData } from '@/mystore/types';
+import { Layer, ItemType, TileData, ToolType } from '@/mystore/types';
 // modules
 import { ICanvasState } from '@/mystore/modules/canvas/canvas.state';
 import { IKeyboradState, prepareKeys } from '@/mystore/modules/keyboard/keyboard.state';
@@ -19,10 +19,13 @@ export const State: IState = {
     y: 0
   },
   dragging: false,
+  showGrid: true,
+  showAxis: true,
   //
   keys: prepareKeys(),
   //
   mapTiles: initMap(),
+  tileInstancesCache: new Map<number, TileData>(),
   //
   tile: {
     path: '',
@@ -40,7 +43,7 @@ export const State: IState = {
   },
   itemType: ItemType.TILE,
   currentLayer: Layer.FRONT,
-  tileInstancesCache: new Map<number, TileData>()
+  currentTool: ToolType.PEN
 };
 
 export function createState() {

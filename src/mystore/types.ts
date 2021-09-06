@@ -65,32 +65,15 @@ export interface ICurrentPrefab {
   height: number;
 }
 
-// /**
-//  * 区块
-//  * size 表示一个区块的宽高，这个块不要使用稀疏数组
-//  * 这个存储块大小确定下来就不能随便改了，它的大小位于常量那里
-//  */
-// export interface Block {
-//   /**
-//    * Block X 终点坐标
-//    */
-//   x: number;
-//   /**
-//    * Block Y 终点坐标
-//    */
-//   y: number;
-//   size: number;
-//   data: number[][];
-// }
-
-// // 这里存储块应该使用字典，根据 'x-y' 这个位置组合 key  取出块，所以需要对取的坐标规格化
-// export interface IBlocks {
-//   [Layer.FRONT]: Dictionary<string, Block>;
-//   [Layer.MIDDLE]: Dictionary<string, Block>;
-//   [Layer.BACKGROUND]: Dictionary<string, Block>;
-// }
-
 export enum ItemType {
   TILE = 'TILE',
   PREFAB = 'PREFAB'
+}
+
+export enum ToolType {
+  PEN = 'PEN',
+  ERASER = 'ERASER',
+  PIPETA = 'PIPETA',
+  AREA_PEN = 'AREA_PEN',
+  AREA_ERASER = 'AREA_ERASER'
 }

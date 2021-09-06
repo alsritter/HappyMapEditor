@@ -19,6 +19,16 @@ export interface ICanvasState {
    * 选中的图层
    */
   currentLayer: Layer;
+
+  /**
+   * 显示网格
+   */
+  showGrid: boolean;
+
+  /**
+   * 显示轴线
+   */
+  showAxis: boolean;
 }
 
 export default ICanvasState;

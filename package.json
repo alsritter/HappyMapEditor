@@ -11,7 +11,7 @@
     "element-plus": "^1.1.0-beta.8",
     "mitt": "^2.1.0",
     "sweet-collections": "^1.0.3",
-    "typescript-collections": "^1.3.3",
+    "ts-treemap": "^1.1.0",
     "vue": "^3.2.8",
     "vue-router": "^4.0.8",
     "vuex": "^4.0.0"
