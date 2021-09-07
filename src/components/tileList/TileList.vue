@@ -1,6 +1,6 @@
 <template>
   <div class="tile-list">
-    <el-image v-for="item of items" :key="item.name" :src="item.path" :title="item.desc" lazy @click="selectedTile(item)"></el-image>
+    <el-image v-for="item of items" :key="item.name" :src="item.path" :title="item.desc" lazy @click="selectedTile($event, item)" @load="loadImage"></el-image>
   </div>
 </template>
 
@@ -23,16 +23,22 @@ export default defineComponent({
         console.error(error);
       });
 
-    function selectedTile(tile: any) {
+    function selectedTile(event: Event, tile: any) {
+      console.log(event.target);
       store.action.currentTileModify({
         index: tile.index,
         path: tile.path,
         name: tile.name,
-        desc: tile.desc
+        desc: tile.desc,
+        image: event.target as HTMLImageElement
       });
     }
 
-    return { items, selectedTile };
+    function loadImage(event: Event) {
+      // console.log(event.target);
+    }
+
+    return { items, selectedTile, loadImage };
   }
 });
 </script>

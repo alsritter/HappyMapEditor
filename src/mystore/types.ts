@@ -13,14 +13,14 @@ export enum Layer {
  * 这个是把通用的数据提取出来
  */
 export class TileData {
-  path: string;
+  image: HTMLImageElement | null;
   index: number;
   color: string;
   effectKeys: number[];
   tags: number[];
 
-  constructor(path: string, index: number, color: string = '#FFF', effectKeys: number[] = [], tags: number[] = []) {
-    this.path = path;
+  constructor(index: number, image: HTMLImageElement | null = null, color: string = '#5d9bbf2e', effectKeys: number[] = [], tags: number[] = []) {
+    this.image = image;
     this.index = index;
     this.color = color;
     this.effectKeys = effectKeys;
@@ -54,6 +54,7 @@ export interface ICurrentTile {
   name: string;
   desc: string;
   index: number;
+  image: HTMLImageElement | null;
 }
 
 export interface ICurrentPrefab {

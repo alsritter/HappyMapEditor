@@ -41,6 +41,56 @@ export default defineComponent({
       store.action.currentTool(value as ToolType);
     });
 
+    watch(
+      () => store.getters.isDown_B(),
+      (newValue) => {
+        if (newValue) {
+          store.action.currentTool(ToolType.PEN);
+          brush.value = 'PEN';
+        }
+      }
+    );
+
+    watch(
+      () => store.getters.isDown_E(),
+      (newValue) => {
+        if (newValue) {
+          store.action.currentTool(ToolType.ERASER);
+          brush.value = 'ERASER';
+        }
+      }
+    );
+
+    watch(
+      () => store.getters.isDown_F(),
+      (newValue) => {
+        if (newValue) {
+          store.action.currentTool(ToolType.PIPETA);
+          brush.value = 'PIPETA';
+        }
+      }
+    );
+
+    watch(
+      () => store.getters.isDown_P(),
+      (newValue) => {
+        if (newValue) {
+          store.action.currentTool(ToolType.AREA_PEN);
+          brush.value = 'AREA_PEN';
+        }
+      }
+    );
+
+    watch(
+      () => store.getters.isDown_U(),
+      (newValue) => {
+        if (newValue) {
+          store.action.currentTool(ToolType.AREA_ERASER);
+          brush.value = 'AREA_ERASER';
+        }
+      }
+    );
+
     return { showGrid, showAxis, brush };
   }
 });

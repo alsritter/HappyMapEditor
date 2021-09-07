@@ -108,6 +108,10 @@ export function drawSingleItem(
   ctx.clearRect(pixX, pixY, size, size);
   // ctx.strokeStyle = data; // 这种是轮廓颜色
   ctx.fillStyle = data.color;
+  // ctx.drawImage()
+  if (data.image != null) {
+    ctx.drawImage(data.image, pixX, pixY, size, size);
+  }
   // 绘制色块
   ctx.fillRect(pixX, pixY, size, size);
 }
@@ -208,11 +212,45 @@ export function clearCanvasPoint(ctx: CanvasRenderingContext2D, initX: number, i
   ctx.clearRect(npoint.x, npoint.y, size, size);
 }
 
+/**
+ * 清空一块区域
+ */
+export function clearAreaItem(ctx: CanvasRenderingContext2D, size: number, initX: number, initY: number, start: Point, end: Point) {
+  let maxPosX: number;
+  let minPosX: number;
+  let maxPosY: number;
+  let minPosY: number;
+
+  if (start.x > end.x) {
+    maxPosX = start.x;
+    minPosX = end.x;
+  } else {
+    maxPosX = end.x;
+    minPosX = start.x;
+  }
+
+  if (start.y > end.y) {
+    maxPosY = start.y;
+    minPosY = end.y;
+  } else {
+    maxPosY = end.y;
+    minPosY = start.y;
+  }
+
+  // 将当前选中的格子存储起来
+  for (let i = minPosX; i <= maxPosX; i++) {
+    for (let j = minPosY; j <= maxPosY; j++) {
+      clearCanvasPoint(ctx, initX, initY, { x: i, y: j }, size);
+    }
+  }
+}
+
 export default {
   drawGrid,
   clearAllCanvas,
   drawSingleItem,
   drawAllItem,
   clearCanvasPoint,
-  drawAreaItem
+  drawAreaItem,
+  clearAreaItem
 };

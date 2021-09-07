@@ -1,7 +1,7 @@
 import { IMapState } from './map.state';
 import { Point, Tile, TileData } from '@/mystore/types';
 import { IState } from '@/mystore/state';
-import { SortedMap } from 'sweet-collections';
+import TreeMap from 'ts-treemap';
 
 /**
  * 添加 Tile
@@ -12,12 +12,12 @@ export function mapAddTile(state: IState) {
     // 先检查是否存在这个 Tile
     const cacheData = state.tileInstancesCache.get(state.tile.index);
     if (!state.mapTiles.has(point.y)) {
-      state.mapTiles.set(point.y, new SortedMap<number, Tile>((a: number, b: number) => a - b));
+      state.mapTiles.set(point.y, new TreeMap<number, Tile>((a: number, b: number) => a - b));
     }
     const xStore = state.mapTiles.get(point.y);
     let tile;
     if (cacheData == undefined) {
-      const tileData = new TileData(state.tile.path, state.tile.index);
+      const tileData = new TileData(state.tile.index, state.tile.image);
       // 先插入缓存
       state.tileInstancesCache.set(state.tile.index, tileData);
       tile = new Tile(point, state.currentLayer, tileData);
@@ -74,18 +74,47 @@ export function mapAddAreaTile(state: IState) {
  */
 export function mapDeleteTile(state: IMapState) {
   return (point: Point) => {
-    console.log('执行一次', point);
     if (!state.mapTiles.has(point.y)) {
       return;
     }
     const xStore = state.mapTiles.get(point.y);
     if (xStore?.size == 0) {
-      console.log('删除库', xStore);
       state.mapTiles.delete(point.y);
       return;
     }
-    console.log('删除元素', [...(xStore as SortedMap<number, Tile>).keys()]);
     xStore?.delete(point.x);
-    console.log('删除元素后', [...(xStore as SortedMap<number, Tile>).keys()]);
+  };
+}
+
+/**
+ * 删除这块区域
+ */
+export function mapDeleteAreaTile(state: IState) {
+  return (start: Point, end: Point) => {
+    let maxPosX: number;
+    let minPosX: number;
+    let maxPosY: number;
+    let minPosY: number;
+
+    if (start.x > end.x) {
+      maxPosX = start.x;
+      minPosX = end.x;
+    } else {
+      maxPosX = end.x;
+      minPosX = start.x;
+    }
+
+    if (start.y > end.y) {
+      maxPosY = start.y;
+      minPosY = end.y;
+    } else {
+      maxPosY = end.y;
+      minPosY = start.y;
+    }
+    for (let i = minPosX; i <= maxPosX; i++) {
+      for (let j = minPosY; j <= maxPosY; j++) {
+        mapDeleteTile(state)({ x: i, y: j });
+      }
+    }
   };
 }

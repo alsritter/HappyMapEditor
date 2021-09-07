@@ -54,8 +54,8 @@ function binarySearch(array: number[], min: number, max: number) {
   }
 
   // console.log('原始：', array, min, max);
-  const result: number[] = [];
-  if (min >= array.length || min >= max) return result;
+  // const result: number[] = [];
+  // if (min >= array.length || min >= max) return result;
 
   let mid = 0;
   let start = 0;

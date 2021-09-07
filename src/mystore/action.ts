@@ -10,7 +10,7 @@ import {
   canvasShowAxis
 } from '@/mystore/modules/canvas/canvas.actions';
 import { keyboardKeyDown, keyboardKeyUp, keyboardRefresh } from '@/mystore/modules/keyboard/keyboard.actions';
-import { mapAddTile, mapDeleteTile, mapAddAreaTile } from '@/mystore/modules/map/map.actions';
+import { mapAddTile, mapDeleteTile, mapAddAreaTile, mapDeleteAreaTile } from '@/mystore/modules/map/map.actions';
 import { currentTileModify, currentPrefabModify, currentTool } from '@/mystore/modules/currentItem/item.actions';
 
 /**
@@ -35,6 +35,7 @@ export function createAction(state: IState) {
     mapAddTile: mapAddTile(state),
     mapDeleteTile: mapDeleteTile(state),
     mapAddAreaTile: mapAddAreaTile(state),
+    mapDeleteAreaTile: mapDeleteAreaTile(state),
     //
     currentTileModify: currentTileModify(state),
     currentPrefabModify: currentPrefabModify(state),

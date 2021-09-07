@@ -43,3 +43,30 @@ export function isAlt(state: IKeyboradState) {
     return state.keys['VALUE_ALT'];
   };
 }
+
+export function isDown_B(state: IKeyboradState) {
+  return () => {
+    return state.keys['VALUE_B'];
+  };
+}
+
+export function isDown_E(state: IKeyboradState) {
+  return () => {
+    return state.keys['VALUE_E'];
+  };
+}
+export function isDown_F(state: IKeyboradState) {
+  return () => {
+    return state.keys['VALUE_F'];
+  };
+}
+export function isDown_P(state: IKeyboradState) {
+  return () => {
+    return state.keys['VALUE_P'];
+  };
+}
+export function isDown_U(state: IKeyboradState) {
+  return () => {
+    return state.keys['VALUE_U'];
+  };
+}

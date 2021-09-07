@@ -31,7 +31,8 @@ export const State: IState = {
     path: '',
     name: '',
     desc: '',
-    index: 0
+    index: 0,
+    image: null
   },
   prefab: {
     path: '',

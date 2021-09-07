@@ -10,7 +10,6 @@
     "axios": "^0.21.2",
     "element-plus": "^1.1.0-beta.8",
     "mitt": "^2.1.0",
-    "sweet-collections": "^1.0.3",
     "ts-treemap": "^1.1.0",
     "vue": "^3.2.8",
     "vue-router": "^4.0.8",

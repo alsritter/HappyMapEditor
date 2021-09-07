@@ -83,7 +83,7 @@ export default class DrawEventShape {
           this.deleteTile(point, this.backgroundCtx);
           break;
       }
-      bus.emit('refreshCanvas');
+      // bus.emit('refreshCanvas');
     });
 
     bus.on('areaPen', (data) => {
@@ -100,6 +100,24 @@ export default class DrawEventShape {
           break;
         case Layer.BACKGROUND:
           this.drawAreaTile(tileData as TileData, start, end, this.backgroundCtx);
+          break;
+      }
+    });
+
+    bus.on('areaEraser', (data) => {
+      const start = data.start as Point;
+      const end = data.end as Point;
+      this.store.action.mapDeleteAreaTile(start, end);
+      const layer = this.store.state.currentLayer;
+      switch (layer) {
+        case Layer.FRONT:
+          this.deleteAreaTile(start, end, this.frontCtx);
+          break;
+        case Layer.MIDDLE:
+          this.deleteAreaTile(start, end, this.backgroundCtx);
+          break;
+        case Layer.BACKGROUND:
+          this.deleteAreaTile(start, end, this.backgroundCtx);
           break;
       }
     });
@@ -135,6 +153,10 @@ export default class DrawEventShape {
 
   private deleteTile(point: Point, ctx: CanvasRenderingContext2D) {
     canvasDraw.clearCanvasPoint(ctx, this.store.state.initPoint.x, this.store.state.initPoint.y, point, this.store.state.canvasSize);
+  }
+
+  private deleteAreaTile(start: Point, end: Point, ctx: CanvasRenderingContext2D) {
+    canvasDraw.clearAreaItem(ctx, this.store.state.canvasSize, this.store.state.initPoint.x, this.store.state.initPoint.y, start, end);
   }
 
   handleRefreshCanvas() {
