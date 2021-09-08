@@ -1,7 +1,7 @@
 import bus from '@/core/util/bus';
 import { canvasPoint } from '@/core/util/graph';
 import { useStore } from '@/mystore';
-import { ToolType } from '@/mystore/types';
+import { ItemType, ToolType } from '@/mystore/types';
 import { watch } from 'vue';
 import { Throttle } from '@/core/util/process';
 
@@ -84,6 +84,10 @@ export default class CanvasEventShape {
    * 初始事件
    */
   initCanvasEvent = (): void => {
+    this.canvasDOM.onmousedown = null;
+    this.canvasDOM.onmouseup = null;
+    this.canvasDOM.onmousemove = null;
+    this.canvasDOM.onmouseout = null;
     this.drawCanvas();
     this.store.action.canvasModifyDragState(false);
   };
@@ -92,25 +96,29 @@ export default class CanvasEventShape {
    * 点击绘制
    */
   drawCanvas = (): void => {
-    switch (this.store.state.currentTool) {
-      case ToolType.PEN:
-        this.click('pen');
-        break;
-      case ToolType.PIPETA:
-        this.click('pipette');
-        break;
-      case ToolType.ERASER:
-        this.click('eraser');
-        break;
-      case ToolType.AREA_PEN:
-        this.drag('areaPen');
-        break;
-      case ToolType.AREA_ERASER:
-        this.drag('areaEraser');
-        break;
-      default:
-        this.click('pen');
-        break;
+    if (this.store.state.itemType == ItemType.TILE) {
+      switch (this.store.state.currentTool) {
+        case ToolType.PEN:
+          this.click('pen');
+          break;
+        case ToolType.PIPETA:
+          this.click('pipette');
+          break;
+        case ToolType.ERASER:
+          this.click('eraser');
+          break;
+        case ToolType.AREA_PEN:
+          this.drag('areaPen');
+          break;
+        case ToolType.AREA_ERASER:
+          this.drag('areaEraser');
+          break;
+        default:
+          this.click('pen');
+          break;
+      }
+    } else {
+      this.click('prefab');
     }
   };
 
@@ -126,9 +134,6 @@ export default class CanvasEventShape {
       );
       bus.emit(eventName, point);
     };
-    this.canvasDOM.onmouseup = null;
-    this.canvasDOM.onmousemove = null;
-    this.canvasDOM.onmouseout = null;
   }
 
   /**

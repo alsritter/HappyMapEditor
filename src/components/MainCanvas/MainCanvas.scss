@@ -11,6 +11,10 @@
 
   #GRID_CANVAS {
     @extend .canvaseffect;
+    z-index: 4;
+  }
+  #PREFAB {
+    @extend .canvaseffect;
     z-index: 3;
   }
   #FRONT {

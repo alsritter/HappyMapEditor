@@ -1,6 +1,6 @@
 import { IState } from './state';
 import { selectKeys, selectPressedKeys, isRecall, isAlt, isDown_B, isDown_E, isDown_F, isDown_P, isDown_U } from '@/mystore/modules/keyboard/keyboard.getters';
-import { getTileByPoint, getTileRange } from '@/mystore/modules/map/map.getters';
+import { getTileByPoint, getTileRange, getPrefabByPoint, getAllPrefab } from '@/mystore/modules/map/map.getters';
 
 export function createGetter(state: IState) {
   return {
@@ -15,6 +15,8 @@ export function createGetter(state: IState) {
     isDown_U: isDown_U(state),
     //
     getTileRange: getTileRange(state),
-    getTileByPoint: getTileByPoint(state)
+    getTileByPoint: getTileByPoint(state),
+    getPrefabByPoint: getPrefabByPoint(state),
+    getAllPrefab: getAllPrefab(state)
   };
 }

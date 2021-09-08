@@ -121,6 +121,31 @@ export default class DrawEventShape {
           break;
       }
     });
+
+    bus.on('prefab', (data) => {
+      const point = data as Point;
+      // 这里做个判断，如果当前点存在某个 Preface，则是拖动模式，反之绘制
+      const prefab = this.store.getters.getPrefabByPoint(point);
+      if (prefab == undefined) {
+        const newPrefab = this.store.action.mapAddPrefab(point);
+
+        if (!newPrefab) {
+          return;
+        }
+
+        canvasDraw.drawSinglePrefab(
+          this.backgroundCtx,
+          this.width,
+          this.height,
+          this.store.state.canvasSize,
+          this.store.state.initPoint.x,
+          this.store.state.initPoint.y,
+          newPrefab.point.x,
+          newPrefab.point.y,
+          newPrefab.data
+        );
+      }
+    });
   }
 
   private drawTile(tile: Tile, ctx: CanvasRenderingContext2D) {

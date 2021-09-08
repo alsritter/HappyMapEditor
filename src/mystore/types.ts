@@ -1,7 +1,37 @@
+import TreeMap, { Comparable } from 'ts-treemap';
+
 export type Point = {
   x: number;
   y: number;
 };
+
+export class PrefabYPoint implements Comparable<PrefabYPoint> {
+  y: number;
+  width: number;
+
+  constructor(y: number, width: number) {
+    this.width = width;
+    this.y = y;
+  }
+
+  compare(object: PrefabYPoint): number {
+    return this.y - object.y;
+  }
+}
+
+export class PrefabXPoint implements Comparable<PrefabXPoint> {
+  x: number;
+  height: number;
+
+  constructor(x: number, height: number) {
+    this.height = height;
+    this.x = x;
+  }
+
+  compare(object: PrefabXPoint): number {
+    return this.x - object.x;
+  }
+}
 
 export enum Layer {
   FRONT = 'FRONT',
@@ -49,6 +79,30 @@ export class Tile {
   }
 }
 
+export class PrefabData {
+  image: HTMLImageElement | null;
+  index: number;
+  width: number;
+  height: number;
+
+  constructor(index: number, width: number, height: number, image: HTMLImageElement | null = null) {
+    this.index = index;
+    this.width = width;
+    this.height = height;
+    this.image = image;
+  }
+}
+
+export class Prefab {
+  point: Point;
+  data: PrefabData;
+
+  constructor(point: Point, data: PrefabData) {
+    this.point = point;
+    this.data = data;
+  }
+}
+
 export interface ICurrentTile {
   path: string;
   name: string;
@@ -64,6 +118,7 @@ export interface ICurrentPrefab {
   index: number;
   width: number;
   height: number;
+  image: HTMLImageElement | null;
 }
 
 export enum ItemType {

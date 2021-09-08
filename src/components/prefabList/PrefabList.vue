@@ -1,6 +1,6 @@
 <template>
   <div class="prefab-list">
-    <el-image v-for="item of items" :key="item.name" :src="item.path" :title="item.desc" fit="contain" @click="selectedPrefab(item)"></el-image>
+    <el-image v-for="item of items" :key="item.name" :src="item.path" :title="item.desc" fit="contain" @click="selectedPrefab($event, item)"></el-image>
   </div>
 </template>
 
@@ -22,14 +22,15 @@ export default defineComponent({
         console.error(error);
       });
 
-    function selectedPrefab(prefab: any) {
+    function selectedPrefab(event: Event, prefab: any) {
       store.action.currentPrefabModify({
         index: prefab.index,
         width: prefab.width,
         height: prefab.height,
         path: prefab.path,
         name: prefab.name,
-        desc: prefab.desc
+        desc: prefab.desc,
+        image: event.target as HTMLImageElement
       });
     }
 
