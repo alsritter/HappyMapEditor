@@ -1,4 +1,4 @@
-import { Tile, TileData, PrefabData, Prefab, PrefabYPoint, PrefabXPoint } from '@/mystore/types';
+import { Tile, TileData, PrefabData, Prefab, Block } from '@/mystore/types';
 import TreeMap from 'ts-treemap';
 
 /**
@@ -21,24 +21,28 @@ import TreeMap from 'ts-treemap';
 
 export interface IMapState {
   mapTiles: TreeMap<number, TreeMap<number, Tile>>;
-
+  mapBlocks: TreeMap<number, TreeMap<number, Block>>;
   /**
-   * 这里 TreeMap 只做 TreeArray 用途，不做 Map 使用（所以需要自己实现 get 方法）
+   * 对应 Block 内部的 Prefab Index
    */
-  mapPrefabs: TreeMap<PrefabYPoint, TreeMap<PrefabXPoint, Prefab>>;
-
+  blockInPrefabCount: TreeMap<number, TreeMap<number, Set<number>>>;
   /**
    * 这个用于缓存引入类型，每次插入之前先检查缓存里面是否存在这个 Tile
    * 如果存在则直接返回这个 Tile 的引用，它的 Key 是 Tile 的 index
    */
   tileInstancesCache: Map<number, TileData>;
   prefabInstancesCache: Map<number, PrefabData>;
+  prefabInstances: Map<number, Prefab>;
 }
 
 export function initTileMap() {
   return new TreeMap<number, TreeMap<number, Tile>>((a: number, b: number) => a - b);
 }
 
-export function initPrefabMap() {
-  return new TreeMap<PrefabYPoint, TreeMap<PrefabXPoint, Prefab>>((a, b) => a.y - b.y);
+export function initBlockMap() {
+  return new TreeMap<number, TreeMap<number, Block>>((a, b) => a - b);
+}
+
+export function initPrefabCountMap() {
+  return new TreeMap<number, TreeMap<number, Set<number>>>((a, b) => a - b);
 }

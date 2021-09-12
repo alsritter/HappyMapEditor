@@ -1,10 +1,10 @@
 import { reactive } from 'vue';
 import Constants from '@/core/util/Constants';
-import { Layer, ItemType, TileData, ToolType, PrefabData } from '@/mystore/types';
+import { Layer, ItemType, TileData, ToolType, PrefabData, Prefab } from '@/mystore/types';
 // modules
 import { ICanvasState } from '@/mystore/modules/canvas/canvas.state';
 import { IKeyboradState, prepareKeys } from '@/mystore/modules/keyboard/keyboard.state';
-import { IMapState, initTileMap, initPrefabMap } from '@/mystore/modules/map/map.state';
+import { IMapState, initTileMap, initBlockMap, initPrefabCountMap } from '@/mystore/modules/map/map.state';
 import { IItemState } from '@/mystore/modules/currentItem/item.state';
 
 /**
@@ -26,8 +26,10 @@ export const State: IState = {
   //
   mapTiles: initTileMap(),
   tileInstancesCache: new Map<number, TileData>(),
-  mapPrefabs: initPrefabMap(),
+  blockInPrefabCount: initPrefabCountMap(),
+  mapBlocks: initBlockMap(),
   prefabInstancesCache: new Map<number, PrefabData>(),
+  prefabInstances: new Map<number, Prefab>(),
   //
   tile: {
     path: '',
@@ -42,7 +44,8 @@ export const State: IState = {
     desc: '',
     width: 0,
     height: 0,
-    index: 0
+    index: 0,
+    image: null
   },
   itemType: ItemType.TILE,
   currentLayer: Layer.FRONT,

@@ -1,35 +1,31 @@
-import TreeMap, { Comparable } from 'ts-treemap';
-
 export type Point = {
   x: number;
   y: number;
 };
 
-export class PrefabYPoint implements Comparable<PrefabYPoint> {
-  y: number;
-  width: number;
-
-  constructor(y: number, width: number) {
-    this.width = width;
-    this.y = y;
-  }
-
-  compare(object: PrefabYPoint): number {
-    return this.y - object.y;
-  }
-}
-
-export class PrefabXPoint implements Comparable<PrefabXPoint> {
+/**
+ * 区块
+ * size 表示一个区块的宽高，这个块不要使用稀疏数组
+ * 这个存储块大小确定下来就不能随便改了，它的大小位于常量那里
+ */
+export class Block {
+  /**
+   * Block X 终点坐标
+   */
   x: number;
-  height: number;
+  /**
+   * Block Y 终点坐标
+   */
+  y: number;
+  /**
+   * 里面存储的是 index
+   */
+  data: number[][];
 
-  constructor(x: number, height: number) {
-    this.height = height;
+  constructor(x: number, y: number, data: number[][]) {
     this.x = x;
-  }
-
-  compare(object: PrefabXPoint): number {
-    return this.x - object.x;
+    this.y = y;
+    this.data = data;
   }
 }
 

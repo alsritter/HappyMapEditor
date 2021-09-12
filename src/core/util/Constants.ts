@@ -4,7 +4,7 @@ export const MIN_SIZE = 22; // 格子最小值
 export const MAX_SIZE = 50; // 格子最小值
 export const CANVAS_WIDTH = 1100; // 画布宽度
 export const CANVAS_HEIGHT = 780; // 画布高度
-export const BLOCK_SIZE = 4; // 一个存储块的宽高
+export const BLOCK_SIZE = 5; // 一个存储块的宽高
 
 export default {
   DEFAULT_SIZE,

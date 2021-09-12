@@ -1,4 +1,4 @@
-import { TileData, Layer, Point, Tile, PrefabData } from '@/mystore/types';
+import { TileData, Layer, Point, Tile } from '@/mystore/types';
 import { CoordinateToPix } from './canvas-point';
 
 /**
@@ -245,37 +245,6 @@ export function clearAreaItem(ctx: CanvasRenderingContext2D, size: number, initX
   }
 }
 
-export function drawSinglePrefab(
-  ctx: CanvasRenderingContext2D,
-  width: number,
-  height: number,
-  size: number,
-  initX: number,
-  initY: number,
-  changeX: number,
-  changeY: number,
-  data: PrefabData
-) {
-  if (data == undefined) return;
-
-  // 计算当前要修改的具体位置(有正负)
-  const pixX = changeX * size + initX;
-  const pixY = changeY * size + initY;
-
-  // 如果要修改的格子在画布外面则不需要绘制，注意它的起始坐标在左上角，所以要比对四个角完全不在画布里面才不需要绘制
-  if (pixX > width || pixX + size < 0 || pixY > height || pixY + size < 0) return;
-  // 先清空指定位置
-  ctx.clearRect(pixX, pixY, data.width * size, data.height * size);
-  // ctx.strokeStyle = data; // 这种是轮廓颜色
-  ctx.fillStyle = '#8c40405c';
-  // ctx.drawImage()
-  if (data.image != null) {
-    ctx.drawImage(data.image, pixX, pixY, data.width * size, data.height * size);
-  }
-  // 绘制色块
-  ctx.fillRect(pixX, pixY, data.width * size, data.height * size);
-}
-
 export default {
   drawGrid,
   clearAllCanvas,
@@ -283,6 +252,5 @@ export default {
   drawAllItem,
   clearCanvasPoint,
   drawAreaItem,
-  clearAreaItem,
-  drawSinglePrefab
+  clearAreaItem
 };

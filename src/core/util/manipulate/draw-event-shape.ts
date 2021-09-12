@@ -1,5 +1,5 @@
 import bus from '@/core/util/bus';
-import { canvasDraw, canvasPoint } from '@/core/util/graph';
+import { canvasDraw, canvasPoint, canvasBlockDraw } from '@/core/util/graph';
 import { Layer, Point, Tile, TileData } from '@/mystore/types';
 import { jumpTimedProcessArray, Task } from '@/core/util/process';
 import { useStore } from '@/mystore';
@@ -124,7 +124,6 @@ export default class DrawEventShape {
 
     bus.on('prefab', (data) => {
       const point = data as Point;
-      // 这里做个判断，如果当前点存在某个 Preface，则是拖动模式，反之绘制
       const prefab = this.store.getters.getPrefabByPoint(point);
       if (prefab == undefined) {
         const newPrefab = this.store.action.mapAddPrefab(point);
@@ -133,7 +132,7 @@ export default class DrawEventShape {
           return;
         }
 
-        canvasDraw.drawSinglePrefab(
+        canvasBlockDraw.drawSinglePrefab(
           this.backgroundCtx,
           this.width,
           this.height,
