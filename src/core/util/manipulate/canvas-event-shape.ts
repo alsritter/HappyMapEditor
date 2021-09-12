@@ -1,7 +1,7 @@
 import bus from '@/core/util/bus';
 import { canvasPoint } from '@/core/util/graph';
 import { useStore } from '@/mystore';
-import { ItemType, ToolType } from '@/mystore/types';
+import { ItemType, ToolType, PrefabToolType } from '@/mystore/types';
 import { watch } from 'vue';
 import { Throttle } from '@/core/util/process';
 
@@ -118,7 +118,14 @@ export default class CanvasEventShape {
           break;
       }
     } else {
-      this.click('prefab');
+      switch (this.store.state.currentPrefabTool) {
+        case PrefabToolType.DRAW:
+          this.click('prefabDraw');
+          break;
+        case PrefabToolType.DELETE:
+          this.click('prefabDelete');
+          break;
+      }
     }
   };
 

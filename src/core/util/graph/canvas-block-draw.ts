@@ -1,5 +1,6 @@
-import { PrefabData } from '@/mystore/types';
+import { PrefabData, Prefab } from '@/mystore/types';
 import { CoordinateToPix } from './canvas-point';
+import { clearAllCanvas } from './canvas-draw';
 import Constants from '@/core/util/Constants';
 
 /**
@@ -59,8 +60,6 @@ export function drawSinglePrefab(
   const pixX = changeX * size + initX;
   const pixY = changeY * size + initY;
 
-  // 如果要修改的格子在画布外面则不需要绘制，注意它的起始坐标在左上角，所以要比对四个角完全不在画布里面才不需要绘制
-  if (pixX > width || pixX + size < 0 || pixY > height || pixY + size < 0) return;
   // 先清空指定位置
   ctx.clearRect(pixX, pixY, data.width * size, data.height * size);
   // ctx.strokeStyle = data; // 这种是轮廓颜色
@@ -73,7 +72,15 @@ export function drawSinglePrefab(
   ctx.fillRect(pixX, pixY, data.width * size, data.height * size);
 }
 
+export function drawAllPrefab(ctx: CanvasRenderingContext2D, width: number, height: number, size: number, initX: number, initY: number, dataes: Prefab[]) {
+  clearAllCanvas(ctx, width, height);
+  for (const prefab of dataes) {
+    drawSinglePrefab(ctx, width, height, size, initX, initY, prefab.point.x, prefab.point.y, prefab.data);
+  }
+}
+
 export default {
   drawBlockBox,
-  drawSinglePrefab
+  drawSinglePrefab,
+  drawAllPrefab
 };

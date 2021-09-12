@@ -48,14 +48,16 @@ export default defineComponent({
       const frontElement = tileCanvasBox.FRONT.value as unknown as HTMLCanvasElement;
       const middleElement = tileCanvasBox.MIDDLE.value as unknown as HTMLCanvasElement;
       const backgroundElement = tileCanvasBox.BACKGROUND.value as unknown as HTMLCanvasElement;
+      const prefabElement = PREFAB_CANVAS.value as unknown as HTMLCanvasElement;
 
       const gridCtx = gridElement.getContext('2d') as CanvasRenderingContext2D;
       const frontCtx = frontElement.getContext('2d') as CanvasRenderingContext2D;
       const middleCtx = middleElement.getContext('2d') as CanvasRenderingContext2D;
       const backgroundCtx = backgroundElement.getContext('2d') as CanvasRenderingContext2D;
+      const prefabCtx = prefabElement.getContext('2d') as CanvasRenderingContext2D;
       // Initialization event
       new CanvasEventShape(gridElement);
-      new DrawEventShape(gridElement, frontCtx, middleCtx, backgroundCtx);
+      new DrawEventShape(gridElement, frontCtx, middleCtx, backgroundCtx, prefabCtx);
     });
 
     return { ...tileCanvasBox, GRID_CANVAS, PREFAB_CANVAS, width, height, scrollBarWheel };

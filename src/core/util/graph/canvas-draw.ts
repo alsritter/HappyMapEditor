@@ -1,5 +1,6 @@
 import { TileData, Layer, Point, Tile } from '@/mystore/types';
 import { CoordinateToPix } from './canvas-point';
+import { DisplayLayers } from '@/mystore/types';
 
 /**
  * 这里专门用来绘制网格
@@ -166,6 +167,7 @@ export function drawAllItem(
   frontCtx: CanvasRenderingContext2D,
   middleCtx: CanvasRenderingContext2D,
   backgroundCtx: CanvasRenderingContext2D,
+  display: DisplayLayers,
   size: number,
   initX: number,
   initY: number,
@@ -179,12 +181,15 @@ export function drawAllItem(
   for (const tile of tiles) {
     switch (tile.layer) {
       case Layer.FRONT:
+        if (!display.frontShow) break;
         drawSingleItem(frontCtx, width, height, size, initX, initY, tile.point.x, tile.point.y, tile.data);
         break;
       case Layer.MIDDLE:
+        if (!display.middleShow) break;
         drawSingleItem(middleCtx, width, height, size, initX, initY, tile.point.x, tile.point.y, tile.data);
         break;
       case Layer.BACKGROUND:
+        if (!display.backgroundShow) break;
         drawSingleItem(backgroundCtx, width, height, size, initX, initY, tile.point.x, tile.point.y, tile.data);
         break;
     }

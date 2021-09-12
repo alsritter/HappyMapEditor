@@ -1,6 +1,6 @@
 import { reactive } from 'vue';
 import Constants from '@/core/util/Constants';
-import { Layer, ItemType, TileData, ToolType, PrefabData, Prefab } from '@/mystore/types';
+import { Layer, ItemType, TileData, ToolType, PrefabData, Prefab, DisplayLayers, PrefabToolType } from '@/mystore/types';
 // modules
 import { ICanvasState } from '@/mystore/modules/canvas/canvas.state';
 import { IKeyboradState, prepareKeys } from '@/mystore/modules/keyboard/keyboard.state';
@@ -49,7 +49,9 @@ export const State: IState = {
   },
   itemType: ItemType.TILE,
   currentLayer: Layer.FRONT,
-  currentTool: ToolType.PEN
+  currentTool: ToolType.PEN,
+  displayLayers: new DisplayLayers(),
+  currentPrefabTool: PrefabToolType.DRAW
 };
 
 export function createState() {

@@ -90,6 +90,7 @@ export function getPrefabByPoint(state: IState) {
     if (block == undefined) return undefined;
     const inPoint = canvasBlockPoint.coordinateToBlockCoordinate(point.x, point.y);
     const index = block.data[inPoint.x][inPoint.y];
+    if (index === -1) return undefined;
     return state.prefabInstances.get(index);
   };
 }
@@ -98,16 +99,13 @@ export function getPrefabByPoint(state: IState) {
  * 取得一个范围的 Prefab
  */
 export function getPrefabRange(state: IMapState) {
+  // FIXME: 修复这里精确度的问题
   return (start: Point, end: Point) => {
     start = { x: Math.min(start.x, end.x), y: Math.min(start.y, end.y) };
     end = { x: Math.max(start.x, end.x), y: Math.max(start.y, end.y) };
 
     const nStart = canvasBlockPoint.coordinateToBlockEndCoordinate(start.x, start.y);
     const nEnd = canvasBlockPoint.coordinateToBlockEndCoordinate(end.x, end.y);
-
-    console.log(nStart, nEnd);
-    console.log('y:', [...state.blockInPrefabCount.keys()]);
-
     const yarr = [...state.blockInPrefabCount.keys()];
     let yRange;
     // 如果相等则无需二分查找了
@@ -120,16 +118,14 @@ export function getPrefabRange(state: IMapState) {
     } else {
       yRange = binarySearch(yarr, nStart.y, nEnd.y);
     }
-
-    console.log('yRange', yRange);
-
     const res = [];
+
+    // 注意这里可能一个 Prefab 存在多个 Block 中，所以创建一个零时 Set 数组避免重复添加
+    const tset = new Set<number>();
     for (let i = 0; i < yRange.length; i++) {
       const xStore = state.blockInPrefabCount.get(yRange[i]);
       if (xStore == undefined) continue;
       const xarr = [...xStore.keys()];
-
-      console.log('x:', [...xStore.keys()]);
       let xRange;
       if (nStart.x == nEnd.x) {
         if (xStore.has(nStart.x)) {
@@ -140,18 +136,15 @@ export function getPrefabRange(state: IMapState) {
       } else {
         xRange = binarySearch(xarr, nStart.x, nEnd.x);
       }
-
       // 直接把 Block 内的 Prefab 直接存入 res 里面
       for (let j = 0; j < xRange.length; j++) {
-        console.log('key', xRange[j]);
         const arr = xStore.get(xRange[j]);
         if (arr) {
           for (const key of arr) {
+            if (tset.has(key)) continue;
+            tset.add(key);
             const prefab = state.prefabInstances.get(key);
             if (!prefab) continue;
-            // 两个点中任意一个在 Prefab 里面
-            console.log(prefab.point, prefab.data.width, prefab.data.height);
-            console.log(start, end);
             if (
               checkRect(
                 { x: prefab.point.x, y: prefab.point.y, width: prefab.data.width, height: prefab.data.height },
@@ -164,9 +157,6 @@ export function getPrefabRange(state: IMapState) {
         }
       }
     }
-
-    console.log('result', res);
-
     return res;
   };
 }

@@ -40,6 +40,14 @@ export function pixToCoordinate(canvas: HTMLCanvasElement, size: number, sx: num
 
 /**
  * 画布上的像素坐标（0,0 -> width, height）转成坐标轴坐标
+ *
+ * @param canvas
+ * @param size 单元格的大小
+ * @param sx 起始点的位置
+ * @param sy 起始点的位置
+ * @param x 要转换的 x
+ * @param y 要转换的 y
+ * @returns 转换后的坐标轴
  */
 export function canvasPixToCoordinate(size: number, sx: number, sy: number, x: number, y: number): Point {
   const relativeX = x - sx;

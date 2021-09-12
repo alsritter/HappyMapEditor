@@ -129,3 +129,25 @@ export enum ToolType {
   AREA_PEN = 'AREA_PEN',
   AREA_ERASER = 'AREA_ERASER'
 }
+
+export enum PrefabToolType {
+  DRAW = 'DRAW',
+  DELETE = 'DELETE'
+}
+
+/**
+ * 当前正在显示的图层
+ */
+export class DisplayLayers {
+  prefabShow: boolean;
+  frontShow: boolean;
+  middleShow: boolean;
+  backgroundShow: boolean;
+
+  constructor() {
+    this.prefabShow = true;
+    this.frontShow = true;
+    this.middleShow = true;
+    this.backgroundShow = true;
+  }
+}

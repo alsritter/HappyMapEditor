@@ -2,7 +2,7 @@ import { Point, Layer } from '@/mystore/types';
 
 export interface ICanvasState {
   /**
-   * 画布大小
+   * 单元格大小
    */
   canvasSize: number;
   /**

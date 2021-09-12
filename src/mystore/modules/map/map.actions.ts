@@ -1,7 +1,7 @@
 import { IMapState } from './map.state';
 import { Point, Tile, TileData, PrefabData, Prefab, Block } from '@/mystore/types';
 import { IState } from '@/mystore/state';
-import { getPrefabRange, getBlockByPoint } from './map.getters';
+import { getPrefabRange, getPrefabByPoint, getBlockByPoint } from './map.getters';
 import TreeMap from 'ts-treemap';
 import { canvasBlockPoint } from '@/core/util/graph';
 import Constants from '@/core/util/Constants';
@@ -132,14 +132,7 @@ export function mapAddPrefab(state: IState) {
   return (point: Point) => {
     const width = state.prefab.width;
     const height = state.prefab.height;
-
-    const range = getPrefabRange(state)({ x: point.x, y: point.y }, { x: point.x + width, y: point.y + height });
-
-    console.log(range);
-
-    if (range != undefined && range.length > 0) return;
-
-    console.log('开始');
+    if (checkRect(state, { x: point.x, y: point.y }, { x: point.x + width, y: point.y + height })) return undefined;
 
     // 生成随机 key（需要避免生成重复的）
     let prefabKey = Math.ceil(Math.random() * 10000);
@@ -193,7 +186,6 @@ export function mapAddPrefab(state: IState) {
         // 插入到指定位置(内部坐标)
         const inPoint = canvasBlockPoint.coordinateToBlockCoordinate(subPoint.x, subPoint.y);
         block.data[inPoint.x][inPoint.y] = prefabKey;
-
         // 再把它丢进 blockInPrefabCount
         addKeyToBlockInPrefabCount(state, prefabKey, blockPoint);
       }
@@ -225,24 +217,114 @@ function addKeyToBlockInPrefabCount(state: IMapState, key: number, blockPoint: P
 }
 
 /**
+ * 检查 Rect 里面是否存在另一个 Prefab
+ *
+ * @param start
+ * @param end
+ * @return 是否存在 prefab
+ */
+function checkRect(state: IState, start: Point, end: Point) {
+  start = { x: Math.min(start.x, end.x), y: Math.min(start.y, end.y) };
+  end = { x: Math.max(start.x, end.x), y: Math.max(start.y, end.y) };
+  // TODO: 改进 getPrefabRange 后，直接调用 getPrefabRange 来检查
+  for (let i = start.x; i < end.x; i++) {
+    for (let j = start.y; j < end.y; j++) {
+      if (getPrefabByPoint(state)({ x: i, y: j })) return true;
+    }
+  }
+  return false;
+}
+
+/**
  * 删除指定位置的 Prefab
  */
-export function mapDeletePrefab(state: IMapState) {
+export function mapDeletePrefab(state: IState) {
   return (point: Point) => {
-    // const pre = getPrefabByPoint(state)(point);
-    // if (!pre) return;
-    // // 存在则替换 point 为标准的 point
-    // point = pre.point;
-    // const ypoint = new PrefabYPoint(point.y, 0);
-    // if (!state.mapPrefabs.has(ypoint)) {
-    //   return;
-    // }
-    // const xStore = state.mapPrefabs.get(ypoint);
-    // if (xStore?.size == 0) {
-    //   state.mapPrefabs.delete(ypoint);
-    //   return;
-    // }
-    // const xpoint = new PrefabXPoint(point.x, 0);
-    // xStore?.delete(xpoint);
+    const blockPoint = canvasBlockPoint.coordinateToBlockEndCoordinate(point.x, point.y);
+    const xStore = state.mapBlocks.get(blockPoint.y);
+    if (xStore == undefined) return undefined;
+    const block = xStore.get(blockPoint.x);
+    if (block == undefined) return undefined;
+    const inPoint = canvasBlockPoint.coordinateToBlockCoordinate(point.x, point.y);
+    // 定位 key
+    const key = block.data[inPoint.x][inPoint.y];
+    const prefab = state.prefabInstances.get(key);
+
+    if (prefab) {
+      const point = prefab.point;
+      const width = prefab.data.width;
+      const height = prefab.data.height;
+      // 用于缓存当前是否检查过这个 Block
+      const cacheMap = new Set<string>();
+
+      for (let i = point.x; i < point.x + width; i++) {
+        for (let j = point.y; j < point.y + height; j++) {
+          const blockPoint = canvasBlockPoint.coordinateToBlockEndCoordinate(i, j);
+          if (cacheMap.has(pointToString(blockPoint))) continue;
+
+          cacheMap.add(pointToString(blockPoint));
+
+          // 清除 blockInPrefabCount 里面的 Prefab
+          const xStoreCount = state.blockInPrefabCount.get(blockPoint.y);
+          const carr = xStoreCount?.get(blockPoint.x);
+          if (carr) {
+            carr.delete(key);
+            if (carr.size === 0) {
+              xStoreCount?.delete(blockPoint.x);
+            }
+          }
+
+          if (xStoreCount?.size === 0) {
+            state.blockInPrefabCount.delete(blockPoint.y);
+          }
+
+          const xStore = state.mapBlocks.get(blockPoint.y);
+          if (xStore == undefined) continue;
+          const block = xStore.get(blockPoint.x);
+          if (block == undefined) continue;
+
+          // 先制空 Block
+          // 再清空 Block 里面的 key
+          for (let r = 0; r < block.data.length; r++) {
+            for (let t = 0; t < block.data[0].length; t++) {
+              if (block.data[r][t] === key) {
+                block.data[r][t] = -1;
+              }
+            }
+          }
+
+          // 检查这个 Block 是否为空
+          let isEmpty = true;
+          for (let r = 0; r < block.data.length; r++) {
+            for (let t = 0; t < block.data[0].length; t++) {
+              if (block.data[r][t] !== -1) {
+                isEmpty = false;
+                break;
+              }
+            }
+            if (!isEmpty) break;
+          }
+
+          // 为空的话直接删除这个 Block
+          if (isEmpty) {
+            xStore.delete(blockPoint.x);
+          }
+
+          // 检查 xStore 是否为空
+          if (xStore.size === 0) {
+            state.mapBlocks.delete(blockPoint.y);
+          }
+        }
+      }
+    }
+
+    // 最后删除 Prefab
+    state.prefabInstances.delete(key);
+
+    return prefab;
   };
+}
+
+function pointToString(point: Point) {
+  return `${point.x}-${point.y}`;
 }
