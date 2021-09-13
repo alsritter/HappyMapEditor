@@ -13,7 +13,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-$bgc: #f9f7d8;
+$bgc: #ffffff;
 
 .index-footer {
   clear: both;
@@ -22,7 +22,7 @@ $bgc: #f9f7d8;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background-color: $bgc;
+  // background-color: $bgc;
   height: 100%;
 }
 </style>

@@ -1,6 +1,6 @@
 import { defineComponent, ref, watch } from 'vue';
 import bus from '@/core/util/bus';
-import { SocketClient } from '@/core/util/net/websocket';
+import { SocketClient } from '@/network/websocket';
 
 export default defineComponent({
   setup() {

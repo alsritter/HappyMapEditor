@@ -24,7 +24,6 @@ export default defineComponent({
       });
 
     function selectedTile(event: Event, tile: any) {
-      console.log(event.target);
       store.action.currentTileModify({
         index: tile.index,
         path: tile.path,

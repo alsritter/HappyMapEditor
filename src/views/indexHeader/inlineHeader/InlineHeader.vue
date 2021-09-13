@@ -106,7 +106,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-$bgc: #888778;
+$bgc: #cccbba;
 
 .el-radio {
   height: 0px;

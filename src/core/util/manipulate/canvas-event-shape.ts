@@ -139,6 +139,12 @@ export default class CanvasEventShape {
     }
   };
 
+  /**
+   * 发送点击事件
+   *
+   * @param eventName 事件名称
+   * @param showBrush 是否显示当前笔刷
+   */
   private click(eventName: string, showBrush: boolean) {
     if (showBrush) this.brushState.open();
 
