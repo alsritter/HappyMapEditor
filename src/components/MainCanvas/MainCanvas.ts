@@ -11,6 +11,7 @@ export default defineComponent({
     // 引用页面的画布
     const GRID_CANVAS = ref(null) as Ref<HTMLCanvasElement | null>;
     const PREFAB_CANVAS = ref(null) as Ref<HTMLCanvasElement | null>;
+    const BRUSH_CANVAS = ref(null) as Ref<HTMLCanvasElement | null>;
     // Tile 画布
     const tileCanvasBox = {
       [Layer.FRONT]: ref(null) as Ref<HTMLCanvasElement | null>,
@@ -49,17 +50,20 @@ export default defineComponent({
       const middleElement = tileCanvasBox.MIDDLE.value as unknown as HTMLCanvasElement;
       const backgroundElement = tileCanvasBox.BACKGROUND.value as unknown as HTMLCanvasElement;
       const prefabElement = PREFAB_CANVAS.value as unknown as HTMLCanvasElement;
+      const brushElement = BRUSH_CANVAS.value as unknown as HTMLCanvasElement;
 
       const gridCtx = gridElement.getContext('2d') as CanvasRenderingContext2D;
       const frontCtx = frontElement.getContext('2d') as CanvasRenderingContext2D;
       const middleCtx = middleElement.getContext('2d') as CanvasRenderingContext2D;
       const backgroundCtx = backgroundElement.getContext('2d') as CanvasRenderingContext2D;
       const prefabCtx = prefabElement.getContext('2d') as CanvasRenderingContext2D;
+      const brushCtx = brushElement.getContext('2d') as CanvasRenderingContext2D;
+
       // Initialization event
       new CanvasEventShape(gridElement);
-      new DrawEventShape(gridElement, frontCtx, middleCtx, backgroundCtx, prefabCtx);
+      new DrawEventShape(gridElement, brushCtx, frontCtx, middleCtx, backgroundCtx, prefabCtx);
     });
 
-    return { ...tileCanvasBox, GRID_CANVAS, PREFAB_CANVAS, width, height, scrollBarWheel };
+    return { ...tileCanvasBox, GRID_CANVAS, PREFAB_CANVAS, BRUSH_CANVAS, width, height, scrollBarWheel };
   }
 });

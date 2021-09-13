@@ -1,22 +1,30 @@
 import bus from '@/core/util/bus';
 import { canvasPoint } from '@/core/util/graph';
 import { useStore } from '@/mystore';
-import { ItemType, ToolType, PrefabToolType } from '@/mystore/types';
+import { ItemType, ToolType, PrefabToolType, Point } from '@/mystore/types';
 import { watch } from 'vue';
 import { Throttle } from '@/core/util/process';
 
 export default class CanvasEventShape {
   store;
   canvasDOM: HTMLCanvasElement;
+  brushState: BrushState;
 
+  /**
+   * 给画布注册事件监听
+   *
+   * @param canvasDOM 用来处理绘图拖动等事件的 Canvas Element
+   */
   constructor(canvasDOM: HTMLCanvasElement) {
     this.store = useStore();
     this.canvasDOM = canvasDOM;
+    this.brushState = new BrushState(this.canvasDOM, this.store);
+
     this.initCanvasEvent();
     // Listen for keyboard events
     watch(
       () => this.store.getters.isAlt(),
-      (newValue, oldValue) => {
+      (newValue) => {
         if (newValue) {
           this.dragCanvas();
         } else {
@@ -96,16 +104,18 @@ export default class CanvasEventShape {
    * 点击绘制
    */
   drawCanvas = (): void => {
+    bus.emit('brushClear');
+
     if (this.store.state.itemType == ItemType.TILE) {
       switch (this.store.state.currentTool) {
         case ToolType.PEN:
-          this.click('pen');
+          this.click('pen', true);
           break;
         case ToolType.PIPETA:
-          this.click('pipette');
+          this.click('pipette', false);
           break;
         case ToolType.ERASER:
-          this.click('eraser');
+          this.click('eraser', false);
           break;
         case ToolType.AREA_PEN:
           this.drag('areaPen');
@@ -114,23 +124,27 @@ export default class CanvasEventShape {
           this.drag('areaEraser');
           break;
         default:
-          this.click('pen');
+          this.click('pen', true);
           break;
       }
     } else {
       switch (this.store.state.currentPrefabTool) {
         case PrefabToolType.DRAW:
-          this.click('prefabDraw');
+          this.click('prefabDraw', true);
           break;
         case PrefabToolType.DELETE:
-          this.click('prefabDelete');
+          this.click('prefabDelete', false);
           break;
       }
     }
   };
 
-  private click(eventName: string) {
+  private click(eventName: string, showBrush: boolean) {
+    if (showBrush) this.brushState.open();
+
     this.canvasDOM.onmousedown = (event: MouseEvent) => {
+      this.brushState.close();
+
       const point = canvasPoint.pixToCoordinate(
         this.canvasDOM,
         this.store.state.canvasSize,
@@ -140,6 +154,14 @@ export default class CanvasEventShape {
         event.clientY
       );
       bus.emit(eventName, point);
+    };
+
+    this.canvasDOM.onmouseup = () => {
+      if (showBrush) this.brushState.open();
+    };
+
+    this.canvasDOM.onmouseout = () => {
+      if (showBrush) this.brushState.open();
     };
   }
 
@@ -152,7 +174,7 @@ export default class CanvasEventShape {
     let endPoint = { x: 0, y: 0 };
     let deffPoint = { x: 0, y: 0 };
     const throttle = new Throttle();
-    // 拖动时的回调函数(只有在不同的格子里才要重绘（否则会在一个格子里面不断的重绘）)
+    // 拖动时的回调函数
     const moveFun = throttle.use((event: MouseEvent) => {
       deffPoint = canvasPoint.pixToCoordinate(
         this.canvasDOM,
@@ -162,7 +184,7 @@ export default class CanvasEventShape {
         event.clientX,
         event.clientY
       );
-
+      // 只有在不同的格子里才要重绘（否则会在一个格子里面不断的重绘）
       if (endPoint.x == deffPoint.x && endPoint.y == deffPoint.y) {
         return;
       } else {
@@ -204,5 +226,64 @@ export default class CanvasEventShape {
         moveFun(event);
       }
     };
+  }
+}
+
+/**
+ * 当没有绘制时的默认状态
+ */
+class BrushState {
+  store;
+  canvasDOM: HTMLCanvasElement;
+  throttle: Throttle;
+  moveFun: any;
+  endPoint: Point;
+  deffPoint: Point;
+
+  constructor(canvasDOM: HTMLCanvasElement, store: any) {
+    this.canvasDOM = canvasDOM;
+    this.store = store;
+    this.throttle = new Throttle();
+
+    this.endPoint = { x: 0, y: 0 };
+    this.deffPoint = { x: 0, y: 0 };
+
+    // 拖动时的回调函数
+    this.moveFun = this.throttle.use((event: MouseEvent) => {
+      this.deffPoint = canvasPoint.pixToCoordinate(
+        this.canvasDOM,
+        this.store.state.canvasSize,
+        this.store.state.initPoint.x,
+        this.store.state.initPoint.y,
+        event.clientX,
+        event.clientY
+      );
+      // 只有在不同的格子里才要重绘（否则会在一个格子里面不断的重绘）
+      if (this.endPoint.x == this.deffPoint.x && this.endPoint.y == this.deffPoint.y) {
+        return;
+      } else {
+        this.endPoint = this.deffPoint;
+      }
+
+      // console.log(this.deffPoint);
+      bus.emit('brushMove', this.deffPoint);
+    }, 10);
+  }
+
+  /**
+   * 在没有绘制画布时的初始状态
+   */
+  open() {
+    this.throttle.open();
+    this.canvasDOM.onmousemove = (event) => {
+      this.moveFun(event);
+    };
+  }
+
+  close() {
+    this.throttle.close();
+    this.canvasDOM.onmousemove = null;
+    this.endPoint = { x: 0, y: 0 };
+    this.deffPoint = { x: 0, y: 0 };
   }
 }

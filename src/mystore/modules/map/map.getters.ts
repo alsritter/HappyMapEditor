@@ -1,9 +1,22 @@
 import { IMapState } from './map.state';
-import { Point } from '@/mystore/types';
+import { Point, PrefabData, TileData } from '@/mystore/types';
 import { binarySearch } from '@/core/util/arithmetic';
 import { canvasBlockPoint } from '@/core/util/graph';
 import { IState } from '@/mystore/state';
 import Constants from '@/core/util/Constants';
+
+/**
+ * 取得当前的 Tile
+ */
+export function getCurrentTileData(state: IState) {
+  return () => {
+    const data = state.tileInstancesCache.get(state.tile.index);
+    if (!data) return new TileData(state.tile.index, state.tile.image);
+    // 先插入缓存
+    state.tileInstancesCache.set(state.tile.index, data);
+    return data;
+  };
+}
 
 /**
  * 根据点取得 Tile
@@ -75,6 +88,18 @@ export function getBlockRange(state: IMapState) {
       }
     }
     return res;
+  };
+}
+
+/**
+ * 取得当前的 prefabData
+ */
+export function getCurrentPrefabData(state: IState) {
+  return () => {
+    const data = state.prefabInstancesCache.get(state.prefab.index);
+    if (!data) return new PrefabData(state.prefab.index, state.prefab.width, state.prefab.height, state.prefab.image);
+    state.prefabInstancesCache.set(state.prefab.index, data);
+    return data;
   };
 }
 

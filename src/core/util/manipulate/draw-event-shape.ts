@@ -1,6 +1,6 @@
 import bus from '@/core/util/bus';
 import { canvasDraw, canvasPoint, canvasBlockDraw } from '@/core/util/graph';
-import { Layer, Point, Tile, TileData, Prefab } from '@/mystore/types';
+import { Layer, Point, Tile, TileData, Prefab, ItemType, PrefabData } from '@/mystore/types';
 import { jumpTimedProcessArray, Task } from '@/core/util/process';
 import { useStore } from '@/mystore';
 import Constants from '@/core/util/Constants';
@@ -10,6 +10,7 @@ export default class DrawEventShape {
   height: number;
   store;
   gridElement: HTMLCanvasElement;
+  brushCtx: CanvasRenderingContext2D;
   frontCtx: CanvasRenderingContext2D;
   middleCtx: CanvasRenderingContext2D;
   backgroundCtx: CanvasRenderingContext2D;
@@ -17,6 +18,7 @@ export default class DrawEventShape {
 
   constructor(
     gridElement: HTMLCanvasElement,
+    brushCtx: CanvasRenderingContext2D,
     frontCtx: CanvasRenderingContext2D,
     middleCtx: CanvasRenderingContext2D,
     backgroundCtx: CanvasRenderingContext2D,
@@ -26,6 +28,7 @@ export default class DrawEventShape {
     this.height = Constants.CANVAS_HEIGHT;
     this.store = useStore();
     this.gridElement = gridElement;
+    this.brushCtx = brushCtx;
     this.frontCtx = frontCtx;
     this.middleCtx = middleCtx;
     this.backgroundCtx = backgroundCtx;
@@ -81,18 +84,7 @@ export default class DrawEventShape {
 
       const point = data as Point;
       this.store.action.mapDeleteTile(point);
-      switch (layer) {
-        case Layer.FRONT:
-          this.deleteTile(point, this.frontCtx);
-          break;
-        case Layer.MIDDLE:
-          this.deleteTile(point, this.backgroundCtx);
-          break;
-        case Layer.BACKGROUND:
-          this.deleteTile(point, this.backgroundCtx);
-          break;
-      }
-      // bus.emit('refreshCanvas');
+      this.deleteTile(point);
     });
 
     bus.on('areaPen', (data) => {
@@ -122,17 +114,7 @@ export default class DrawEventShape {
       const start = data.start as Point;
       const end = data.end as Point;
       this.store.action.mapDeleteAreaTile(start, end);
-      switch (layer) {
-        case Layer.FRONT:
-          this.deleteAreaTile(start, end, this.frontCtx);
-          break;
-        case Layer.MIDDLE:
-          this.deleteAreaTile(start, end, this.backgroundCtx);
-          break;
-        case Layer.BACKGROUND:
-          this.deleteAreaTile(start, end, this.backgroundCtx);
-          break;
-      }
+      this.deleteAreaTile(start, end);
     });
 
     bus.on('prefabDraw', (data) => {
@@ -164,7 +146,69 @@ export default class DrawEventShape {
       const prefab = this.store.action.mapDeletePrefab(point);
       // bus.emit('refreshCanvas');
       if (prefab) {
-        this.deleteAreaTile(prefab.point, { x: prefab.point.x + prefab.data.width - 1, y: prefab.point.y + prefab.data.height - 1 }, this.prefabCtx);
+        this.deleteSingleAreaTile(prefab.point, { x: prefab.point.x + prefab.data.width - 1, y: prefab.point.y + prefab.data.height - 1 }, this.prefabCtx);
+      }
+    });
+
+    /**
+     * 记录上一帧的数据
+     */
+    const lastData = {
+      type: ItemType.TILE,
+      canvasSize: 0,
+      initPoint: { x: 0, y: 0 },
+      point: { x: -10, y: -10 },
+      prefab: new PrefabData(0, 0, 0, null),
+      tile: new TileData(-10, null)
+    };
+
+    bus.on('brushClear', () => {
+      // 清空上一帧的数据
+      if (lastData.type == ItemType.TILE) {
+        this.deleteSingleTile(lastData.point, this.brushCtx);
+      } else {
+        this.deleteSingleAreaTile(
+          lastData.point,
+          { x: lastData.point.x + lastData.prefab.width - 1, y: lastData.point.y + lastData.prefab.height - 1 },
+          this.brushCtx
+        );
+      }
+    });
+
+    bus.on('brushMove', (data) => {
+      const point = data as Point;
+      // 先清空上一帧的数据
+      if (lastData.type == ItemType.TILE) {
+        this.deleteSingleTile(lastData.point, this.brushCtx);
+      } else {
+        this.deleteSingleAreaTile(
+          lastData.point,
+          { x: lastData.point.x + lastData.prefab.width - 1, y: lastData.point.y + lastData.prefab.height - 1 },
+          this.brushCtx
+        );
+      }
+
+      lastData.type = this.store.state.itemType;
+      lastData.canvasSize = this.store.state.canvasSize;
+      lastData.initPoint = this.store.state.initPoint;
+      lastData.point = point;
+      lastData.prefab = this.store.getters.getCurrentPrefabData();
+      lastData.tile = this.store.getters.getCurrentTileData();
+
+      if (this.store.state.itemType == ItemType.TILE) {
+        this.drawTileInSingleLayer(lastData.point, lastData.tile, this.brushCtx);
+      } else {
+        canvasBlockDraw.drawSinglePrefab(
+          this.brushCtx,
+          this.width,
+          this.height,
+          lastData.canvasSize,
+          lastData.initPoint.x,
+          lastData.initPoint.y,
+          lastData.point.x,
+          lastData.point.y,
+          lastData.prefab
+        );
       }
     });
   }
@@ -172,6 +216,9 @@ export default class DrawEventShape {
   private drawTile(tile: Tile, ctx: CanvasRenderingContext2D) {
     canvasDraw.drawSingleItem(
       ctx,
+      this.frontCtx,
+      this.middleCtx,
+      this.backgroundCtx,
       this.width,
       this.height,
       this.store.state.canvasSize,
@@ -183,9 +230,26 @@ export default class DrawEventShape {
     );
   }
 
+  private drawTileInSingleLayer(point: Point, tileData: TileData, ctx: CanvasRenderingContext2D) {
+    canvasDraw.drawSingleItemInSingleLayer(
+      ctx,
+      this.width,
+      this.height,
+      this.store.state.canvasSize,
+      this.store.state.initPoint.x,
+      this.store.state.initPoint.y,
+      point.x,
+      point.y,
+      tileData
+    );
+  }
+
   private drawAreaTile(data: TileData, start: Point, end: Point, ctx: CanvasRenderingContext2D) {
     canvasDraw.drawAreaItem(
       ctx,
+      this.frontCtx,
+      this.middleCtx,
+      this.backgroundCtx,
       this.width,
       this.height,
       this.store.state.canvasSize,
@@ -197,12 +261,37 @@ export default class DrawEventShape {
     );
   }
 
-  private deleteTile(point: Point, ctx: CanvasRenderingContext2D) {
-    canvasDraw.clearCanvasPoint(ctx, this.store.state.initPoint.x, this.store.state.initPoint.y, point, this.store.state.canvasSize);
+  private deleteTile(point: Point) {
+    canvasDraw.clearCanvasPoint(
+      this.frontCtx,
+      this.middleCtx,
+      this.backgroundCtx,
+      this.store.state.initPoint.x,
+      this.store.state.initPoint.y,
+      point,
+      this.store.state.canvasSize
+    );
   }
 
-  private deleteAreaTile(start: Point, end: Point, ctx: CanvasRenderingContext2D) {
-    canvasDraw.clearAreaItem(ctx, this.store.state.canvasSize, this.store.state.initPoint.x, this.store.state.initPoint.y, start, end);
+  private deleteSingleTile(point: Point, ctx: CanvasRenderingContext2D) {
+    canvasDraw.clearSingleLayerCanvasPoint(ctx, this.store.state.initPoint.x, this.store.state.initPoint.y, point, this.store.state.canvasSize);
+  }
+
+  private deleteAreaTile(start: Point, end: Point) {
+    canvasDraw.clearAreaItem(
+      this.frontCtx,
+      this.middleCtx,
+      this.backgroundCtx,
+      this.store.state.canvasSize,
+      this.store.state.initPoint.x,
+      this.store.state.initPoint.y,
+      start,
+      end
+    );
+  }
+
+  private deleteSingleAreaTile(start: Point, end: Point, ctx: CanvasRenderingContext2D) {
+    canvasDraw.clearSingleLayerAreaItem(ctx, this.store.state.canvasSize, this.store.state.initPoint.x, this.store.state.initPoint.y, start, end);
   }
 
   handleRefreshCanvas() {
@@ -278,6 +367,8 @@ export default class DrawEventShape {
         );
 
         canvasDraw.clearAllCanvas(this.prefabCtx, this.width, this.height);
+        canvasDraw.clearAllCanvas(this.brushCtx, this.width, this.height);
+
         if (this.store.state.displayLayers.prefabShow) {
           const prefabs = this.store.getters.getPrefabRange(startPoint, endPoint) as Prefab[];
 

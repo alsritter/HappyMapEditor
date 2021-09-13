@@ -11,6 +11,8 @@
 
     <!-- 预制件的画布 -->
     <canvas id="PREFAB" ref="PREFAB_CANVAS" class="map" :width="width" :height="height"></canvas>
+    <!-- 显示当前选中的笔刷 -->
+    <canvas id="BRUSH" ref="BRUSH_CANVAS" class="map" :width="width" :height="height"></canvas>
   </div>
 </template>
 

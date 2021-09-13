@@ -11,7 +11,7 @@
 
   #GRID_CANVAS {
     @extend .canvaseffect;
-    z-index: 4;
+    z-index: 100;
   }
   #PREFAB {
     @extend .canvaseffect;
@@ -32,6 +32,10 @@
     @extend .canvaseffect;
     z-index: 0;
     background-color: rgb(205, 214, 211);
+  }
+  #BRUSH {
+    @extend .canvaseffect;
+    z-index: 50;
   }
 
   // 禁止文字被鼠标选中

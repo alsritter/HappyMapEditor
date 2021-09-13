@@ -76,7 +76,7 @@ export function drawGrid(
 
 /**
  *  绘制单个格子
- * @param ctx 画布
+ * @param mainCtx 画布
  * @param width 画布的宽度
  * @param height 画布的高度
  * @param size 单个格子大小
@@ -87,7 +87,10 @@ export function drawGrid(
  * @param data Tile
  */
 export function drawSingleItem(
-  ctx: CanvasRenderingContext2D,
+  mainCtx: CanvasRenderingContext2D,
+  frontCtx: CanvasRenderingContext2D,
+  middleCtx: CanvasRenderingContext2D,
+  backgroundCtx: CanvasRenderingContext2D,
   width: number,
   height: number,
   size: number,
@@ -106,22 +109,72 @@ export function drawSingleItem(
   // 如果要修改的格子在画布外面则不需要绘制，注意它的起始坐标在左上角，所以要比对四个角完全不在画布里面才不需要绘制
   if (pixX > width || pixX + size < 0 || pixY > height || pixY + size < 0) return;
   // 先清空指定位置
-  ctx.clearRect(pixX, pixY, size, size);
+  frontCtx.clearRect(pixX, pixY, size, size);
+  middleCtx.clearRect(pixX, pixY, size, size);
+  backgroundCtx.clearRect(pixX, pixY, size, size);
+
   // ctx.strokeStyle = data; // 这种是轮廓颜色
-  ctx.fillStyle = data.color;
+  mainCtx.fillStyle = data.color;
   // ctx.drawImage()
   if (data.image != null) {
-    ctx.drawImage(data.image, pixX, pixY, size, size);
+    mainCtx.drawImage(data.image, pixX, pixY, size, size);
   }
   // 绘制色块
-  ctx.fillRect(pixX, pixY, size, size);
+  mainCtx.fillRect(pixX, pixY, size, size);
+}
+
+/**
+ *  绘制单个格子
+ * @param mainCtx 画布
+ * @param width 画布的宽度
+ * @param height 画布的高度
+ * @param size 单个格子大小
+ * @param initX 初始x
+ * @param initY 初始y
+ * @param changeX 当前要变化的 X坐标轴坐标
+ * @param changeY 当前要变化的 Y坐标轴坐标
+ * @param data Tile
+ */
+export function drawSingleItemInSingleLayer(
+  mainCtx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  size: number,
+  initX: number,
+  initY: number,
+  changeX: number,
+  changeY: number,
+  data: TileData
+): void {
+  if (data == undefined) return;
+
+  // 计算当前要修改的具体位置(有正负)
+  const pixX = changeX * size + initX;
+  const pixY = changeY * size + initY;
+
+  // 如果要修改的格子在画布外面则不需要绘制，注意它的起始坐标在左上角，所以要比对四个角完全不在画布里面才不需要绘制
+  if (pixX > width || pixX + size < 0 || pixY > height || pixY + size < 0) return;
+  // 先清空指定位置
+  mainCtx.clearRect(pixX, pixY, size, size);
+
+  // ctx.strokeStyle = data; // 这种是轮廓颜色
+  mainCtx.fillStyle = data.color;
+  // ctx.drawImage()
+  if (data.image != null) {
+    mainCtx.drawImage(data.image, pixX, pixY, size, size);
+  }
+  // 绘制色块
+  mainCtx.fillRect(pixX, pixY, size, size);
 }
 
 /**
  * 绘制一块区域
  */
 export function drawAreaItem(
-  ctx: CanvasRenderingContext2D,
+  mainCtx: CanvasRenderingContext2D,
+  frontCtx: CanvasRenderingContext2D,
+  middleCtx: CanvasRenderingContext2D,
+  backgroundCtx: CanvasRenderingContext2D,
   width: number,
   height: number,
   size: number,
@@ -155,7 +208,7 @@ export function drawAreaItem(
   // 将当前选中的格子存储起来
   for (let i = minPosX; i <= maxPosX; i++) {
     for (let j = minPosY; j <= maxPosY; j++) {
-      drawSingleItem(ctx, width, height, size, initX, initY, i, j, data);
+      drawSingleItem(mainCtx, frontCtx, middleCtx, backgroundCtx, width, height, size, initX, initY, i, j, data);
     }
   }
 }
@@ -182,15 +235,15 @@ export function drawAllItem(
     switch (tile.layer) {
       case Layer.FRONT:
         if (!display.frontShow) break;
-        drawSingleItem(frontCtx, width, height, size, initX, initY, tile.point.x, tile.point.y, tile.data);
+        drawSingleItem(frontCtx, frontCtx, middleCtx, backgroundCtx, width, height, size, initX, initY, tile.point.x, tile.point.y, tile.data);
         break;
       case Layer.MIDDLE:
         if (!display.middleShow) break;
-        drawSingleItem(middleCtx, width, height, size, initX, initY, tile.point.x, tile.point.y, tile.data);
+        drawSingleItem(middleCtx, frontCtx, middleCtx, backgroundCtx, width, height, size, initX, initY, tile.point.x, tile.point.y, tile.data);
         break;
       case Layer.BACKGROUND:
         if (!display.backgroundShow) break;
-        drawSingleItem(backgroundCtx, width, height, size, initX, initY, tile.point.x, tile.point.y, tile.data);
+        drawSingleItem(backgroundCtx, frontCtx, middleCtx, backgroundCtx, width, height, size, initX, initY, tile.point.x, tile.point.y, tile.data);
         break;
     }
   }
@@ -212,15 +265,34 @@ export function clearAllCanvas(ctx: CanvasRenderingContext2D, width: number, hei
  * @param width 画布的高度
  * @param height 画布的宽度
  */
-export function clearCanvasPoint(ctx: CanvasRenderingContext2D, initX: number, initY: number, point: Point, size: number): void {
+export function clearCanvasPoint(
+  frontCtx: CanvasRenderingContext2D,
+  middleCtx: CanvasRenderingContext2D,
+  backgroundCtx: CanvasRenderingContext2D,
+  initX: number,
+  initY: number,
+  point: Point,
+  size: number
+): void {
   const npoint = CoordinateToPix(size, initX, initY, point.x, point.y);
-  ctx.clearRect(npoint.x, npoint.y, size, size);
+  frontCtx.clearRect(npoint.x, npoint.y, size, size);
+  middleCtx.clearRect(npoint.x, npoint.y, size, size);
+  backgroundCtx.clearRect(npoint.x, npoint.y, size, size);
 }
 
 /**
  * 清空一块区域
  */
-export function clearAreaItem(ctx: CanvasRenderingContext2D, size: number, initX: number, initY: number, start: Point, end: Point) {
+export function clearAreaItem(
+  frontCtx: CanvasRenderingContext2D,
+  middleCtx: CanvasRenderingContext2D,
+  backgroundCtx: CanvasRenderingContext2D,
+  size: number,
+  initX: number,
+  initY: number,
+  start: Point,
+  end: Point
+) {
   let maxPosX: number;
   let minPosX: number;
   let maxPosY: number;
@@ -245,9 +317,53 @@ export function clearAreaItem(ctx: CanvasRenderingContext2D, size: number, initX
   // 将当前选中的格子存储起来
   for (let i = minPosX; i <= maxPosX; i++) {
     for (let j = minPosY; j <= maxPosY; j++) {
-      clearCanvasPoint(ctx, initX, initY, { x: i, y: j }, size);
+      clearCanvasPoint(frontCtx, middleCtx, backgroundCtx, initX, initY, { x: i, y: j }, size);
     }
   }
+}
+
+/**
+ * 清空一块区域
+ */
+export function clearSingleLayerAreaItem(mainCtx: CanvasRenderingContext2D, size: number, initX: number, initY: number, start: Point, end: Point) {
+  let maxPosX: number;
+  let minPosX: number;
+  let maxPosY: number;
+  let minPosY: number;
+
+  if (start.x > end.x) {
+    maxPosX = start.x;
+    minPosX = end.x;
+  } else {
+    maxPosX = end.x;
+    minPosX = start.x;
+  }
+
+  if (start.y > end.y) {
+    maxPosY = start.y;
+    minPosY = end.y;
+  } else {
+    maxPosY = end.y;
+    minPosY = start.y;
+  }
+
+  // 将当前选中的格子存储起来
+  for (let i = minPosX; i <= maxPosX; i++) {
+    for (let j = minPosY; j <= maxPosY; j++) {
+      clearSingleLayerCanvasPoint(mainCtx, initX, initY, { x: i, y: j }, size);
+    }
+  }
+}
+
+/**
+ * 清空整个某个格子
+ * @param ctx 画布元素
+ * @param width 画布的高度
+ * @param height 画布的宽度
+ */
+export function clearSingleLayerCanvasPoint(mainCtx: CanvasRenderingContext2D, initX: number, initY: number, point: Point, size: number): void {
+  const npoint = CoordinateToPix(size, initX, initY, point.x, point.y);
+  mainCtx.clearRect(npoint.x, npoint.y, size, size);
 }
 
 export default {
@@ -257,5 +373,8 @@ export default {
   drawAllItem,
   clearCanvasPoint,
   drawAreaItem,
-  clearAreaItem
+  clearAreaItem,
+  clearSingleLayerAreaItem,
+  clearSingleLayerCanvasPoint,
+  drawSingleItemInSingleLayer
 };
