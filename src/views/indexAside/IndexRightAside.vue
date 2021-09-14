@@ -1,31 +1,28 @@
 <template>
   <div class="index-aside">
     <el-card class="box-card">
-      <template #header>
-        <div class="card-header">
-          <span>收藏的 Tile</span>
-        </div>
-      </template>
-      <div><canvas class="current-tile"></canvas></div>
+      <collect-list />
     </el-card>
     <el-card class="box-card">
-      <template #header>
-        <div class="card-header">
-          <layer-select />
-        </div>
-      </template>
-      <div></div>
+      <layer-select />
+    </el-card>
+    <el-card class="box-card">
+      <background-select />
     </el-card>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import BackgroundSelect from '@/components/backgroundSelect/BackgroundSelect.vue';
 import LayerSelect from '@/components/layerSelect/LayerSelect.vue';
+import CollectList from '@/components/collectList/CollectList.vue';
 
 export default defineComponent({
   components: {
-    LayerSelect
+    LayerSelect,
+    BackgroundSelect,
+    CollectList
   },
   setup() {
     return {};
@@ -34,12 +31,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.current-tile {
-  width: 100%;
-  height: 400px;
-  background-color: #56553f;
-  margin-bottom: 18px;
-}
 .el-card {
   margin-bottom: 10px;
 }

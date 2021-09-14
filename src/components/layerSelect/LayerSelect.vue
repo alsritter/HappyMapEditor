@@ -16,10 +16,10 @@
       <input type="radio" name="layerRadio" />
       <label id="s-prefab">预制件</label>
 
-      <input id="s-front" v-model="layer" type="radio" checked="true" name="layerRadio" value="0" />
+      <input id="s-front" v-model="layer" type="radio" name="layerRadio" value="0" />
       <label for="s-front">前景装饰</label>
 
-      <input id="s-middle" v-model="layer" type="radio" name="layerRadio" value="1" />
+      <input id="s-middle" v-model="layer" type="radio" checked="true" name="layerRadio" value="1" />
       <label for="s-middle">瓦片层</label>
 
       <input id="s-background" v-model="layer" type="radio" name="layerRadio" value="2" />

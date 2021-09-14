@@ -1,4 +1,4 @@
-import { Tile, TileData, PrefabData, Prefab, Block } from '@/mystore/types';
+import { Tile, PrefabData, Prefab, Block, TileData } from '@/mystore/types';
 import TreeMap from 'ts-treemap';
 
 /**
@@ -23,15 +23,14 @@ export interface IMapState {
   mapTiles: TreeMap<number, TreeMap<number, Tile>>;
   mapBlocks: TreeMap<number, TreeMap<number, Block>>;
   /**
+   * 这个单纯是给笔刷显示用的临时缓存 Map
+   */
+  currentTileInstancesCache: Map<string, TileData>;
+  /**
    * 对应 Block 内部的 Prefab Index
    */
   blockInPrefabCount: TreeMap<number, TreeMap<number, Set<number>>>;
-  /**
-   * 这个用于缓存引入类型，每次插入之前先检查缓存里面是否存在这个 Tile
-   * 如果存在则直接返回这个 Tile 的引用，它的 Key 是 Tile 的 index
-   */
-  tileInstancesCache: Map<number, TileData>;
-  prefabInstancesCache: Map<number, PrefabData>;
+  prefabInstancesCache: Map<string, PrefabData>;
   prefabInstances: Map<number, Prefab>;
 }
 

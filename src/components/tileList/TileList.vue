@@ -25,7 +25,9 @@ export default defineComponent({
 
     function selectedTile(event: Event, tile: any) {
       store.action.currentTileModify({
-        index: tile.index,
+        isCollect: false,
+        spriteId: tile.spriteId,
+        key: '',
         path: tile.path,
         name: tile.name,
         desc: tile.desc,

@@ -1,4 +1,4 @@
-import { defineComponent, ref, onMounted, Ref } from 'vue';
+import { defineComponent, ref, onMounted, Ref, computed } from 'vue';
 import bus from '@/core/util/bus';
 import Constants from '@/core/util/Constants';
 import { CanvasEventShape, DrawEventShape } from '@/core/util/manipulate';
@@ -22,6 +22,10 @@ export default defineComponent({
     const width = Constants.CANVAS_WIDTH;
     const height = Constants.CANVAS_HEIGHT;
     // The starting position of the current coordinate
+    const bgUrl = computed(() => {
+      console.log(store.getters.getBgUrl());
+      return store.getters.getBgUrl();
+    });
 
     /**
      * 放大缩小画布
@@ -58,12 +62,13 @@ export default defineComponent({
       const backgroundCtx = backgroundElement.getContext('2d') as CanvasRenderingContext2D;
       const prefabCtx = prefabElement.getContext('2d') as CanvasRenderingContext2D;
       const brushCtx = brushElement.getContext('2d') as CanvasRenderingContext2D;
+      brushCtx.globalAlpha = 0.5;
 
       // Initialization event
       new CanvasEventShape(gridElement);
       new DrawEventShape(gridElement, brushCtx, frontCtx, middleCtx, backgroundCtx, prefabCtx);
     });
 
-    return { ...tileCanvasBox, GRID_CANVAS, PREFAB_CANVAS, BRUSH_CANVAS, width, height, scrollBarWheel };
+    return { ...tileCanvasBox, GRID_CANVAS, PREFAB_CANVAS, BRUSH_CANVAS, width, height, scrollBarWheel, bgUrl };
   }
 });

@@ -2,6 +2,8 @@ import { IState } from './state';
 import { selectKeys, selectPressedKeys, isRecall, isAlt, isDown_B, isDown_E, isDown_F, isDown_P, isDown_U } from '@/mystore/modules/keyboard/keyboard.getters';
 import { getTileByPoint, getTileRange, getPrefabByPoint, getPrefabRange, getCurrentPrefabData, getCurrentTileData } from '@/mystore/modules/map/map.getters';
 import { currentLayerIsDisplayed } from '@/mystore/modules/currentItem/item.getters';
+import { getAllCollectTile, getCollectTileByKey } from '@/mystore/modules/collect/collect.getters';
+import { getBgUrl } from '@/mystore/modules/background/bg.getters';
 
 export function createGetter(state: IState) {
   return {
@@ -22,6 +24,11 @@ export function createGetter(state: IState) {
     getCurrentPrefabData: getCurrentPrefabData(state),
     getCurrentTileData: getCurrentTileData(state),
     //
-    currentLayerIsDisplayed: currentLayerIsDisplayed(state)
+    currentLayerIsDisplayed: currentLayerIsDisplayed(state),
+    //
+    getAllCollectTile: getAllCollectTile(state),
+    getCollectTileByKey: getCollectTileByKey(state),
+    //
+    getBgUrl: getBgUrl(state)
   };
 }

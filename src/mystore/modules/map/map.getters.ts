@@ -6,15 +6,49 @@ import { IState } from '@/mystore/state';
 import Constants from '@/core/util/Constants';
 
 /**
- * 取得当前的 Tile
+ * 取得当前的 TileData
  */
 export function getCurrentTileData(state: IState) {
   return () => {
-    const data = state.tileInstancesCache.get(state.tile.index);
-    if (!data) return new TileData(state.tile.index, state.tile.image);
-    // 先插入缓存
-    state.tileInstancesCache.set(state.tile.index, data);
-    return data;
+    // const data = state.tileInstancesCache.get(state.tile.index);
+    // if (!data) return new TileData(state.tile.index, state.tile.image);
+    // // 先插入缓存
+    // state.tileInstancesCache.set(state.tile.index, data);
+    if (!state.tile.image) return;
+
+    // 注意这里使用的是 currentTileInstancesCache 这个专门用来缓存临时 TileData 的 Map
+    let tileData;
+    if (!state.tile.isCollect) {
+      // 生成随机 key（需要避免生成重复的）
+      let tk = Math.ceil(Math.random() * 10000);
+      while (state.currentTileInstancesCache.has(tk + '')) {
+        tk = Math.ceil(Math.random() * 10000);
+      }
+      const tileKey = tk + '';
+      tileData = new TileData(tileKey, state.currentLayer, state.tile.spriteId, state.tile.path, state.tile.image);
+      //
+      // state.tile.isCollect = true;
+      state.tile.key = tileKey;
+      state.currentTileInstancesCache.set(tileKey, tileData);
+    } else {
+      if (!state.tile.key) {
+        let tk = Math.ceil(Math.random() * 10000);
+        while (state.currentTileInstancesCache.has(tk + '')) {
+          tk = Math.ceil(Math.random() * 10000);
+        }
+        const tileKey = tk + '';
+        state.tile.key = tileKey;
+      }
+
+      // 检查是否存在这个 Tile
+      tileData = state.currentTileInstancesCache.get(state.tile.key);
+      if (!tileData) {
+        tileData = new TileData(state.tile.key, state.currentLayer, state.tile.spriteId, state.tile.path, state.tile.image);
+        state.currentTileInstancesCache.set(state.tile.key, tileData);
+      }
+    }
+
+    return tileData;
   };
 }
 
@@ -96,9 +130,9 @@ export function getBlockRange(state: IMapState) {
  */
 export function getCurrentPrefabData(state: IState) {
   return () => {
-    const data = state.prefabInstancesCache.get(state.prefab.index);
-    if (!data) return new PrefabData(state.prefab.index, state.prefab.width, state.prefab.height, state.prefab.image);
-    state.prefabInstancesCache.set(state.prefab.index, data);
+    const data = state.prefabInstancesCache.get(state.prefab.prefabId);
+    if (!data) return new PrefabData(state.prefab.prefabId, state.prefab.width, state.prefab.height, state.prefab.image);
+    state.prefabInstancesCache.set(state.prefab.prefabId, data);
     return data;
   };
 }

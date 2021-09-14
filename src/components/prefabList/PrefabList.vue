@@ -24,7 +24,7 @@ export default defineComponent({
 
     function selectedPrefab(event: Event, prefab: any) {
       store.action.currentPrefabModify({
-        index: prefab.index,
+        prefabId: prefab.prefabId,
         width: prefab.width,
         height: prefab.height,
         path: prefab.path,

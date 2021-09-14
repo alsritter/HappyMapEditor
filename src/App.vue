@@ -8,7 +8,7 @@
   <!-- <index-footer /> -->
 
   <el-container>
-    <el-header height="50px"><index-header /></el-header>
+    <el-header height="30px"><index-header /></el-header>
     <el-container>
       <el-aside width="450px"><index-left-aside /></el-aside>
       <el-container>

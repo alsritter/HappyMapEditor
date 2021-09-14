@@ -12,23 +12,47 @@ import Constants from '@/core/util/Constants';
  */
 export function mapAddTile(state: IState) {
   return (point: Point) => {
-    // 先检查是否存在这个 Tile
-    const cacheData = state.tileInstancesCache.get(state.tile.index);
+    if (!state.tile.image) return;
+
+    let tileData;
+    if (!state.tile.isCollect) {
+      // 生成随机 key（需要避免生成重复的）
+      let tk = Math.ceil(Math.random() * 10000);
+      while (state.tileInstancesCache.has(tk + '')) {
+        tk = Math.ceil(Math.random() * 10000);
+      }
+      const tileKey = tk + '';
+
+      tileData = new TileData(tileKey, state.currentLayer, state.tile.spriteId, state.tile.path, state.tile.image);
+      //
+      state.tile.isCollect = true;
+      state.tile.key = tileKey;
+      state.tileInstancesCache.set(tileKey, tileData);
+    } else {
+      if (!state.tile.key) {
+        let tk = Math.ceil(Math.random() * 10000);
+        while (state.tileInstancesCache.has(tk + '')) {
+          tk = Math.ceil(Math.random() * 10000);
+        }
+        const tileKey = tk + '';
+        state.tile.key = tileKey;
+      }
+
+      // 检查是否存在这个 Tile
+      tileData = state.tileInstancesCache.get(state.tile.key);
+      if (!tileData) {
+        tileData = new TileData(state.tile.key, state.currentLayer, state.tile.spriteId, state.tile.path, state.tile.image);
+        state.tileInstancesCache.set(state.tile.key, tileData);
+      }
+    }
+
     if (!state.mapTiles.has(point.y)) {
       state.mapTiles.set(point.y, new TreeMap<number, Tile>((a: number, b: number) => a - b));
     }
+
     const xStore = state.mapTiles.get(point.y);
-    let tile;
-    if (cacheData == undefined) {
-      const tileData = new TileData(state.tile.index, state.tile.image);
-      // 先插入缓存
-      state.tileInstancesCache.set(state.tile.index, tileData);
-      tile = new Tile(point, state.currentLayer, tileData);
-      xStore?.set(point.x, tile);
-    } else {
-      tile = new Tile(point, state.currentLayer, cacheData);
-      xStore?.set(point.x, tile);
-    }
+    const tile = new Tile(point, state.currentLayer, tileData);
+    xStore?.set(point.x, tile);
     return tile;
   };
 }
@@ -143,11 +167,11 @@ export function mapAddPrefab(state: IState) {
     let prefab;
 
     // 插入到 prefabInstances 中
-    const cacheData = state.prefabInstancesCache.get(state.prefab.index);
+    const cacheData = state.prefabInstancesCache.get(state.prefab.prefabId);
     if (cacheData == undefined) {
-      const prefabData = new PrefabData(state.prefab.index, state.prefab.width, state.prefab.height, state.prefab.image);
+      const prefabData = new PrefabData(state.prefab.prefabId, state.prefab.width, state.prefab.height, state.prefab.image);
       // 先插入缓存
-      state.prefabInstancesCache.set(state.prefab.index, prefabData);
+      state.prefabInstancesCache.set(state.prefab.prefabId, prefabData);
       prefab = new Prefab(point, prefabData);
       state.prefabInstances.set(prefabKey, prefab);
     } else {

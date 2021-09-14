@@ -12,4 +12,10 @@ export function getPrefabList() {
   });
 }
 
-export default { getTileList, getPrefabList };
+export function getBg() {
+  return request({
+    url: '/get-bg'
+  });
+}
+
+export default { getTileList, getPrefabList, getBg };

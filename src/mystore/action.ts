@@ -12,6 +12,8 @@ import {
 import { keyboardKeyDown, keyboardKeyUp, keyboardRefresh } from '@/mystore/modules/keyboard/keyboard.actions';
 import { mapAddTile, mapDeleteTile, mapAddAreaTile, mapDeleteAreaTile, mapAddPrefab, mapDeletePrefab } from '@/mystore/modules/map/map.actions';
 import { currentTileModify, currentPrefabModify, currentTool, currentDisplayLayer, currentPrefabTool } from '@/mystore/modules/currentItem/item.actions';
+import { backgroundModify } from '@/mystore/modules/background/bg.actions';
+import { collectTileColor, collectTileEffect, collectTileTags } from '@/mystore/modules/collect/collect.actions';
 
 /**
  * 创建Action
@@ -43,6 +45,12 @@ export function createAction(state: IState) {
     currentPrefabModify: currentPrefabModify(state),
     currentTool: currentTool(state),
     currentDisplayLayer: currentDisplayLayer(state),
-    currentPrefabTool: currentPrefabTool(state)
+    currentPrefabTool: currentPrefabTool(state),
+    //
+    backgroundModify: backgroundModify(state),
+    //
+    collectTileColor: collectTileColor(state),
+    collectTileEffect: collectTileEffect(state),
+    collectTileTags: collectTileTags(state)
   };
 }

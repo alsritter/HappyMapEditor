@@ -28,7 +28,7 @@ $bgc: #f9f7d8;
 
 .index-header {
   width: 100%;
-  min-height: 50px;
+  min-height: 30px;
   background-color: $bgc;
   box-sizing: border-box;
   padding: 0 70px 0 70px;
@@ -46,7 +46,7 @@ $bgc: #f9f7d8;
 
 .logo {
   float: left;
-  height: 50px;
+  height: 30px;
   width: 150px;
   cursor: pointer;
   background: url('@/assets/img/logo.png') no-repeat center center;

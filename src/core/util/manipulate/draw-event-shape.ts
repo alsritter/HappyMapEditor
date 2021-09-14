@@ -158,8 +158,8 @@ export default class DrawEventShape {
       canvasSize: 0,
       initPoint: { x: 0, y: 0 },
       point: { x: -10, y: -10 },
-      prefab: new PrefabData(0, 0, 0, null),
-      tile: new TileData(-10, null)
+      prefab: new PrefabData('', 0, 0, null),
+      tile: new TileData('', Layer.FRONT, '', '')
     };
 
     bus.on('brushClear', () => {
@@ -193,7 +193,7 @@ export default class DrawEventShape {
       lastData.initPoint = this.store.state.initPoint;
       lastData.point = point;
       lastData.prefab = this.store.getters.getCurrentPrefabData();
-      lastData.tile = this.store.getters.getCurrentTileData();
+      lastData.tile = this.store.getters.getCurrentTileData() as TileData;
 
       if (this.store.state.itemType == ItemType.TILE) {
         this.drawTileInSingleLayer(lastData.point, lastData.tile, this.brushCtx);

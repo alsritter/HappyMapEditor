@@ -40,14 +40,29 @@ export enum Layer {
  */
 export class TileData {
   image: HTMLImageElement | null;
-  index: number;
+  url: string;
+  key: string;
+  layer: Layer;
+  tileSpriteId: string;
   color: string;
-  effectKeys: number[];
-  tags: number[];
+  effectKeys: string[];
+  tags: string[];
 
-  constructor(index: number, image: HTMLImageElement | null = null, color: string = '#5d9bbf2e', effectKeys: number[] = [], tags: number[] = []) {
+  constructor(
+    key: string,
+    layer: Layer,
+    tileSpriteId: string,
+    url: string,
+    image: HTMLImageElement | null = null,
+    color: string = '#ffffff00',
+    effectKeys: string[] = [],
+    tags: string[] = []
+  ) {
     this.image = image;
-    this.index = index;
+    this.url = url;
+    this.key = key;
+    this.layer = layer;
+    this.tileSpriteId = tileSpriteId;
     this.color = color;
     this.effectKeys = effectKeys;
     this.tags = tags;
@@ -77,12 +92,12 @@ export class Tile {
 
 export class PrefabData {
   image: HTMLImageElement | null;
-  index: number;
+  prefabId: string;
   width: number;
   height: number;
 
-  constructor(index: number, width: number, height: number, image: HTMLImageElement | null = null) {
-    this.index = index;
+  constructor(prefabId: string, width: number, height: number, image: HTMLImageElement | null = null) {
+    this.prefabId = prefabId;
     this.width = width;
     this.height = height;
     this.image = image;
@@ -100,10 +115,12 @@ export class Prefab {
 }
 
 export interface ICurrentTile {
+  isCollect: boolean;
   path: string;
   name: string;
   desc: string;
-  index: number;
+  spriteId: string;
+  key: string;
   image: HTMLImageElement | null;
 }
 
@@ -111,7 +128,7 @@ export interface ICurrentPrefab {
   path: string;
   name: string;
   desc: string;
-  index: number;
+  prefabId: string;
   width: number;
   height: number;
   image: HTMLImageElement | null;
@@ -149,5 +166,17 @@ export class DisplayLayers {
     this.frontShow = true;
     this.middleShow = true;
     this.backgroundShow = true;
+  }
+}
+
+export class Background {
+  bgId: string;
+  color: string;
+  url: string;
+
+  constructor(bgId: string, url: string, color: string = '#fff') {
+    this.bgId = bgId;
+    this.color = color;
+    this.url = url;
   }
 }
