@@ -41,11 +41,11 @@ export function expPrefabs(store: any) {
   for (const prefab of prefabs) {
     result.push({
       prefab_id: prefab.data.prefabId,
-      // 因为坐标反向了，所以得减去宽度高度信息
+      // 得减去宽度高度信息
       // x: prefab.point.x + prefab.data.width,
       // y: -(prefab.point.y + prefab.data.height)
       x: prefab.point.x,
-      y: -prefab.point.y - prefab.data.height + 1
+      y: prefab.point.y - prefab.data.height + 1
     });
   }
   return result;
@@ -80,7 +80,7 @@ export function expTiles(store: any) {
     const txMap = xMap as TreeMap<number, Tile>;
     const tiles = [...txMap.values()];
     for (const tile of tiles) {
-      result.push({ x: tile.point.x, y: -tile.point.y, key: tile.data.key, layer: layerToNumber(tile.layer) });
+      result.push({ x: tile.point.x, y: tile.point.y, key: tile.data.key, layer: layerToNumber(tile.layer) });
     }
   }
   return result;

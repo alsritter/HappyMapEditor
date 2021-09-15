@@ -1,5 +1,8 @@
 /**
  * 这里用于处理平面坐标相关的问题
+ * 注意：因为画布元素坐标的 y 轴是颠倒的，所以需要对一些结果取反：
+ * 1. pixToCoord 取反
+ * 2. coordToPix 取反（将上面取反坐标翻转回来）
  */
 import { Point } from '@/mystore/types';
 
@@ -19,7 +22,7 @@ export function windowToCanvas(canvas: HTMLCanvasElement, x: number, y: number):
 }
 
 /**
- * 将 Canvas 像素位置转换成坐标轴坐标
+ * 将屏幕上（未转成画布上的像素）像素位置转换成坐标轴坐标
  * @param canvas
  * @param size 单元格的大小
  * @param sx 起始点的位置
@@ -34,7 +37,7 @@ export function pixToCoordinate(canvas: HTMLCanvasElement, size: number, sx: num
   const relativeY = tmp.y - sy;
   return {
     x: Math.floor(relativeX / size),
-    y: Math.floor(relativeY / size)
+    y: -Math.floor(relativeY / size)
   };
 }
 
@@ -54,7 +57,7 @@ export function canvasPixToCoordinate(size: number, sx: number, sy: number, x: n
   const relativeY = y - sy;
   return {
     x: Math.floor(relativeX / size),
-    y: Math.floor(relativeY / size)
+    y: -Math.floor(relativeY / size)
   };
 }
 
@@ -71,14 +74,14 @@ export function canvasPixToCoordinate(size: number, sx: number, sy: number, x: n
 export function CoordinateToPix(size: number, sx: number, sy: number, x: number, y: number): Point {
   return {
     x: x * size + sx,
-    y: y * size + sy
+    y: -y * size + sy
   };
 }
 
 /**
- * 判断某个坐标是否在屏幕外面
+ * 判断某个坐标轴坐标是否在画布外面
  *
- * @param canvas
+ * @param canvas 传入一个画布元素
  * @param size 单元格的大小
  * @param sx 起始点的位置
  * @param sy 起始点的位置
@@ -92,7 +95,7 @@ export function coordinateIsOffScreenByElement(canvas: HTMLCanvasElement, size: 
 }
 
 /**
- * 判断某个坐标是否在屏幕外面
+ * 判断某个坐标轴坐标是否在画布外面
  *
  * @param width 画布的高度
  * @param height 画布的宽度
@@ -113,7 +116,7 @@ export function coordinateIsOffScreen(width: number, height: number, size: numbe
 }
 
 /**
- * 判断某个坐标是否在屏幕外面
+ * 判断某个像素坐标是否在画布外面
  *
  * @param width 画布的高度
  * @param height 画布的宽度

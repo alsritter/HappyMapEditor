@@ -129,8 +129,6 @@ export default class DrawEventShape {
 
         canvasBlockDraw.drawSinglePrefab(
           this.prefabCtx,
-          this.width,
-          this.height,
           this.store.state.canvasSize,
           this.store.state.initPoint.x,
           this.store.state.initPoint.y,
@@ -169,7 +167,7 @@ export default class DrawEventShape {
       } else {
         this.deleteSingleAreaTile(
           lastData.point,
-          { x: lastData.point.x + lastData.prefab.width - 1, y: lastData.point.y + lastData.prefab.height - 1 },
+          { x: lastData.point.x + lastData.prefab.width - 1, y: lastData.point.y - lastData.prefab.height + 1 },
           this.brushCtx
         );
       }
@@ -183,7 +181,7 @@ export default class DrawEventShape {
       } else {
         this.deleteSingleAreaTile(
           lastData.point,
-          { x: lastData.point.x + lastData.prefab.width - 1, y: lastData.point.y + lastData.prefab.height - 1 },
+          { x: lastData.point.x + lastData.prefab.width - 1, y: lastData.point.y - lastData.prefab.height + 1 },
           this.brushCtx
         );
       }
@@ -200,8 +198,6 @@ export default class DrawEventShape {
       } else {
         canvasBlockDraw.drawSinglePrefab(
           this.brushCtx,
-          this.width,
-          this.height,
           lastData.canvasSize,
           lastData.initPoint.x,
           lastData.initPoint.y,
@@ -371,6 +367,7 @@ export default class DrawEventShape {
 
         if (this.store.state.displayLayers.prefabShow) {
           const prefabs = this.store.getters.getPrefabRange(startPoint, endPoint) as Prefab[];
+          if (!prefabs) return;
 
           canvasBlockDraw.drawAllPrefab(
             this.prefabCtx,

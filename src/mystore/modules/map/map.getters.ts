@@ -158,15 +158,17 @@ export function getPrefabByPoint(state: IState) {
  * 取得一个范围的 Prefab
  */
 export function getPrefabRange(state: IMapState) {
-  // FIXME: 修复这里精确度的问题
   return (start: Point, end: Point) => {
-    start = { x: Math.min(start.x, end.x), y: Math.min(start.y, end.y) };
-    end = { x: Math.max(start.x, end.x), y: Math.max(start.y, end.y) };
+    if (state.blockInPrefabCount.size == 0) return;
+    const low = { x: Math.min(start.x, end.x), y: Math.min(start.y, end.y) };
+    // y 轴反向了，所以需要加一个 Block 的大小
+    const high = { x: Math.max(start.x, end.x), y: Math.max(start.y, end.y) + Constants.BLOCK_SIZE };
 
-    const nStart = canvasBlockPoint.coordinateToBlockEndCoordinate(start.x, start.y);
-    const nEnd = canvasBlockPoint.coordinateToBlockEndCoordinate(end.x, end.y);
+    const nStart = canvasBlockPoint.coordinateToBlockEndCoordinate(low.x, low.y);
+    const nEnd = canvasBlockPoint.coordinateToBlockEndCoordinate(high.x, high.y);
     const yarr = [...state.blockInPrefabCount.keys()];
     let yRange;
+
     // 如果相等则无需二分查找了
     if (nStart.y == nEnd.y) {
       if (state.blockInPrefabCount.has(nStart.y)) {
@@ -175,12 +177,18 @@ export function getPrefabRange(state: IMapState) {
         return undefined;
       }
     } else {
+      // FIXME: 修复这里精确度的问题
+      // 增大一个 Block 的范围
       yRange = binarySearch(yarr, nStart.y, nEnd.y);
     }
+
     const res = [];
 
     // 注意这里可能一个 Prefab 存在多个 Block 中，所以创建一个零时 Set 数组避免重复添加
     const tset = new Set<number>();
+
+    // console.log(yRange.length, yarr, nStart.y - Constants.BLOCK_SIZE, nEnd.y + Constants.BLOCK_SIZE);
+
     for (let i = 0; i < yRange.length; i++) {
       const xStore = state.blockInPrefabCount.get(yRange[i]);
       if (xStore == undefined) continue;
@@ -195,6 +203,7 @@ export function getPrefabRange(state: IMapState) {
       } else {
         xRange = binarySearch(xarr, nStart.x, nEnd.x);
       }
+
       // 直接把 Block 内的 Prefab 直接存入 res 里面
       for (let j = 0; j < xRange.length; j++) {
         const arr = xStore.get(xRange[j]);
@@ -205,9 +214,10 @@ export function getPrefabRange(state: IMapState) {
             const prefab = state.prefabInstances.get(key);
             if (!prefab) continue;
             if (
+              // 因为 prefab 的坐标实际是 { x: 0, y: height } 所以这里要减去 height
               checkRect(
-                { x: prefab.point.x, y: prefab.point.y, width: prefab.data.width, height: prefab.data.height },
-                { x: start.x, y: start.y, width: end.x - start.x, height: end.y - start.y }
+                { x: prefab.point.x, y: prefab.point.y - prefab.data.height, width: prefab.data.width, height: prefab.data.height },
+                { x: low.x, y: low.y, width: high.x - low.x, height: high.y - low.y }
               )
             ) {
               res.push(prefab);

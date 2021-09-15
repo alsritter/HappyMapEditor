@@ -29,7 +29,7 @@ export default defineComponent({
     const store = useStore();
     const showGrid = ref(true);
     const showAxis = ref(true);
-    const brush = ref('PEN');
+    const brush = ref('AREA_PEN');
     const prefabModel = ref('DRAW');
 
     watch(showGrid, (newValue) => {

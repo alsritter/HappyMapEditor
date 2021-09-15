@@ -57,7 +57,7 @@ export function drawGrid(
     if (showAxis) {
       // 绘制文字
       ctx.font = `${size * 0.6}px serif`;
-      ctx.fillText(Math.ceil(i - cy) + '', initX, size * i - 0.5 + size / 2 + (initY % size), size);
+      ctx.fillText(-Math.ceil(i - cy) + '', initX, size * i - 0.5 + size / 2 + (initY % size), size);
     }
   }
 
@@ -103,24 +103,25 @@ export function drawSingleItem(
   if (data == undefined) return;
 
   // 计算当前要修改的具体位置(有正负)
-  const pixX = changeX * size + initX;
-  const pixY = changeY * size + initY;
+  // const pixX = changeX * size + initX;
+  // const pixY = changeY * size + initY;
+  const pix = CoordinateToPix(size, initX, initY, changeX, changeY);
 
   // 如果要修改的格子在画布外面则不需要绘制，注意它的起始坐标在左上角，所以要比对四个角完全不在画布里面才不需要绘制
-  if (pixX > width || pixX + size < 0 || pixY > height || pixY + size < 0) return;
+  if (pix.x > width || pix.x + size < 0 || pix.y > height || pix.y + size < 0) return;
   // 先清空指定位置
-  frontCtx.clearRect(pixX, pixY, size, size);
-  middleCtx.clearRect(pixX, pixY, size, size);
-  backgroundCtx.clearRect(pixX, pixY, size, size);
+  frontCtx.clearRect(pix.x, pix.y, size, size);
+  middleCtx.clearRect(pix.x, pix.y, size, size);
+  backgroundCtx.clearRect(pix.x, pix.y, size, size);
 
   // ctx.strokeStyle = data; // 这种是轮廓颜色
   mainCtx.fillStyle = data.color;
   // ctx.drawImage()
   if (data.image != null) {
-    mainCtx.drawImage(data.image, pixX, pixY, size, size);
+    mainCtx.drawImage(data.image, pix.x, pix.y, size, size);
   }
   // 绘制色块
-  mainCtx.fillRect(pixX, pixY, size, size);
+  mainCtx.fillRect(pix.x, pix.y, size, size);
 }
 
 /**
@@ -149,22 +150,23 @@ export function drawSingleItemInSingleLayer(
   if (data == undefined) return;
 
   // 计算当前要修改的具体位置(有正负)
-  const pixX = changeX * size + initX;
-  const pixY = changeY * size + initY;
+  // const pixX = changeX * size + initX;
+  // const pixY = changeY * size + initY;
+  const pix = CoordinateToPix(size, initX, initY, changeX, changeY);
 
   // 如果要修改的格子在画布外面则不需要绘制，注意它的起始坐标在左上角，所以要比对四个角完全不在画布里面才不需要绘制
-  if (pixX > width || pixX + size < 0 || pixY > height || pixY + size < 0) return;
+  if (pix.x > width || pix.x + size < 0 || pix.y > height || pix.y + size < 0) return;
   // 先清空指定位置
-  mainCtx.clearRect(pixX, pixY, size, size);
+  mainCtx.clearRect(pix.x, pix.y, size, size);
 
   // ctx.strokeStyle = data; // 这种是轮廓颜色
   mainCtx.fillStyle = data.color;
   // ctx.drawImage()
   if (data.image != null) {
-    mainCtx.drawImage(data.image, pixX, pixY, size, size);
+    mainCtx.drawImage(data.image, pix.x, pix.y, size, size);
   }
   // 绘制色块
-  mainCtx.fillRect(pixX, pixY, size, size);
+  mainCtx.fillRect(pix.x, pix.y, size, size);
 }
 
 /**

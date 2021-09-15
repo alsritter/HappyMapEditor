@@ -4,6 +4,8 @@ import { clearAllCanvas } from './canvas-draw';
 import Constants from '@/core/util/Constants';
 
 /**
+ * DISCARD: 这个函数已经被废弃
+ *
  * 绘制 Block 盒子（边框）
  * @param ctx 画布元素
  * @param size 单元格宽度
@@ -46,8 +48,6 @@ export const drawBlockBox = (ctx: CanvasRenderingContext2D, size: number, sx: nu
 
 export function drawSinglePrefab(
   ctx: CanvasRenderingContext2D,
-  width: number,
-  height: number,
   size: number,
   initX: number,
   initY: number,
@@ -57,26 +57,40 @@ export function drawSinglePrefab(
 ) {
   if (data == undefined) return;
 
-  const pixX = changeX * size + initX;
-  const pixY = changeY * size + initY;
+  // const pixX = changeX * size + initX;
+  // const pixY = changeY * size + initY;
+
+  const pix = CoordinateToPix(size, initX, initY, changeX, changeY);
 
   // 先清空指定位置
-  ctx.clearRect(pixX, pixY, data.width * size, data.height * size);
+  ctx.clearRect(pix.x, pix.y, data.width * size, data.height * size);
   // ctx.strokeStyle = data; // 这种是轮廓颜色
   ctx.fillStyle = '#8c40405c';
   // ctx.drawImage()
   if (data.image != null) {
-    ctx.drawImage(data.image, pixX, pixY, data.width * size, data.height * size);
+    ctx.drawImage(data.image, pix.x, pix.y, data.width * size, data.height * size);
   }
   // 绘制色块
-  ctx.fillRect(pixX, pixY, data.width * size, data.height * size);
+  ctx.fillRect(pix.x, pix.y, data.width * size, data.height * size);
 }
 
+/**
+ * 批量绘制 Prefab
+ *
+ * @param ctx
+ * @param width
+ * @param height
+ * @param size
+ * @param initX
+ * @param initY
+ * @param dataes
+ * @returns
+ */
 export function drawAllPrefab(ctx: CanvasRenderingContext2D, width: number, height: number, size: number, initX: number, initY: number, dataes: Prefab[]) {
   clearAllCanvas(ctx, width, height);
   if (!dataes) return;
   for (const prefab of dataes) {
-    drawSinglePrefab(ctx, width, height, size, initX, initY, prefab.point.x, prefab.point.y, prefab.data);
+    drawSinglePrefab(ctx, size, initX, initY, prefab.point.x, prefab.point.y, prefab.data);
   }
 }
 

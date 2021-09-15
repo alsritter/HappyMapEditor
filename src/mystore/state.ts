@@ -53,7 +53,7 @@ export const State: IState = {
   },
   itemType: ItemType.TILE,
   currentLayer: Layer.MIDDLE,
-  currentTool: ToolType.PEN,
+  currentTool: ToolType.AREA_PEN,
   displayLayers: new DisplayLayers(),
   currentPrefabTool: PrefabToolType.DRAW,
   //
