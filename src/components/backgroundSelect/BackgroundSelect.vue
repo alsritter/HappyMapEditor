@@ -16,7 +16,6 @@
 import { defineComponent, ref } from 'vue';
 import { useStore } from '@/mystore';
 import axios from '@/network';
-import { Background } from '@/mystore/types';
 
 export default defineComponent({
   setup() {

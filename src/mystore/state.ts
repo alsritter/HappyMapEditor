@@ -17,8 +17,8 @@ export interface IState extends ICanvasState, IKeyboradState, IMapState, IItemSt
 export const State: IState = {
   canvasSize: Constants.DEFAULT_SIZE,
   initPoint: {
-    x: 0,
-    y: 0
+    x: Constants.CANVAS_WIDTH / 2,
+    y: Constants.CANVAS_HEIGHT / 2
   },
   dragging: false,
   showGrid: true,

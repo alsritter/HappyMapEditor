@@ -67,13 +67,13 @@ export default class DrawEventShape {
 
       switch (layer) {
         case Layer.FRONT:
-          this.drawTile(tile, this.frontCtx);
+          this.drawTile(tile as Tile, this.frontCtx);
           break;
         case Layer.MIDDLE:
-          this.drawTile(tile, this.backgroundCtx);
+          this.drawTile(tile as Tile, this.backgroundCtx);
           break;
         case Layer.BACKGROUND:
-          this.drawTile(tile, this.backgroundCtx);
+          this.drawTile(tile as Tile, this.backgroundCtx);
           break;
       }
     });

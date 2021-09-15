@@ -74,6 +74,7 @@ export function drawSinglePrefab(
 
 export function drawAllPrefab(ctx: CanvasRenderingContext2D, width: number, height: number, size: number, initX: number, initY: number, dataes: Prefab[]) {
   clearAllCanvas(ctx, width, height);
+  if (!dataes) return;
   for (const prefab of dataes) {
     drawSinglePrefab(ctx, width, height, size, initX, initY, prefab.point.x, prefab.point.y, prefab.data);
   }
