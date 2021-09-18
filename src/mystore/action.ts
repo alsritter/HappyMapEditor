@@ -10,9 +10,22 @@ import {
   canvasShowAxis
 } from '@/mystore/modules/canvas/canvas.actions';
 import { keyboardKeyDown, keyboardKeyUp, keyboardRefresh } from '@/mystore/modules/keyboard/keyboard.actions';
-import { mapAddTile, mapDeleteTile, mapAddAreaTile, mapDeleteAreaTile, mapAddPrefab, mapDeletePrefab } from '@/mystore/modules/map/map.actions';
+import {
+  mapAddTile,
+  mapDeleteTile,
+  mapAddAreaTile,
+  mapDeleteAreaTile,
+  mapAddPrefab,
+  mapDeletePrefab,
+  clearAllTileData,
+  replaceTileData,
+  clearAllTile,
+  replaceTile,
+  clearPrefabs,
+  replacePrefab
+} from '@/mystore/modules/map/map.actions';
 import { currentTileModify, currentPrefabModify, currentTool, currentDisplayLayer, currentPrefabTool } from '@/mystore/modules/currentItem/item.actions';
-import { backgroundModify } from '@/mystore/modules/background/bg.actions';
+import { backgroundModify, backgroundClear } from '@/mystore/modules/background/bg.actions';
 import { collectTileColor, collectTileEffect, collectTileTags } from '@/mystore/modules/collect/collect.actions';
 
 /**
@@ -40,6 +53,12 @@ export function createAction(state: IState) {
     mapDeleteAreaTile: mapDeleteAreaTile(state),
     mapAddPrefab: mapAddPrefab(state),
     mapDeletePrefab: mapDeletePrefab(state),
+    clearAllTileData: clearAllTileData(state),
+    replaceTileData: replaceTileData(state),
+    clearAllTile: clearAllTile(state),
+    replaceTile: replaceTile(state),
+    clearPrefabs: clearPrefabs(state),
+    replacePrefab: replacePrefab(state),
     //
     currentTileModify: currentTileModify(state),
     currentPrefabModify: currentPrefabModify(state),
@@ -48,6 +67,7 @@ export function createAction(state: IState) {
     currentPrefabTool: currentPrefabTool(state),
     //
     backgroundModify: backgroundModify(state),
+    backgroundClear: backgroundClear(state),
     //
     collectTileColor: collectTileColor(state),
     collectTileEffect: collectTileEffect(state),

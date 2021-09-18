@@ -23,8 +23,7 @@ export default defineComponent({
     const height = Constants.CANVAS_HEIGHT;
     // The starting position of the current coordinate
     const bgUrl = computed(() => {
-      console.log(store.getters.getBgUrl());
-      return store.getters.getBgUrl();
+      return store.state.bgUrl;
     });
 
     /**

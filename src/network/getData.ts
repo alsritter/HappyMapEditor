@@ -18,4 +18,22 @@ export function getBg() {
   });
 }
 
-export default { getTileList, getPrefabList, getBg };
+export function getTileById(id: string) {
+  return request({
+    url: `/get-tile-by-id/${id}`
+  });
+}
+
+export function getPrefabById(id: string) {
+  return request({
+    url: `/get-prefab-by-id/${id}`
+  });
+}
+
+export function getBgById(id: string) {
+  return request({
+    url: `/get-bg-by-id/${id}`
+  });
+}
+
+export default { getTileList, getPrefabList, getBg, getTileById, getPrefabById, getBgById };

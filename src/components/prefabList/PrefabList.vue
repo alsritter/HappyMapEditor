@@ -54,8 +54,10 @@ export default defineComponent({
 .el-image {
   // height: 30px;
   margin: 2px;
-  max-height: 50px;
+  min-height: 30px;
+  min-width: 30px;
   max-width: 50px;
+  max-height: 50px;
 
   &:hover {
     -webkit-filter: brightness(50%);

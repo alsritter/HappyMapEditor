@@ -156,7 +156,8 @@ export function mapAddPrefab(state: IState) {
   return (point: Point) => {
     const width = state.prefab.width;
     const height = state.prefab.height;
-    if (checkRect(state, { x: point.x, y: point.y }, { x: point.x + width, y: point.y + height })) return undefined;
+    // 注意因为 prefab 的起点是左上角，所以这里要减去 height
+    if (checkRect(state, { x: point.x, y: point.y - height }, { x: point.x + width, y: point.y })) return undefined;
 
     // 生成随机 key（需要避免生成重复的）
     let prefabKey = Math.ceil(Math.random() * 10000);
@@ -181,10 +182,9 @@ export function mapAddPrefab(state: IState) {
 
     for (let i = 0; i < width; i++) {
       for (let j = 0; j < height; j++) {
-        const subPoint = { x: point.x + i, y: point.y + j };
+        const subPoint = { x: point.x + i, y: point.y - j };
         let block = getBlockByPoint(state)(subPoint);
         const blockPoint = canvasBlockPoint.coordinateToBlockEndCoordinate(subPoint.x, subPoint.y);
-
         // 如果不存在 block 则需要创建
         if (!block) {
           // 创建一个初始为 -1 的数组
@@ -252,7 +252,7 @@ function checkRect(state: IState, start: Point, end: Point) {
   end = { x: Math.max(start.x, end.x), y: Math.max(start.y, end.y) };
   // TODO: 改进 getPrefabRange 后，直接调用 getPrefabRange 来检查
   for (let i = start.x; i < end.x; i++) {
-    for (let j = start.y; j < end.y; j++) {
+    for (let j = end.y; j > start.y; j--) {
       if (getPrefabByPoint(state)({ x: i, y: j })) return true;
     }
   }
@@ -272,8 +272,8 @@ export function mapDeletePrefab(state: IState) {
     const inPoint = canvasBlockPoint.coordinateToBlockCoordinate(point.x, point.y);
     // 定位 key
     const key = block.data[inPoint.x][inPoint.y];
+    if (key === -1) return undefined;
     const prefab = state.prefabInstances.get(key);
-
     if (prefab) {
       const point = prefab.point;
       const width = prefab.data.width;
@@ -346,6 +346,111 @@ export function mapDeletePrefab(state: IState) {
     state.prefabInstances.delete(key);
 
     return prefab;
+  };
+}
+
+/**
+ * 清空全部 TileData
+ */
+export function clearAllTileData(state: IState) {
+  return () => {
+    state.tileInstancesCache.clear();
+    state.currentTileInstancesCache.clear();
+  };
+}
+
+/**
+ * 替换 TileData
+ */
+export function replaceTileData(state: IState) {
+  return (tile: TileData) => {
+    state.tileInstancesCache.set(tile.key, tile);
+    state.currentTileInstancesCache.set(tile.key, tile);
+  };
+}
+
+/**
+ * 清空全部 Tile
+ */
+export function clearAllTile(state: IMapState) {
+  return () => {
+    state.mapTiles.clear();
+  };
+}
+
+/**
+ * 替换 Tile
+ */
+export function replaceTile(state: IMapState) {
+  return (tile: Tile) => {
+    if (!state.mapTiles.has(tile.point.y)) {
+      state.mapTiles.set(tile.point.y, new TreeMap<number, Tile>((a: number, b: number) => a - b));
+    }
+
+    const xStore = state.mapTiles.get(tile.point.y);
+    xStore?.set(tile.point.x, tile);
+  };
+}
+
+/**
+ * 清空预制件
+ */
+export function clearPrefabs(state: IMapState) {
+  return () => {
+    state.prefabInstancesCache.clear();
+    state.mapBlocks.clear();
+    state.blockInPrefabCount.clear();
+    state.prefabInstances.clear();
+  };
+}
+
+/**
+ * 替换 Prefab
+ */
+export function replacePrefab(state: IState) {
+  return (prefab: Prefab) => {
+    const key = Math.ceil(Math.random() * 10000);
+
+    const width = prefab.data.width;
+    const height = prefab.data.height;
+    state.prefabInstancesCache.set(prefab.data.prefabId, prefab.data);
+    state.prefabInstances.set(key, prefab);
+
+    for (let i = 0; i < width; i++) {
+      for (let j = 0; j < height; j++) {
+        const subPoint = { x: prefab.point.x + i, y: prefab.point.y - j };
+        let block = getBlockByPoint(state)(subPoint);
+        const blockPoint = canvasBlockPoint.coordinateToBlockEndCoordinate(subPoint.x, subPoint.y);
+        // 如果不存在 block 则需要创建
+        if (!block) {
+          // 创建一个初始为 -1 的数组
+          const blockData = [];
+          for (let z = 0; z < Constants.BLOCK_SIZE; z++) {
+            const tmpArr = [];
+            for (let t = 0; t < Constants.BLOCK_SIZE; t++) {
+              tmpArr.push(-1);
+            }
+            blockData.push(tmpArr);
+          }
+          const nBlock = new Block(blockPoint.x, blockPoint.y, blockData);
+
+          let xStore = state.mapBlocks.get(blockPoint.y);
+          if (!xStore) {
+            state.mapBlocks.set(blockPoint.y, new TreeMap<number, Block>((a: number, b: number) => a - b));
+            xStore = state.mapBlocks.get(blockPoint.y);
+          }
+
+          xStore?.set(blockPoint.x, nBlock);
+          block = nBlock;
+        }
+
+        // 插入到指定位置(内部坐标)
+        const inPoint = canvasBlockPoint.coordinateToBlockCoordinate(subPoint.x, subPoint.y);
+        block.data[inPoint.x][inPoint.y] = key;
+        // 再把它丢进 blockInPrefabCount
+        addKeyToBlockInPrefabCount(state, key, blockPoint);
+      }
+    }
   };
 }
 

@@ -3,6 +3,9 @@
  */
 import { Layer, Tile } from '@/mystore/types';
 import TreeMap from 'ts-treemap';
+import { useStore } from '@/mystore';
+
+const store = useStore();
 
 /**
  * 导出初始化数据
@@ -25,9 +28,9 @@ export function expInitial() {
 /**
  * 导出背景数据
  */
-export function expBg(store: any) {
+export function expBg() {
   return {
-    bg_id: store.state.currentBackground.bgId,
+    bg_id: store.state.bgId,
     color: '#fff'
   };
 }
@@ -35,7 +38,7 @@ export function expBg(store: any) {
 /**
  * 导出预制件信息
  */
-export function expPrefabs(store: any) {
+export function expPrefabs() {
   const result = [];
   const prefabs = [...store.state.prefabInstances.values()];
   for (const prefab of prefabs) {
@@ -54,7 +57,7 @@ export function expPrefabs(store: any) {
 /**
  * 导出 Tile 信息
  */
-export function expTileData(store: any) {
+export function expTileData() {
   const result = [];
   const tiles = [...store.state.tileInstancesCache.values()];
   for (const tile of tiles) {
@@ -73,7 +76,7 @@ export function expTileData(store: any) {
 /**
  * 导出 Tile 信息
  */
-export function expTiles(store: any) {
+export function expTiles() {
   const result = [];
   const yMap = [...store.state.mapTiles.values()];
   for (const xMap of yMap) {
@@ -86,7 +89,7 @@ export function expTiles(store: any) {
   return result;
 }
 
-function layerToNumber(layer: Layer) {
+export function layerToNumber(layer: Layer) {
   switch (layer) {
     case Layer.BACKGROUND:
       return 1;

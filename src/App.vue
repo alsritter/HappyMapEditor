@@ -1,18 +1,10 @@
 <template>
-  <!-- <index-header /> -->
-  <!-- <main> -->
-  <!-- <MainCanvas /> -->
-  <!-- <router-view class="main-left"></router-view> -->
-  <!-- <index-aside class="main-right" /> -->
-  <!-- </main> -->
-  <!-- <index-footer /> -->
-
   <el-container>
-    <el-header height="30px"><index-header /></el-header>
+    <el-header height="45px"><index-header /></el-header>
     <el-container>
       <el-aside width="450px"><index-left-aside /></el-aside>
       <el-container>
-        <el-header height="50px"><inline-header /></el-header>
+        <el-header height="30px"><inline-header /></el-header>
         <el-main><router-view></router-view></el-main>
       </el-container>
       <el-aside width="300px"><index-right-aside /></el-aside>
@@ -30,6 +22,8 @@ import InlineHeader from '@/views/indexHeader/inlineHeader/InlineHeader.vue';
 import IndexLeftAside from '@/views/indexAside/IndexLeftAside.vue';
 import IndexRightAside from '@/views/indexAside/IndexRightAside.vue';
 import IndexFooter from '@/views/indexFooter/IndexFooter.vue';
+import { inputData } from '@/core/util/iofile/inpdata';
+import { expTiles, expInitial, expBg, expPrefabs, expTileData, downLoadFiles } from '@/core/util/iofile/exportdata';
 
 export default defineComponent({
   name: 'App',
@@ -48,6 +42,10 @@ export default defineComponent({
       init() {
         this.addEvents();
         //this.$store.dispatch('maps/MAPS_REQUEST');
+        const map = localStorage.getItem('localMapData');
+        if (map) {
+          inputData(map);
+        }
       },
       addEvents() {
         document.addEventListener('keydown', this.onKeyDown);
@@ -66,7 +64,22 @@ export default defineComponent({
       onShortcutKey() {
         // console.log(tmp);
         if (store.getters.isRecall()) {
-          console.log('按下了撤回键');
+          // console.log('按下了撤回键');
+        }
+        // 按下保存
+        if (store.getters.isSave()) {
+          const data = {
+            create_time: '2021-05-01T12:53Z',
+            version: '1.1',
+            author: 'alsritter',
+            initial: expInitial(),
+            background: expBg(),
+            prefabs: expPrefabs(),
+            tileData: expTileData(),
+            tiles: expTiles()
+          };
+          // downLoadFiles(data, 'exportData.json');
+          localStorage.setItem('localMapData', JSON.stringify(data));
         }
       }
     };

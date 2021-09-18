@@ -1,8 +1,6 @@
 <template>
   <div class="bg-list">
-    <el-divider>选择背景</el-divider>
-    <br />
-    <el-popover placement="left" :width="400" trigger="click">
+    <el-popover placement="right" trigger="click">
       <!-- <div v-for="item of items" :key="item.name">{{ item.name }}</div> -->
       <el-radio v-for="item of items" :key="item.name" v-model="radioValue" :label="item.bg_id" @change="changeBG(item)">{{ item.name }}</el-radio>
       <template #reference>
@@ -24,7 +22,7 @@ export default defineComponent({
     const radioValue = ref('');
 
     function changeBG(item: any) {
-      store.action.backgroundModify(item.bg_id, item.path, '#FFF');
+      store.action.backgroundModify(item.bg_id, item.path, item.name);
     }
 
     axios.getData
@@ -45,4 +43,8 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.bg-list {
+  display: inline;
+}
+</style>

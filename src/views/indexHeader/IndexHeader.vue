@@ -3,8 +3,11 @@
     <!-- 限制元素堆积在中间 -->
     <div class="limit-box">
       <!-- 可以返回首页的logo -->
-      <div class="logo" @click="GotoIndex"></div>
-      <el-button size="mini" type="warning" @click="outputMapData">导出数据</el-button>
+      <div class="logo" @click="gotoIndex"></div>
+      <el-button size="mini" type="warning" @click="clearLocal">清空本地数据</el-button>
+      <el-button size="mini" type="primary" @click="outputMapData">导出数据</el-button>
+      <!-- <el-button size="mini" @click="inputMapData">导入数据</el-button> -->
+      <file-reader @load="inputMapData"></file-reader>
     </div>
   </div>
 </template>
@@ -12,40 +15,53 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { expTiles, expInitial, expBg, expPrefabs, expTileData, downLoadFiles } from '@/core/util/iofile/exportdata';
+import { inputData } from '@/core/util/iofile/inpdata';
 import { useStore } from '@/mystore';
+import FileReader from '@/components/textReader/FileReader.vue';
+import { ElMessage } from 'element-plus';
 
 export default defineComponent({
+  components: {
+    // MainCanvas,
+    FileReader
+  },
   setup() {
     const store = useStore();
 
-    function GotoIndex() {
+    function inputMapData(value: string) {
+      // const map = JSON.parse(value);
+      // console.log(map);
+      inputData(value);
+    }
+
+    function gotoIndex() {
       console.log('点击了 Log');
     }
 
+    function clearLocal() {
+      localStorage.removeItem('localMapData');
+    }
+
     function outputMapData() {
+      if (!store.state.bgUrl) {
+        ElMessage.error('请先选择一个背景图片');
+        return;
+      }
+
       const data = {
         create_time: '2021-05-01T12:53Z',
         version: '1.1',
         author: 'alsritter',
         initial: expInitial(),
-        background: expBg(store),
-        prefabs: expPrefabs(store),
-        tileData: expTileData(store),
-        tiles: expTiles(store)
+        background: expBg(),
+        prefabs: expPrefabs(),
+        tileData: expTileData(),
+        tiles: expTiles()
       };
-
-      // const str = JSON.stringify(data);
       downLoadFiles(data, 'exportData.json');
-
-      // console.log(str);
-      // console.log(JSON.stringify(data));
-      // let link = document.createElement('a');
-      // link.download = 'exportData.json';
-      // link.href = 'data:text/plain,' + str;
-      // link.click();
     }
 
-    return { GotoIndex, outputMapData };
+    return { gotoIndex, outputMapData, inputMapData, clearLocal };
   }
 });
 </script>
@@ -79,5 +95,9 @@ $bgc: #f9f7d8;
   cursor: pointer;
   background: url('@/assets/img/logo.png') no-repeat center center;
   background-size: 50px;
+}
+
+label.text-reader {
+  margin-left: 10px;
 }
 </style>

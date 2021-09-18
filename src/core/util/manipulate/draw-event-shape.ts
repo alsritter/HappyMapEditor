@@ -144,7 +144,9 @@ export default class DrawEventShape {
       const prefab = this.store.action.mapDeletePrefab(point);
       // bus.emit('refreshCanvas');
       if (prefab) {
-        this.deleteSingleAreaTile(prefab.point, { x: prefab.point.x + prefab.data.width - 1, y: prefab.point.y + prefab.data.height - 1 }, this.prefabCtx);
+        console.log(prefab);
+
+        this.deleteSingleAreaTile(prefab.point, { x: prefab.point.x + prefab.data.width - 1, y: prefab.point.y - prefab.data.height + 1 }, this.prefabCtx);
       }
     });
 

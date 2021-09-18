@@ -1,9 +1,19 @@
 import { IState } from './state';
-import { selectKeys, selectPressedKeys, isRecall, isAlt, isDown_B, isDown_E, isDown_F, isDown_P, isDown_U } from '@/mystore/modules/keyboard/keyboard.getters';
+import {
+  selectKeys,
+  selectPressedKeys,
+  isRecall,
+  isAlt,
+  isDown_B,
+  isDown_E,
+  isDown_F,
+  isDown_P,
+  isDown_U,
+  isSave
+} from '@/mystore/modules/keyboard/keyboard.getters';
 import { getTileByPoint, getTileRange, getPrefabByPoint, getPrefabRange, getCurrentPrefabData, getCurrentTileData } from '@/mystore/modules/map/map.getters';
 import { currentLayerIsDisplayed } from '@/mystore/modules/currentItem/item.getters';
 import { getAllCollectTile, getCollectTileByKey } from '@/mystore/modules/collect/collect.getters';
-import { getBgUrl } from '@/mystore/modules/background/bg.getters';
 
 export function createGetter(state: IState) {
   return {
@@ -16,6 +26,7 @@ export function createGetter(state: IState) {
     isDown_F: isDown_F(state),
     isDown_P: isDown_P(state),
     isDown_U: isDown_U(state),
+    isSave: isSave(state),
     //
     getTileRange: getTileRange(state),
     getTileByPoint: getTileByPoint(state),
@@ -27,8 +38,6 @@ export function createGetter(state: IState) {
     currentLayerIsDisplayed: currentLayerIsDisplayed(state),
     //
     getAllCollectTile: getAllCollectTile(state),
-    getCollectTileByKey: getCollectTileByKey(state),
-    //
-    getBgUrl: getBgUrl(state)
+    getCollectTileByKey: getCollectTileByKey(state)
   };
 }

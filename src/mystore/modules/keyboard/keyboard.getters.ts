@@ -44,6 +44,16 @@ export function isAlt(state: IKeyboradState) {
   };
 }
 
+/**
+ * 是否按下 Ctrl + S
+ * @returns 是否按下 保存
+ */
+export function isSave(state: IKeyboradState) {
+  return () => {
+    return state.keys['VALUE_CONTROL'] && state.keys['VALUE_S'];
+  };
+}
+
 export function isDown_B(state: IKeyboradState) {
   return () => {
     return state.keys['VALUE_B'];

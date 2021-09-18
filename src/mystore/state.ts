@@ -59,7 +59,9 @@ export const State: IState = {
   //
   tileInstancesCache: new Map<string, TileData>(),
   //
-  currentBackground: new Background('', '')
+  bgUrl: '',
+  bgId: '',
+  bgName: ''
 };
 
 export function createState() {

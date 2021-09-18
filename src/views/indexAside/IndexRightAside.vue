@@ -6,22 +6,18 @@
     <el-card class="box-card">
       <layer-select />
     </el-card>
-    <el-card class="box-card">
-      <background-select />
-    </el-card>
+    <el-card class="box-card"></el-card>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import BackgroundSelect from '@/components/backgroundSelect/BackgroundSelect.vue';
 import LayerSelect from '@/components/layerSelect/LayerSelect.vue';
 import CollectList from '@/components/collectList/CollectList.vue';
 
 export default defineComponent({
   components: {
     LayerSelect,
-    BackgroundSelect,
     CollectList
   },
   setup() {

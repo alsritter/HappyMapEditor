@@ -1,20 +1,26 @@
 <template>
   <div class="inline-header">
-    <div>
-      <el-checkbox v-model="showGrid" label="显示网格"></el-checkbox>
-      <el-checkbox v-model="showAxis" label="显示轴线"></el-checkbox>
-    </div>
-    <div v-if="store.state.itemType == 'TILE'">
-      <el-radio v-model="brush" label="PEN">铅笔|B</el-radio>
-      <el-radio v-model="brush" label="ERASER">橡皮|E</el-radio>
-      <el-radio v-model="brush" label="PIPETA">滴灌|F</el-radio>
-      <el-radio v-model="brush" label="AREA_PEN">选框笔|P</el-radio>
-      <el-radio v-model="brush" label="AREA_ERASER">选框擦|U</el-radio>
-    </div>
-    <div v-else>
-      <el-radio v-model="prefabModel" label="DRAW">绘制|Q</el-radio>
-      <el-radio v-model="prefabModel" label="DELETE">删除|D</el-radio>
-    </div>
+    <el-row :gutter="24" align="middle">
+      <el-col :span="5">
+        <div>
+          <el-checkbox v-model="showGrid" label="显示网格"></el-checkbox>
+          <el-checkbox v-model="showAxis" label="显示轴线"></el-checkbox>
+        </div>
+      </el-col>
+      <el-col :span="19">
+        <div v-if="store.state.itemType == 'TILE'">
+          <el-radio v-model="brush" label="PEN">铅笔|B</el-radio>
+          <el-radio v-model="brush" label="ERASER">橡皮|E</el-radio>
+          <el-radio v-model="brush" label="PIPETA">滴灌|F</el-radio>
+          <el-radio v-model="brush" label="AREA_PEN">选框笔|P</el-radio>
+          <el-radio v-model="brush" label="AREA_ERASER">选框擦|U</el-radio>
+        </div>
+        <div v-else>
+          <el-radio v-model="prefabModel" label="DRAW">绘制|Q</el-radio>
+          <el-radio v-model="prefabModel" label="DELETE">删除|D</el-radio>
+        </div>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
