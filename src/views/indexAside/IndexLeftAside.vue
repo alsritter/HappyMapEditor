@@ -16,7 +16,7 @@
           <div v-if="store.state.tile.isCollect">
             <div class="block">
               <!-- <span class="demonstration">选择颜色：</span> -->
-              <el-color-picker v-model="color" color-format="hex" show-alpha @change="changeColor(store.state.tile.key)"></el-color-picker>
+              <!-- <el-color-picker v-model="color" color-format="hex" show-alpha @change="changeColor(store.state.tile.key)"></el-color-picker> -->
             </div>
           </div>
           <div v-else>
@@ -70,15 +70,31 @@ export default defineComponent({
       }
     );
 
-    function changeColor(key: string) {
-      store.action.collectTileColor(key, color.value);
-      bus.emit('refreshCanvas');
-    }
+    // function getHexColor(color: string) {
+    //   const values = color
+    //     .replace(/rgba?\(/, '')
+    //     .replace(/\)/, '')
+    //     .replace(/[\s+]/g, '')
+    //     .split(',');
+    //   const a = parseFloat(values[3] || 1),
+    //     r = Math.floor(a * parseInt(values[0]) + (1 - a) * 255),
+    //     g = Math.floor(a * parseInt(values[1]) + (1 - a) * 255),
+    //     b = Math.floor(a * parseInt(values[2]) + (1 - a) * 255);
+
+    //   return '#' + ('0' + r.toString(16)).slice(-2) + ('0' + g.toString(16)).slice(-2) + ('0' + b.toString(16)).slice(-2) + ('0' + a.toString(16)).slice(-2);
+    // }
+
+    // function changeColor(key: string) {
+    //   console.log(getHexColor(color.value));
+
+    //   store.action.collectTileColor(key, getHexColor(color.value));
+    //   bus.emit('refreshCanvas');
+    // }
 
     return {
       activeName,
       store,
-      changeColor,
+      // changeColor,
       color
     };
   }
