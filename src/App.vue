@@ -46,6 +46,11 @@ export default defineComponent({
         if (map) {
           inputData(map);
         }
+
+        window.oncontextmenu = function (e) {
+          //取消默认的浏览器自带右键 很重要！！
+          e.preventDefault();
+        };
       },
       addEvents() {
         document.addEventListener('keydown', this.onKeyDown);

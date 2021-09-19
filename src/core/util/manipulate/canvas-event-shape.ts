@@ -109,7 +109,7 @@ export default class CanvasEventShape {
     if (this.store.state.itemType == ItemType.TILE) {
       switch (this.store.state.currentTool) {
         case ToolType.PEN:
-          this.click('pen', true);
+          this.click('pen', true, 'eraser');
           break;
         case ToolType.PIPETA:
           this.click('pipette', false);
@@ -118,19 +118,19 @@ export default class CanvasEventShape {
           this.click('eraser', false);
           break;
         case ToolType.AREA_PEN:
-          this.drag('areaPen');
+          this.drag('areaPen', 'areaEraser');
           break;
         case ToolType.AREA_ERASER:
           this.drag('areaEraser');
           break;
         default:
-          this.click('pen', true);
+          this.click('pen', true, 'eraser');
           break;
       }
     } else {
       switch (this.store.state.currentPrefabTool) {
         case PrefabToolType.DRAW:
-          this.click('prefabDraw', true);
+          this.click('prefabDraw', true, 'prefabDelete');
           break;
         case PrefabToolType.DELETE:
           this.click('prefabDelete', false);
@@ -145,7 +145,7 @@ export default class CanvasEventShape {
    * @param eventName 事件名称
    * @param showBrush 是否显示当前笔刷
    */
-  private click(eventName: string, showBrush: boolean) {
+  private click(eventName: string, showBrush: boolean, eventNameRight: string = '') {
     if (showBrush) this.brushState.open();
 
     this.canvasDOM.onmousedown = (event: MouseEvent) => {
@@ -159,7 +159,14 @@ export default class CanvasEventShape {
         event.clientX,
         event.clientY
       );
-      bus.emit(eventName, point);
+
+      if (event.buttons == 1) {
+        bus.emit(eventName, point);
+      }
+
+      if (eventNameRight && event.buttons == 2) {
+        bus.emit(eventNameRight, point);
+      }
     };
 
     this.canvasDOM.onmouseup = () => {
@@ -173,13 +180,16 @@ export default class CanvasEventShape {
 
   /**
    * 拖动时调用
+   *
+   * @param eventName
    */
-  private drag(eventName: string) {
+  private drag(eventName: string, eventNameRight: string = '') {
     let down = false;
     let downPoint = { x: 0, y: 0 };
     let endPoint = { x: 0, y: 0 };
     let deffPoint = { x: 0, y: 0 };
     const throttle = new Throttle();
+
     // 拖动时的回调函数
     const moveFun = throttle.use((event: MouseEvent) => {
       deffPoint = canvasPoint.pixToCoordinate(
@@ -190,6 +200,7 @@ export default class CanvasEventShape {
         event.clientX,
         event.clientY
       );
+
       // 只有在不同的格子里才要重绘（否则会在一个格子里面不断的重绘）
       if (endPoint.x == deffPoint.x && endPoint.y == deffPoint.y) {
         return;
@@ -197,11 +208,26 @@ export default class CanvasEventShape {
         endPoint = deffPoint;
       }
 
-      bus.emit(eventName, {
-        start: downPoint,
-        end: endPoint
-      });
+      console.log(event);
+
+      // 鼠标左键
+      if (event.buttons == 1) {
+        bus.emit(eventName, {
+          start: downPoint,
+          end: endPoint
+        });
+        return;
+      }
+
+      // 鼠标右键
+      if (eventNameRight && event.buttons == 2) {
+        bus.emit(eventNameRight, {
+          start: downPoint,
+          end: endPoint
+        });
+      }
     }, 10);
+
     throttle.open();
 
     this.canvasDOM.onmousedown = (event: MouseEvent) => {

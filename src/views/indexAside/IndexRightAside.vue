@@ -6,7 +6,7 @@
     <el-card class="box-card">
       <layer-select />
     </el-card>
-    <el-card class="box-card"></el-card>
+    <el-card class="box-card"><effect-list /></el-card>
   </div>
 </template>
 
@@ -14,11 +14,13 @@
 import { defineComponent } from 'vue';
 import LayerSelect from '@/components/layerSelect/LayerSelect.vue';
 import CollectList from '@/components/collectList/CollectList.vue';
+import EffectList from '@/components/effectList/EffectList.vue';
 
 export default defineComponent({
   components: {
     LayerSelect,
-    CollectList
+    CollectList,
+    EffectList
   },
   setup() {
     return {};
