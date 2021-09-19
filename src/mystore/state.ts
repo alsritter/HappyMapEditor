@@ -8,11 +8,12 @@ import { IMapState, initTileMap, initBlockMap, initPrefabCountMap } from '@/myst
 import { IItemState } from '@/mystore/modules/currentItem/item.state';
 import { ICollectState } from './modules/collect/collect.state';
 import { IBackgroundState } from './modules/background/bg.state';
+import { IEffectState } from './modules/effect/effect.state';
 
 /**
  * 用于传递各个模块的状态接口
  */
-export interface IState extends ICanvasState, IKeyboradState, IMapState, IItemState, ICollectState, IBackgroundState {}
+export interface IState extends ICanvasState, IKeyboradState, IMapState, IItemState, ICollectState, IBackgroundState, IEffectState {}
 
 export const State: IState = {
   canvasSize: Constants.DEFAULT_SIZE,
@@ -26,6 +27,10 @@ export const State: IState = {
   //
   keys: prepareKeys(),
   //
+  startPoint: {
+    x: 5,
+    y: 5
+  },
   mapTiles: initTileMap(),
   blockInPrefabCount: initPrefabCountMap(),
   mapBlocks: initBlockMap(),
@@ -61,7 +66,9 @@ export const State: IState = {
   //
   bgUrl: '',
   bgId: '',
-  bgName: ''
+  bgName: '',
+  //
+  effects: new Map<string, string[]>()
 };
 
 export function createState() {

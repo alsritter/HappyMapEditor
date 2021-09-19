@@ -1,26 +1,29 @@
 <template>
-  <div class="inline-header">
-    <el-row :gutter="24" align="middle">
-      <el-col :span="5">
-        <div>
-          <el-checkbox v-model="showGrid" label="显示网格"></el-checkbox>
-          <el-checkbox v-model="showAxis" label="显示轴线"></el-checkbox>
-        </div>
-      </el-col>
-      <el-col :span="19">
-        <div v-if="store.state.itemType == 'TILE'">
-          <el-radio v-model="brush" label="PEN">铅笔|B</el-radio>
-          <el-radio v-model="brush" label="ERASER">橡皮|E</el-radio>
-          <el-radio v-model="brush" label="PIPETA">滴灌|F</el-radio>
-          <el-radio v-model="brush" label="AREA_PEN">选框笔|P</el-radio>
-          <el-radio v-model="brush" label="AREA_ERASER">选框擦|U</el-radio>
-        </div>
-        <div v-else>
-          <el-radio v-model="prefabModel" label="DRAW">绘制|Q</el-radio>
-          <el-radio v-model="prefabModel" label="DELETE">删除|D</el-radio>
-        </div>
-      </el-col>
-    </el-row>
+  <div class="tool-select">
+    <div class="canvas-set">
+      <el-checkbox v-model="showGrid" label="显示网格"></el-checkbox>
+      <el-checkbox v-model="showAxis" label="显示轴线"></el-checkbox>
+    </div>
+    <div v-if="store.state.itemType == 'TILE'">
+      <div>
+        <el-row :gutter="24">
+          <el-col :span="8"><el-radio v-model="brush" label="PEN">铅笔|B</el-radio></el-col>
+          <el-col :span="8"><el-radio v-model="brush" label="ERASER">橡皮|E</el-radio></el-col>
+          <el-col :span="8"><el-radio v-model="brush" label="PIPETA">滴灌|F</el-radio></el-col>
+        </el-row>
+      </div>
+      <div>
+        <el-row :gutter="24">
+          <el-col :span="8"><el-radio v-model="brush" label="AREA_PEN">选框笔|P</el-radio></el-col>
+          <el-col :span="8"><el-radio v-model="brush" label="AREA_ERASER">选框擦|U</el-radio></el-col>
+          <el-col :span="8"><el-radio v-model="brush" label="START">设置起点</el-radio></el-col>
+        </el-row>
+      </div>
+    </div>
+    <div v-else>
+      <el-radio v-model="prefabModel" label="DRAW">绘制|Q</el-radio>
+      <el-radio v-model="prefabModel" label="DELETE">删除|D</el-radio>
+    </div>
   </div>
 </template>
 
@@ -112,22 +115,26 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-$bgc: #cccbba;
+$bgc: #ffffff;
 
 .el-radio {
   height: 0px;
 }
 
-.inline-header {
+.canvas-set {
+  margin-bottom: 20px;
+}
+
+.tool-select {
   width: 100%;
   min-height: 50px;
   background-color: $bgc;
   box-sizing: border-box;
-  padding: 0 70px 0 70px;
-  &::after {
-    content: '';
-    display: block;
-    clear: left;
-  }
+  // padding: 0 70px 0 70px;
+  // &::after {
+  //   content: '';
+  //   display: block;
+  //   clear: left;
+  // }
 }
 </style>

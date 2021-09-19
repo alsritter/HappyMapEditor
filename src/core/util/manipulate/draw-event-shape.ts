@@ -15,6 +15,7 @@ export default class DrawEventShape {
   middleCtx: CanvasRenderingContext2D;
   backgroundCtx: CanvasRenderingContext2D;
   prefabCtx: CanvasRenderingContext2D;
+  specialCtx: CanvasRenderingContext2D;
 
   constructor(
     gridElement: HTMLCanvasElement,
@@ -22,17 +23,20 @@ export default class DrawEventShape {
     frontCtx: CanvasRenderingContext2D,
     middleCtx: CanvasRenderingContext2D,
     backgroundCtx: CanvasRenderingContext2D,
-    prefabCtx: CanvasRenderingContext2D
+    prefabCtx: CanvasRenderingContext2D,
+    specialCtx: CanvasRenderingContext2D
   ) {
     this.width = Constants.CANVAS_WIDTH;
     this.height = Constants.CANVAS_HEIGHT;
     this.store = useStore();
+    //
     this.gridElement = gridElement;
     this.brushCtx = brushCtx;
     this.frontCtx = frontCtx;
     this.middleCtx = middleCtx;
     this.backgroundCtx = backgroundCtx;
     this.prefabCtx = prefabCtx;
+    this.specialCtx = specialCtx;
     //
     this.initDraw();
     this.handleDrawTileEvent();
@@ -57,6 +61,32 @@ export default class DrawEventShape {
   }
 
   handleDrawTileEvent() {
+    bus.on('startPoint', (data) => {
+      const point = data as Point;
+      const oldPoint = this.store.state.startPoint;
+      // 先清除这个格子
+      canvasDraw.clearSingleLayerCanvasPoint(
+        this.specialCtx,
+        this.store.state.initPoint.x,
+        this.store.state.initPoint.y,
+        oldPoint,
+        this.store.state.canvasSize
+      );
+
+      this.store.action.mapSetStartPoint(point);
+
+      // 绘制起点格子
+      canvasDraw.drawSingleColorInSingleLayer(
+        this.specialCtx,
+        this.width,
+        this.height,
+        this.store.state.canvasSize,
+        this.store.state.initPoint,
+        point,
+        Constants.Start_Point_Color
+      );
+    });
+
     bus.on('pen', (data) => {
       // 检查当前图层是否显示，不显示则不绘制
       const layer = this.store.state.currentLayer;
@@ -75,6 +105,22 @@ export default class DrawEventShape {
         case Layer.BACKGROUND:
           this.drawTile(tile as Tile, this.backgroundCtx);
           break;
+      }
+    });
+
+    bus.on('pipette', (data) => {
+      const point = data as Point;
+      const tile = this.store.getters.getTileByPoint(point);
+      if (tile) {
+        this.store.action.currentTileModify({
+          isCollect: true,
+          spriteId: tile.data.tileSpriteId,
+          key: tile.data.key,
+          path: tile.data.url,
+          name: '',
+          desc: '',
+          image: tile.data.image
+        });
       }
     });
 
@@ -366,6 +412,18 @@ export default class DrawEventShape {
 
         canvasDraw.clearAllCanvas(this.prefabCtx, this.width, this.height);
         canvasDraw.clearAllCanvas(this.brushCtx, this.width, this.height);
+        canvasDraw.clearAllCanvas(this.specialCtx, this.width, this.height);
+
+        // 绘制起点格子
+        canvasDraw.drawSingleColorInSingleLayer(
+          this.specialCtx,
+          this.width,
+          this.height,
+          this.store.state.canvasSize,
+          this.store.state.initPoint,
+          this.store.state.startPoint,
+          Constants.Start_Point_Color
+        );
 
         if (this.store.state.displayLayers.prefabShow) {
           const prefabs = this.store.getters.getPrefabRange(startPoint, endPoint) as Prefab[];

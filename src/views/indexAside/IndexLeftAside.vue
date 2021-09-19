@@ -21,6 +21,9 @@
                     <div>名称：{{ store.state.tile.name }}</div>
                     <div>详情：{{ store.state.tile.desc }}</div>
                   </div>
+                  <div v-show="store.state.tile.isCollect">
+                    <effect-list />
+                  </div>
                 </div>
               </el-col>
             </el-row>
@@ -47,15 +50,7 @@
         <span>画布大小：{{ Math.round((store.state.canvasSize / 32) * 100) }} %</span>
       </div>
     </el-card>
-    <el-card class="select-bg">
-      <el-row :gutter="24">
-        <el-col :span="8"><background-select /></el-col>
-        <el-col v-if="store.state.bgName" :span="14">
-          <el-divider>背景信息</el-divider>
-          <span>当前选中背景： {{ store.state.bgName }}</span>
-        </el-col>
-      </el-row>
-    </el-card>
+    <el-card><tool-select /></el-card>
   </div>
 </template>
 
@@ -64,15 +59,17 @@ import bus from '@/core/util/bus';
 import { defineComponent, ref, watch } from 'vue';
 import { useStore } from '@/mystore';
 
-import BackgroundSelect from '@/components/backgroundSelect/BackgroundSelect.vue';
+import EffectList from '@/components/effectList/EffectList.vue';
 import TileList from '@/components/tileList/TileList.vue';
 import PrefabList from '@/components/prefabList/PrefabList.vue';
+import ToolSelect from '@/components/toolSelect/ToolSelect.vue';
 
 export default defineComponent({
   components: {
     TileList,
     PrefabList,
-    BackgroundSelect
+    EffectList,
+    ToolSelect
   },
   setup() {
     const store = useStore();
@@ -88,27 +85,6 @@ export default defineComponent({
         }
       }
     );
-
-    // function getHexColor(color: string) {
-    //   const values = color
-    //     .replace(/rgba?\(/, '')
-    //     .replace(/\)/, '')
-    //     .replace(/[\s+]/g, '')
-    //     .split(',');
-    //   const a = parseFloat(values[3] || 1),
-    //     r = Math.floor(a * parseInt(values[0]) + (1 - a) * 255),
-    //     g = Math.floor(a * parseInt(values[1]) + (1 - a) * 255),
-    //     b = Math.floor(a * parseInt(values[2]) + (1 - a) * 255);
-
-    //   return '#' + ('0' + r.toString(16)).slice(-2) + ('0' + g.toString(16)).slice(-2) + ('0' + b.toString(16)).slice(-2) + ('0' + a.toString(16)).slice(-2);
-    // }
-
-    // function changeColor(key: string) {
-    //   console.log(getHexColor(color.value));
-
-    //   store.action.collectTileColor(key, getHexColor(color.value));
-    //   bus.emit('refreshCanvas');
-    // }
 
     return {
       activeName,
@@ -137,9 +113,5 @@ export default defineComponent({
 
 .info-box {
   // width: 70%;
-}
-
-.background-select {
-  display: inline;
 }
 </style>

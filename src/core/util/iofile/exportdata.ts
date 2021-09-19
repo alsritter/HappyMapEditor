@@ -12,16 +12,12 @@ const store = useStore();
  */
 export function expInitial() {
   return {
-    x: 1,
-    y: 3,
-    speed: 8,
-    runDivisor: 3,
-    jumpSpeedDivisor: 1.2,
-    climbSpeed: 0.1,
-    crouchSpeedDivisor: 3,
-    jumpForce: 10,
-    jump2ForceDivisor: 2,
-    climbLateralForce: 5
+    x: store.state.startPoint.x,
+    y: store.state.startPoint.y,
+    speed: 6,
+    jumpMin: 1.5,
+    jumpMax: 2,
+    jumpSpeed: 8
   };
 }
 
@@ -45,8 +41,6 @@ export function expPrefabs() {
     result.push({
       prefab_id: prefab.data.prefabId,
       // 得减去宽度高度信息
-      // x: prefab.point.x + prefab.data.width,
-      // y: -(prefab.point.y + prefab.data.height)
       x: prefab.point.x,
       y: prefab.point.y - prefab.data.height + 1
     });
@@ -61,13 +55,13 @@ export function expTileData() {
   const result = [];
   const tiles = [...store.state.tileInstancesCache.values()];
   for (const tile of tiles) {
+    const eff = store.state.effects.get(tile.key);
     result.push({
       key: tile.key,
       layer: layerToNumber(tile.layer),
       tile_sprite_id: tile.tileSpriteId,
       color: tile.color,
-      effect_keys: tile.effectKeys,
-      tags: tile.tags
+      effect_keys: eff ? eff : []
     });
   }
   return result;

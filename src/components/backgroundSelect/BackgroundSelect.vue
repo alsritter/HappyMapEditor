@@ -1,6 +1,6 @@
 <template>
   <div class="bg-list">
-    <el-popover placement="right" trigger="click">
+    <el-popover placement="left" trigger="click">
       <!-- <div v-for="item of items" :key="item.name">{{ item.name }}</div> -->
       <el-radio v-for="item of items" :key="item.name" v-model="radioValue" :label="item.bg_id" @change="changeBG(item)">{{ item.name }}</el-radio>
       <template #reference>

@@ -16,8 +16,6 @@ export default defineComponent({
     const items = computed(() => store.getters.getAllCollectTile());
 
     function selectedTile(event: Event, tile: TileData) {
-      console.log(tile, event);
-
       store.action.currentTileModify({
         isCollect: true,
         spriteId: tile.tileSpriteId,

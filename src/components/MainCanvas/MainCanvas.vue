@@ -1,6 +1,6 @@
 <template>
-  <!-- <div class="coordinate">x:{{ currentX }}, y: {{ currentY }}</div> -->
-  <el-card shadow="hover">
+  <el-card shadow="always">
+    <!-- <div class="coordinate">x:{{ currentX }}, y: {{ currentY }}</div> -->
     <div class="map__container">
       <img class="bg_img" :src="bgUrl" :width="width" :height="height" />
       <!-- GRID_CANVAS 就是顶层用来刷新网格的那个画布，因为经常更新，所以这里单独提取出来 -->
@@ -15,6 +15,8 @@
       <canvas id="PREFAB" ref="PREFAB_CANVAS" class="map" :width="width" :height="height"></canvas>
       <!-- 显示当前选中的笔刷 -->
       <canvas id="BRUSH" ref="BRUSH_CANVAS" class="map" :width="width" :height="height"></canvas>
+      <!-- 显示特殊点（出生点之类的） -->
+      <canvas id="SPECIAL" ref="SPECIAL_CANVAS" class="map" :width="width" :height="height"></canvas>
     </div>
   </el-card>
 </template>

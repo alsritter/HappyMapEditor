@@ -20,8 +20,11 @@ a {
 body {
   background-color: #e1e1e1;
   font-size: 14px;
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('@/assets/img/logo.svg') repeat center center;
+  background-size: 20% 20%;
+  -moz-background-size: 20% 20%;
+  /* opacity: 0.5; */
 }
-
 
 html,
 body {

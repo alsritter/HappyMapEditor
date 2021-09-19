@@ -45,27 +45,14 @@ export class TileData {
   layer: Layer;
   tileSpriteId: string;
   color: string;
-  effectKeys: string[];
-  tags: string[];
 
-  constructor(
-    key: string,
-    layer: Layer,
-    tileSpriteId: string,
-    url: string,
-    image: HTMLImageElement | null = null,
-    color: string = '#ffffff00',
-    effectKeys: string[] = [],
-    tags: string[] = []
-  ) {
+  constructor(key: string, layer: Layer, tileSpriteId: string, url: string, image: HTMLImageElement | null = null, color: string = '#ffffff00') {
     this.image = image;
     this.url = url;
     this.key = key;
     this.layer = layer;
     this.tileSpriteId = tileSpriteId;
     this.color = color;
-    this.effectKeys = effectKeys;
-    this.tags = tags;
   }
 }
 
@@ -144,7 +131,8 @@ export enum ToolType {
   ERASER = 'ERASER',
   PIPETA = 'PIPETA',
   AREA_PEN = 'AREA_PEN',
-  AREA_ERASER = 'AREA_ERASER'
+  AREA_ERASER = 'AREA_ERASER',
+  START = 'START'
 }
 
 export enum PrefabToolType {

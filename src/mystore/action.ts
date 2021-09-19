@@ -22,11 +22,13 @@ import {
   clearAllTile,
   replaceTile,
   clearPrefabs,
-  replacePrefab
+  replacePrefab,
+  mapSetStartPoint
 } from '@/mystore/modules/map/map.actions';
 import { currentTileModify, currentPrefabModify, currentTool, currentDisplayLayer, currentPrefabTool } from '@/mystore/modules/currentItem/item.actions';
 import { backgroundModify, backgroundClear } from '@/mystore/modules/background/bg.actions';
 import { collectTileColor, collectTileEffect, collectTileTags } from '@/mystore/modules/collect/collect.actions';
+import { effectModify } from '@/mystore/modules/effect/effect.actions';
 
 /**
  * 创建Action
@@ -59,6 +61,7 @@ export function createAction(state: IState) {
     replaceTile: replaceTile(state),
     clearPrefabs: clearPrefabs(state),
     replacePrefab: replacePrefab(state),
+    mapSetStartPoint: mapSetStartPoint(state),
     //
     currentTileModify: currentTileModify(state),
     currentPrefabModify: currentPrefabModify(state),
@@ -71,6 +74,8 @@ export function createAction(state: IState) {
     //
     collectTileColor: collectTileColor(state),
     collectTileEffect: collectTileEffect(state),
-    collectTileTags: collectTileTags(state)
+    collectTileTags: collectTileTags(state),
+    //
+    effectModify: effectModify(state)
   };
 }

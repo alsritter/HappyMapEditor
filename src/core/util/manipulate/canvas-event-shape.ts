@@ -123,6 +123,9 @@ export default class CanvasEventShape {
         case ToolType.AREA_ERASER:
           this.drag('areaEraser');
           break;
+        case ToolType.START:
+          this.click('startPoint', false);
+          break;
         default:
           this.click('pen', true, 'eraser');
           break;

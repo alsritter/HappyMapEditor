@@ -46,7 +46,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .tile-list {
-  height: 400px;
+  height: 300px;
   width: 400px;
   overflow-y: auto;
   -webkit-user-select: none;

@@ -1,4 +1,4 @@
-import { Tile, PrefabData, Prefab, Block, TileData } from '@/mystore/types';
+import { Tile, PrefabData, Prefab, Block, TileData, Point } from '@/mystore/types';
 import TreeMap from 'ts-treemap';
 
 /**
@@ -20,6 +20,10 @@ import TreeMap from 'ts-treemap';
  */
 
 export interface IMapState {
+  /**
+   * 角色出生点
+   */
+  startPoint: Point;
   mapTiles: TreeMap<number, TreeMap<number, Tile>>;
   mapBlocks: TreeMap<number, TreeMap<number, Block>>;
   /**

@@ -6,6 +6,12 @@ import TreeMap from 'ts-treemap';
 import { canvasBlockPoint } from '@/core/util/graph';
 import Constants from '@/core/util/Constants';
 
+export function mapSetStartPoint(state: IMapState) {
+  return (point: Point) => {
+    state.startPoint = point;
+  };
+}
+
 /**
  * 添加 Tile
  * @returns tile

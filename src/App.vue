@@ -4,7 +4,7 @@
     <el-container>
       <el-aside width="450px"><index-left-aside /></el-aside>
       <el-container>
-        <el-header height="30px"><inline-header /></el-header>
+        <!-- <el-header height="30px"></el-header> -->
         <el-main><router-view></router-view></el-main>
       </el-container>
       <el-aside width="300px"><index-right-aside /></el-aside>
@@ -18,12 +18,12 @@ import { defineComponent, onMounted, computed, onUpdated } from 'vue';
 // import { useStore } from 'vuex';
 import { useStore } from '@/mystore';
 import IndexHeader from '@/views/indexHeader/IndexHeader.vue';
-import InlineHeader from '@/views/indexHeader/inlineHeader/InlineHeader.vue';
 import IndexLeftAside from '@/views/indexAside/IndexLeftAside.vue';
 import IndexRightAside from '@/views/indexAside/IndexRightAside.vue';
 import IndexFooter from '@/views/indexFooter/IndexFooter.vue';
 import { inputData } from '@/core/util/iofile/inpdata';
-import { expTiles, expInitial, expBg, expPrefabs, expTileData, downLoadFiles } from '@/core/util/iofile/exportdata';
+import { ElMessage } from 'element-plus';
+import { expTiles, expInitial, expBg, expPrefabs, expTileData } from '@/core/util/iofile/exportdata';
 
 export default defineComponent({
   name: 'App',
@@ -32,8 +32,7 @@ export default defineComponent({
     IndexHeader,
     IndexLeftAside,
     IndexRightAside,
-    IndexFooter,
-    InlineHeader
+    IndexFooter
   },
   setup() {
     const store = useStore();
@@ -85,6 +84,7 @@ export default defineComponent({
           };
           // downLoadFiles(data, 'exportData.json');
           localStorage.setItem('localMapData', JSON.stringify(data));
+          ElMessage.success('保存成功');
         }
       }
     };
@@ -115,7 +115,7 @@ export default defineComponent({
   main {
     width: 97%;
     max-width: 1400px;
-    margin: 15px auto;
+    // margin: 15px auto;
     display: flex;
   }
   .main-left {

@@ -1,3 +1,8 @@
+.el-card {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
 .map__container {
   width: 1100px;
   height: 780px;
@@ -15,6 +20,11 @@
 
   img[src=''] {
     display: none;
+  }
+
+  #SPECIAL {
+    @extend .canvaseffect;
+    z-index: 50;
   }
 
   #GRID_CANVAS {

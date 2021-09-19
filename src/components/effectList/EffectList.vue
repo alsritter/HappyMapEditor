@@ -1,41 +1,76 @@
 <template>
   <div>
-    <el-select v-model="value1" multiple placeholder="请选择">
-      <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+    <el-select v-model="eff" multiple placeholder="选择 Tile 携带效果">
+      <el-option v-for="item in effects" :key="item.value" :label="item.label" :value="item.value"></el-option>
     </el-select>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { watch, defineComponent, ref, computed } from 'vue';
+import { useStore } from '@/mystore';
+import axios from '@/network';
 
 export default defineComponent({
   setup() {
-    return {
-      options: [
-        {
-          value: '选项1',
-          label: '黄金糕'
-        },
-        {
-          value: '选项2',
-          label: '双皮奶'
-        },
-        {
-          value: '选项3',
-          label: '蚵仔煎'
-        },
-        {
-          value: '选项4',
-          label: '龙须面'
-        },
-        {
-          value: '选项5',
-          label: '北京烤鸭'
+    const store = useStore();
+    const eff = ref([] as string[]);
+    const effects = ref([] as Lb[]);
+    const key = computed(() => store.state.tile.key);
+    store.state.effects.get(key.value)?.forEach((o) => {
+      eff.value.push(o);
+    });
+
+    type Lb = {
+      value: string;
+      label: string;
+    };
+
+    axios.getData
+      .getEffectList()
+      .then((res) => {
+        effects.value = [];
+        for (const item of res as any[]) {
+          effects.value.push({
+            value: item.effect_id,
+            label: item.effect
+          });
         }
-      ],
-      value1: [],
-      value2: []
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+    // const eff = computed(() => store.state.effects);
+    watch(eff, (value) => {
+      // console.log(value);
+      if (value) {
+        if (!key.value) return;
+        const result = [];
+        for (const item of value) {
+          result.push(item);
+        }
+        store.action.effectModify(key.value, result);
+      }
+    });
+
+    watch(
+      () => store.state.tile.key,
+      (value) => {
+        if (value) {
+          eff.value = [];
+          const arr = store.state.effects.get(value);
+          if (!arr) return;
+          for (const item of arr) {
+            eff.value.push(item);
+          }
+        }
+      }
+    );
+
+    return {
+      effects,
+      eff
     };
   }
 });

@@ -11,7 +11,6 @@ type TD = {
   tile_sprite_id: string;
   color: string;
   effect_keys: string[];
-  tags: string[];
 };
 
 type TP = {
@@ -36,9 +35,17 @@ type BG = {
 export function inputData(dataStr: string) {
   const map = JSON.parse(dataStr);
   const background = map.background;
+  const initial = map.initial;
   const prefabs = map.prefabs;
   const tileData = map.tileData;
   const tiles = map.tiles;
+
+  if (initial.x && initial.y) {
+    store.action.mapSetStartPoint({
+      x: initial.x,
+      y: initial.y
+    });
+  }
 
   inData(tileData, tiles, prefabs, background);
 }
@@ -51,7 +58,8 @@ async function inData(tiledata: TD[], tile: TP[], prefabs: PP[], bg: BG) {
       .then((res: any) => {
         const img = new Image(100, 200);
         img.src = res.path;
-        const tile = new TileData(o.key, numberToLayer(o.layer), o.tile_sprite_id, res.path, img, o.color, o.effect_keys, o.tags);
+        const tile = new TileData(o.key, numberToLayer(o.layer), o.tile_sprite_id, res.path, img, o.color);
+        store.action.effectModify(o.key, o.effect_keys);
         store.action.replaceTileData(tile);
       })
       .catch((error) => {

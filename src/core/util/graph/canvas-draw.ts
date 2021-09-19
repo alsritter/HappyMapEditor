@@ -148,24 +148,42 @@ export function drawSingleItemInSingleLayer(
   data: TileData
 ): void {
   if (data == undefined) return;
-
-  // 计算当前要修改的具体位置(有正负)
-  // const pixX = changeX * size + initX;
-  // const pixY = changeY * size + initY;
   const pix = CoordinateToPix(size, initX, initY, changeX, changeY);
-
-  // 如果要修改的格子在画布外面则不需要绘制，注意它的起始坐标在左上角，所以要比对四个角完全不在画布里面才不需要绘制
   if (pix.x > width || pix.x + size < 0 || pix.y > height || pix.y + size < 0) return;
-  // 先清空指定位置
   mainCtx.clearRect(pix.x, pix.y, size, size);
-
-  // ctx.strokeStyle = data; // 这种是轮廓颜色
   mainCtx.fillStyle = data.color;
-  // ctx.drawImage()
   if (data.image != null) {
     mainCtx.drawImage(data.image, pix.x, pix.y, size, size);
   }
   // 绘制色块
+  mainCtx.fillRect(pix.x, pix.y, size, size);
+}
+
+/**
+ *  指定位置上绘制一个颜色
+ *
+ * @param mainCtx 画布
+ * @param width 画布的宽度
+ * @param height 画布的高度
+ * @param size 单个格子大小
+ * @param initPoint 初始点位置
+ * @param point 当前要变化的坐标轴坐标
+ * @param color 颜色
+ */
+export function drawSingleColorInSingleLayer(
+  mainCtx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  size: number,
+  initPoint: Point,
+  point: Point,
+  color: string
+): void {
+  if (color == undefined) return;
+  const pix = CoordinateToPix(size, initPoint.x, initPoint.y, point.x, point.y);
+  if (pix.x > width || pix.x + size < 0 || pix.y > height || pix.y + size < 0) return;
+  mainCtx.clearRect(pix.x, pix.y, size, size);
+  mainCtx.fillStyle = color;
   mainCtx.fillRect(pix.x, pix.y, size, size);
 }
 
@@ -378,5 +396,6 @@ export default {
   clearAreaItem,
   clearSingleLayerAreaItem,
   clearSingleLayerCanvasPoint,
-  drawSingleItemInSingleLayer
+  drawSingleItemInSingleLayer,
+  drawSingleColorInSingleLayer
 };
