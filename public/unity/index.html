@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Unity WebGL Player | Genergaming</title>
+  <script src="Build/UnityLoader.js"></script>
+  <script>
+    var unityInstance = UnityLoader.instantiate("unityContainer", "Build/game.json");
+    window.ReportReady = function (eventName, data) {
+      window.top.dispatchEvent(new CustomEvent(eventName, { detail: data }));
+      // send('SetData', 'this is test Data');
+    }
+
+
+    function send(name, data) {
+      // 是 JsTalker 是挂载了对应脚本的对象 name 是 JsTalker 挂载的方法
+      unityInstance.SendMessage('JsTalker', name, data);
+    }
+  </script>
+</head>
+
+<body>
+  <div id="unityContainer" style="width: 960px; height: 600px; margin: auto"></div>
+</body>
+
+</html>

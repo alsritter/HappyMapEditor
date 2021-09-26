@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- <unity src="/dist/Build/Dist.json" width="1000" height="600" unityLoader="/dist/Build/UnityLoader.js" ref="unityvue"></unity> -->
-    <iframe ref="iframe" src="/dist/index.html" frameborder="0" width="960px" height="650px" scrolling="no"></iframe>
+    <iframe ref="iframe" src="/unity/index.html" frameborder="0" width="960px" height="650px" scrolling="no"></iframe>
   </div>
 </template>
 
