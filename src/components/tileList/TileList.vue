@@ -36,7 +36,7 @@ export default defineComponent({
     }
 
     function loadImage(event: Event) {
-      // console.log(event.target);
+      //
     }
 
     return { items, selectedTile, loadImage };

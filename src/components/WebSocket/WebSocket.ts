@@ -6,7 +6,7 @@ export default defineComponent({
   setup() {
     // 服务器返回的数据
     bus.on('sendData', (data) => {
-      console.log(data);
+      // console.log(data);
     });
 
     const checked = ref(false);
@@ -15,11 +15,9 @@ export default defineComponent({
     watch(
       () => checked.value,
       (newVal) => {
-        console.log('执行了修改~');
-
         if (newVal) {
           wc = new SocketClient('localhost', 6543, (event) => {
-            console.log(event);
+            // console.log(event);
           });
         } else {
           wc?.close();

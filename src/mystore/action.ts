@@ -27,7 +27,7 @@ import {
 } from '@/mystore/modules/map/map.actions';
 import { currentTileModify, currentPrefabModify, currentTool, currentDisplayLayer, currentPrefabTool } from '@/mystore/modules/currentItem/item.actions';
 import { backgroundModify, backgroundClear } from '@/mystore/modules/background/bg.actions';
-import { collectTileColor, collectTileEffect, collectTileTags } from '@/mystore/modules/collect/collect.actions';
+import { collectTileColor } from '@/mystore/modules/collect/collect.actions';
 import { effectModify } from '@/mystore/modules/effect/effect.actions';
 
 /**
@@ -73,8 +73,8 @@ export function createAction(state: IState) {
     backgroundClear: backgroundClear(state),
     //
     collectTileColor: collectTileColor(state),
-    collectTileEffect: collectTileEffect(state),
-    collectTileTags: collectTileTags(state),
+    // collectTileEffect: collectTileEffect(state),
+    // collectTileTags: collectTileTags(state),
     //
     effectModify: effectModify(state)
   };

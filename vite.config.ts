@@ -12,6 +12,9 @@ export default defineConfig({
     // 是否开启 https
     https: false
   },
+  build: {
+    outDir: 'dist/output/'
+  },
   resolve: {
     // 配置别名
     alias: {

@@ -175,12 +175,15 @@ export default class ReconnectingWebSocket {
     console.log('start');
     this.timeoutObj && clearTimeout(this.timeoutObj);
     this.serverTimeoutObj && clearTimeout(this.serverTimeoutObj);
-
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     this.timeoutObj = setTimeout(() => {
       //这里发送一个心跳，后端收到后，返回一个心跳消息
       ws.send('0x9'); // 这里随便发什么，只要确保后端收到心跳请求能返回数据就行了，这里规定 ping：0x9、pong：0xA
       if (this.timedOut) {
         const that = this;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         this.serverTimeoutObj = setTimeout(() => {
           // 如果超时了则关闭 Socket 的连接
           that.close();

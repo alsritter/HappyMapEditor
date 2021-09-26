@@ -210,9 +210,6 @@ export default class CanvasEventShape {
       } else {
         endPoint = deffPoint;
       }
-
-      console.log(event);
-
       // 鼠标左键
       if (event.buttons == 1) {
         bus.emit(eventName, {
@@ -299,8 +296,6 @@ class BrushState {
       } else {
         this.endPoint = this.deffPoint;
       }
-
-      // console.log(this.deffPoint);
       bus.emit('brushMove', this.deffPoint);
     }, 10);
   }

@@ -45,7 +45,6 @@ export default defineComponent({
     });
 
     watch(display, () => {
-      // console.log(display);
       store.action.currentDisplayLayer(display);
     });
 

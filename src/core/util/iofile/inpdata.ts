@@ -120,8 +120,6 @@ async function inBg(bg: BG) {
     .then((res: any) => {
       const path = res.path;
       const name = res.name;
-      console.log(path);
-
       store.action.backgroundModify(bg.bg_id, path, name);
     })
     .catch((error) => {

@@ -45,8 +45,7 @@ export default defineComponent({
         if (map) {
           inputData(map);
         }
-
-        window.oncontextmenu = function (e) {
+        window.oncontextmenu = function (e: any) {
           //取消默认的浏览器自带右键 很重要！！
           e.preventDefault();
         };
@@ -66,9 +65,8 @@ export default defineComponent({
       },
       // 监听快捷键
       onShortcutKey() {
-        // console.log(tmp);
         if (store.getters.isRecall()) {
-          // console.log('按下了撤回键');
+          // 按下了撤回键
         }
         // 按下保存
         if (store.getters.isSave()) {

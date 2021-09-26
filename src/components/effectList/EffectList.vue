@@ -43,7 +43,6 @@ export default defineComponent({
 
     // const eff = computed(() => store.state.effects);
     watch(eff, (value) => {
-      // console.log(value);
       if (value) {
         if (!key.value) return;
         const result = [];

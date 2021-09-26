@@ -42,7 +42,7 @@ export default defineComponent({
     }
 
     function gotoIndex() {
-      console.log('点击了 Log');
+      // console.log('点击了 Log');
     }
 
     function clearLocal() {

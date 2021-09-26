@@ -108,8 +108,6 @@ export function coordinateIsOffScreenByElement(canvas: HTMLCanvasElement, size: 
  */
 export function coordinateIsOffScreen(width: number, height: number, size: number, sx: number, sy: number, x: number, y: number): boolean {
   const point = CoordinateToPix(size, sx, sy, x, y);
-  // console.log(point, x, y);
-
   if (point.x > width || point.x < 0) return true;
   if (point.y > height || point.y < 0) return true;
   return false;
@@ -127,7 +125,6 @@ export function coordinateIsOffScreen(width: number, height: number, size: numbe
  * @returns 是否在边界外
  */
 export function coordinateIsOffScreenByPix(width: number, height: number, point: Point): boolean {
-  // console.log(point);
   if (point.x > width || point.x < 0) return true;
   if (point.y > height || point.y < 0) return true;
   return false;
