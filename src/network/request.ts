@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
 
-// const baseURL = 'http://localhost:19999/';
-const baseURL = 'https://happyserver.alsritter.icu/';
+const baseURL = 'http://localhost:19999/';
+// const baseURL = 'https://happyserver.alsritter.icu/';
 export { baseURL };
 
 export function request(options: AxiosRequestConfig) {

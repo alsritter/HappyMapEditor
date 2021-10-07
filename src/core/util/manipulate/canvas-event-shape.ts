@@ -118,7 +118,7 @@ export default class CanvasEventShape {
           this.click('eraser', false);
           break;
         case ToolType.AREA_PEN:
-          this.drag('areaPen', 'areaEraser');
+          this.drag('areaPen', 'areaEraser', 'pen', 'eraser');
           break;
         case ToolType.AREA_ERASER:
           this.drag('areaEraser');
@@ -186,7 +186,7 @@ export default class CanvasEventShape {
    *
    * @param eventName
    */
-  private drag(eventName: string, eventNameRight: string = '') {
+  private drag(eventName: string, eventNameRight: string = '', clickEventName: string = '', clickEventNameRight: string = '') {
     let down = false;
     let downPoint = { x: 0, y: 0 };
     let endPoint = { x: 0, y: 0 };
@@ -210,6 +210,7 @@ export default class CanvasEventShape {
       } else {
         endPoint = deffPoint;
       }
+
       // 鼠标左键
       if (event.buttons == 1) {
         bus.emit(eventName, {
@@ -241,6 +242,15 @@ export default class CanvasEventShape {
         event.clientY
       );
       endPoint = downPoint;
+
+      // 开始的位置也需要绘制
+      if (clickEventName && event.buttons == 1) {
+        bus.emit(clickEventName, downPoint);
+      }
+
+      if (clickEventNameRight && event.buttons == 2) {
+        bus.emit(clickEventNameRight, downPoint);
+      }
     };
 
     this.canvasDOM.onmouseup = () => {

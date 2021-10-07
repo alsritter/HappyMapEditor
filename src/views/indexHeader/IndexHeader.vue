@@ -9,7 +9,7 @@
       <el-button size="mini" @click="openUnity">打开 Unity</el-button>
       <file-reader @load="inputMapData"></file-reader>
       <el-dialog v-model="dialogVisible" width="1000px">
-        <embed-unity />
+        <div v-if="dialogVisible"><embed-unity /></div>
       </el-dialog>
     </div>
   </div>
@@ -23,7 +23,7 @@ import { useStore } from '@/mystore';
 import { ElMessage } from 'element-plus';
 import FileReader from '@/components/textReader/FileReader.vue';
 import EmbedUnity from '@/components/embedUnity/EmbedUnity.vue';
-import bus from '@/core/util/bus';
+// import bus from '@/core/util/bus';
 
 export default defineComponent({
   components: {
@@ -70,7 +70,7 @@ export default defineComponent({
 
     function openUnity() {
       //
-      bus.emit('unityRefresh');
+      // bus.emit('unityRefresh');
       dialogVisible.value = true;
     }
 
