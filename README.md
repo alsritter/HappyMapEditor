@@ -31,3 +31,7 @@ Game
 # TODO
 
 * updated README
+
+## License
+
+Apache-2.0
