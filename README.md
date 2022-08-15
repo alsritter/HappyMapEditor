@@ -21,15 +21,7 @@ Game
 * Jump <kbd>J</kbd>
 * Run <kbd>K</kbd>
 
-
-<iframe 
-    src="https://player.bilibili.com/player.html?aid=378975090&bvid=BV1vf4y1u7CN&cid=434586183&page=1" 
-    scrolling="no" 
-    border="0" 
-    frameborder="no" 
-    framespacing="0" 
-    allowfullscreen="true"> 
-</iframe>
+[![](https://image.alsritter.icu/img20220815205126.png)](https://www.bilibili.com/video/BV1vf4y1u7CN)
 
 # TODO
 
